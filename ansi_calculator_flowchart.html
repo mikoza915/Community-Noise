@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ANSI S12.9 Penalty Calculator - Enhanced with File Upload</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 2rem;
+        }
+        h1 {
+            text-align: center;
+            color: #1f2937;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        .subtitle {
+            text-align: center;
+            color: #6b7280;
+            margin-bottom: 2rem;
+        }
+        
+        /* File Upload Section */
+        .upload-section {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            padding: 2rem;
+            border-radius: 0.75rem;
+            margin-bottom: 2rem;
+            color: white;
+        }
+        .upload-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+        .upload-box {
+            background: rgba(255,255,255,0.2);
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            border: 2px dashed rgba(255,255,255,0.5);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .upload-box:hover {
+            background: rgba(255,255,255,0.3);
+            border-color: white;
+            transform: scale(1.02);
+        }
+        .upload-box.drag-over {
+            background: rgba(255,255,255,0.4);
+            border-color: white;
+            border-style: solid;
+        }
+        .upload-box.uploading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+        .upload-box input[type="file"] {
+            display: none;
+        }
+        .upload-icon {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+        }
+        .upload-status {
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+        
+        /* Data Display */
+        .data-display {
+            background: #f9fafb;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            margin-bottom: 2rem;
+            border: 2px solid #e5e7eb;
+        }
+        .data-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .data-card {
+            background: white;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .data-label {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-bottom: 0.5rem;
+        }
+        .data-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1f2937;
+        }
+        
+        /* Spectrum Table */
+        .spectrum-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            font-size: 0.875rem;
+        }
+        .spectrum-table th {
+            background: #667eea;
+            color: white;
+            padding: 0.75rem;
+            text-align: left;
+        }
+        .spectrum-table td {
+            padding: 0.5rem 0.75rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .spectrum-table tr:hover {
+            background: #f9fafb;
+        }
+        .tone-detected {
+            background: #fef3c7 !important;
+            font-weight: 600;
+        }
+        
+        /* Rest of existing styles */
+        .flowchart {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            position: relative;
+        }
+        .flow-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 2rem;
+            position: relative;
+        }
+        .block {
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            min-width: 280px;
+            position: relative;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .block:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        }
+        .block-input {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .block-process {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+        .block-calculation {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+        .block-decision {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            color: #1f2937;
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+            padding: 2rem;
+            min-width: 240px;
+            text-align: center;
+        }
+        .block-output {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            color: #1f2937;
+            font-weight: 600;
+        }
+        .block-title {
+            font-weight: 700;
+            font-size: 1.125rem;
+            margin-bottom: 0.5rem;
+        }
+        .block-content {
+            font-size: 0.875rem;
+            line-height: 1.5;
+            opacity: 0.95;
+        }
+        .arrow {
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-top: 20px solid #6b7280;
+            margin: 0 auto;
+        }
+        .arrow-horizontal {
+            width: 60px;
+            height: 3px;
+            background: #6b7280;
+            position: relative;
+        }
+        .arrow-horizontal::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: -5px;
+            width: 0;
+            height: 0;
+            border-left: 12px solid #6b7280;
+            border-top: 6px solid transparent;
+            border-bottom: 6px solid transparent;
+        }
+        .legend {
+            background: #f9fafb;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            margin-top: 2rem;
+            border: 2px solid #e5e7eb;
+        }
+        .legend-title {
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #1f2937;
+        }
+        .legend-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .legend-box {
+            width: 40px;
+            height: 40px;
+            border-radius: 0.5rem;
+            flex-shrink: 0;
+        }
+        .formula {
+            background: #1f2937;
+            color: #fbbf24;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+        .note {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+            font-size: 0.875rem;
+            color: #92400e;
+        }
+        .interactive-demo {
+            background: #f9fafb;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            margin-top: 2rem;
+            border: 2px solid #e5e7eb;
+        }
+        .input-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        .input-field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .input-field label {
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: #374151;
+        }
+        .input-field input, .input-field select {
+            padding: 0.5rem;
+            border: 2px solid #d1d5db;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+        }
+        .input-field input:focus, .input-field select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .result-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            text-align: center;
+            margin-top: 1rem;
+        }
+        .result-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0.5rem 0;
+        }
+        .btn {
+            background: #667eea;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+        .btn-secondary {
+            background: #6b7280;
+        }
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎵 ANSI S12.9 Penalty Calculator</h1>
+        <p class="subtitle">Upload SignalScope Data or WAV Files for Automatic Analysis</p>
+
+        <!-- File Upload Section -->
+        <div class="upload-section">
+            <h2 style="color: white; margin-bottom: 1rem;">📁 Upload Measurement Data</h2>
+            <div class="upload-grid">
+                <div class="upload-box" id="csv-box" onclick="document.getElementById('csv-upload').click()">
+                    <input type="file" id="csv-upload" accept=".csv,.txt" onchange="handleCSVUpload(event)">
+                    <div class="upload-icon">📊</div>
+                    <div style="font-weight: 600; margin-bottom: 0.5rem;">SignalScope CSV</div>
+                    <div style="font-size: 0.875rem; opacity: 0.9;">
+                        Drag & drop or click to upload<br>
+                        1/3 octave band data
+                    </div>
+                    <div class="upload-status" id="csv-status"></div>
+                </div>
+                
+                <div class="upload-box" id="wav-box" onclick="document.getElementById('wav-upload').click()">
+                    <input type="file" id="wav-upload" accept=".wav,.wave" onchange="handleWAVUpload(event)">
+                    <div class="upload-icon">🎵</div>
+                    <div style="font-weight: 600; margin-bottom: 0.5rem;">WAV Audio File</div>
+                    <div style="font-size: 0.875rem; opacity: 0.9;">
+                        Drag & drop or click to upload<br>
+                        Automatic tone detection
+                    </div>
+                    <div class="upload-status" id="wav-status"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Display Section -->
+        <div class="data-display" id="data-display" style="display: none;">
+            <h2 style="margin-bottom: 1rem;">📊 Measurement Results</h2>
+            
+            <!-- Overall Levels -->
+            <div class="data-grid">
+                <div class="data-card">
+                    <div class="data-label">dB(Z) Unweighted</div>
+                    <div class="data-value" id="dbz-value">--</div>
+                </div>
+                <div class="data-card">
+                    <div class="data-label">dB(C)</div>
+                    <div class="data-value" id="dbc-value">--</div>
+                </div>
+                <div class="data-card">
+                    <div class="data-label">dB(A)</div>
+                    <div class="data-value" id="dba-value">--</div>
+                </div>
+                <div class="data-card">
+                    <div class="data-label">C-A Difference</div>
+                    <div class="data-value" id="ca-diff-value">--</div>
+                </div>
+            </div>
+
+            <!-- Spectrum Table -->
+            <h3 style="margin-top: 1.5rem; margin-bottom: 0.5rem;">1/3 Octave Band Spectrum</h3>
+            <div style="overflow-x: auto;">
+                <table class="spectrum-table" id="spectrum-table">
+                    <thead>
+                        <tr>
+                            <th>Frequency (Hz)</th>
+                            <th>Level (dB)</th>
+                            <th>A-Weighted (dB)</th>
+                            <th>C-Weighted (dB)</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="spectrum-tbody">
+                        <!-- Will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="tone-alert" style="display: none; background: #fef3c7; border-left: 4px solid #f59e0b; padding: 1rem; border-radius: 0.5rem; margin-top: 1rem; color: #92400e;">
+                <strong>⚠️ Tonal Character Detected!</strong><br>
+                <span id="tone-details"></span>
+            </div>
+        </div>
+
+        <!-- Flowchart (existing content) -->
+        <div class="flowchart">
+            <!-- Input Layer -->
+            <div class="flow-row">
+                <div class="block block-input">
+                    <div class="block-title">📊 INPUT: Frequency Spectrum</div>
+                    <div class="block-content">
+                        1/3 Octave Band Measurements<br>
+                        6.3 Hz → 20 kHz (33 bands)<br>
+                        <strong>Unweighted (dB(Z))</strong>
+                    </div>
+                    <div class="formula">
+                        freq[6.3, 8, 10, ... 20k] Hz<br>
+                        level[L₁, L₂, L₃, ... Lₙ] dB
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow"></div>
+
+            <!-- Processing Layer 1: Weighting -->
+            <div class="flow-row">
+                <div class="block block-process">
+                    <div class="block-title">🔊 A-Weighting (IEC 61672-1)</div>
+                    <div class="block-content">
+                        Simulates human ear sensitivity<br>
+                        Attenuates low frequencies<br>
+                        Standardized response curve
+                    </div>
+                    <div class="formula">
+                        A(f) = 12194² × f⁴ / [(f² + 20.6²)(f² + 12194²)√((f² + 107.7²)(f² + 737.9²))]
+                    </div>
+                </div>
+
+                <div class="arrow-horizontal"></div>
+
+                <div class="block block-process">
+                    <div class="block-title">🔊 C-Weighting (IEC 61672-1)</div>
+                    <div class="block-content">
+                        Minimal attenuation<br>
+                        Preserves low frequencies<br>
+                        Near-flat response 31-8000 Hz
+                    </div>
+                    <div class="formula">
+                        C(f) = 12194² × f² / [(f² + 20.6²)(f² + 12194²)]
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow"></div>
+
+            <!-- Processing Layer 2: Level Calculation -->
+            <div class="flow-row">
+                <div class="block block-calculation">
+                    <div class="block-title">📐 Calculate dB(A)</div>
+                    <div class="block-content">
+                        Apply A-weighting to each band<br>
+                        Logarithmic energy summation<br>
+                        Results in single dB(A) value
+                    </div>
+                    <div class="formula">
+                        dB(A) = 10×log₁₀(Σ 10^[(Lᵢ + Aᵢ)/10])
+                    </div>
+                </div>
+
+                <div class="arrow-horizontal"></div>
+
+                <div class="block block-calculation">
+                    <div class="block-title">📐 Calculate dB(C)</div>
+                    <div class="block-content">
+                        Apply C-weighting to each band<br>
+                        Logarithmic energy summation<br>
+                        Results in single dB(C) value
+                    </div>
+                    <div class="formula">
+                        dB(C) = 10×log₁₀(Σ 10^[(Lᵢ + Cᵢ)/10])
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow"></div>
+
+            <!-- Decision Layer: Tonal Detection -->
+            <div class="flow-row">
+                <div class="block block-decision">
+                    <div class="block-title">❓ Tonal Character?</div>
+                    <div class="block-content">
+                        ANSI S12.9 Part 4 Appendix H<br>
+                        Peak ≥ 6 dB above neighbors?<br>
+                        (1/3 octave bands)
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow"></div>
+
+            <!-- Processing Layer 3: Penalties -->
+            <div class="flow-row">
+                <div class="block block-process">
+                    <div class="block-title">⚠️ Tonal Penalty</div>
+                    <div class="block-content">
+                        IF tone detected:<br>
+                        <strong>+5 dB penalty</strong><br>
+                        ELSE: 0 dB
+                    </div>
+                    <div class="formula">
+                        P_tonal = hasTone ? 5 : 0
+                    </div>
+                </div>
+
+                <div class="arrow-horizontal"></div>
+
+                <div class="block block-process">
+                    <div class="block-title">📊 LF Content Penalty (ISO 1996-2)</div>
+                    <div class="block-content">
+                        Calculate: C - A difference<br>
+                        <strong>+3 dB</strong> if C-A > 10 dB<br>
+                        <strong>+5 dB</strong> if C-A > 15 dB<br>
+                        <strong>+10 dB</strong> if C-A > 20 dB
+                    </div>
+                    <div class="formula">
+                        LF = C - A<br>
+                        P_LF = LF>20 ? 10 : LF>15 ? 5 : LF>10 ? 3 : 0
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow"></div>
+
+            <!-- Output Layer -->
+            <div class="flow-row">
+                <div class="block block-output">
+                    <div class="block-title">✅ FINAL OUTPUT: dB(A)_adjusted</div>
+                    <div class="block-content">
+                        Base level + penalties<br>
+                        Reflects actual annoyance<br>
+                        Compare to regulatory limits
+                    </div>
+                    <div class="formula">
+                        dB(A)_adj = dB(A) + P_tonal + P_LF
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Interactive Demo -->
+        <div class="interactive-demo">
+            <h2 style="margin-bottom: 1rem; color: #1f2937;">🧮 Interactive Calculator</h2>
+            <div class="input-group">
+                <div class="input-field">
+                    <label>dB(A) Base Level</label>
+                    <input type="number" id="dba-input" value="49.8" step="0.1" min="0" max="120">
+                </div>
+                <div class="input-field">
+                    <label>dB(C) Level</label>
+                    <input type="number" id="dbc-input" value="57.4" step="0.1" min="0" max="120">
+                </div>
+                <div class="input-field">
+                    <label>Has Tonal Character?</label>
+                    <select id="tone-input">
+                        <option value="true">Yes (+ 5 dB)</option>
+                        <option value="false">No (+ 0 dB)</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="btn" onclick="calculate()">🔄 Calculate Adjusted Level</button>
+
+            <div class="result-box" id="result-box" style="display: none;">
+                <div style="font-size: 1rem; opacity: 0.9;">Adjusted Noise Level</div>
+                <div class="result-value" id="result-value">0.0 dB(A)</div>
+                <div id="result-breakdown" style="font-size: 0.875rem; margin-top: 1rem; opacity: 0.95;"></div>
+                <div id="result-status" style="font-size: 1rem; font-weight: 600; margin-top: 1rem;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // IEC 61672-1 Weighting Functions
+        function aWeighting(freq) {
+            const f = freq;
+            const f2 = f * f;
+            const num = 12194 * 12194 * f2 * f2;
+            const den = (f2 + 20.6 * 20.6) * Math.sqrt((f2 + 107.7 * 107.7) * (f2 + 737.9 * 737.9)) * (f2 + 12194 * 12194);
+            const A = num / den;
+            return 20 * Math.log10(A) + 2.0; // +2.0 dB normalization
+        }
+
+        function cWeighting(freq) {
+            const f = freq;
+            const f2 = f * f;
+            const num = 12194 * 12194 * f2;
+            const den = (f2 + 20.6 * 20.6) * (f2 + 12194 * 12194);
+            const C = num / den;
+            return 20 * Math.log10(C) + 0.06; // +0.06 dB normalization
+        }
+
+        // Logarithmic sum (energy summation)
+        function logSum(levels) {
+            const sum = levels.reduce((acc, level) => acc + Math.pow(10, level / 10), 0);
+            return 10 * Math.log10(sum);
+        }
+
+        // ANSI S12.9 Part 4 Tone Detection
+        function detectTones(spectrum) {
+            const tones = [];
+            
+            for (let i = 1; i < spectrum.length - 1; i++) {
+                const current = spectrum[i].level;
+                const prev = spectrum[i - 1].level;
+                const next = spectrum[i + 1].level;
+                const avgNeighbors = (prev + next) / 2;
+                
+                // ANSI S12.9 Part 4 Appendix H: 6 dB criterion
+                if (current - avgNeighbors >= 6) {
+                    tones.push({
+                        frequency: spectrum[i].frequency,
+                        level: current,
+                        prominence: current - avgNeighbors
+                    });
+                }
+            }
+            
+            return tones;
+        }
+
+        // SignalScope CSV Parser
+        function handleCSVUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            console.log('File selected:', file.name, file.size, 'bytes');
+            document.getElementById('csv-status').textContent = 'Loading...';
+            document.getElementById('csv-status').style.color = '#fbbf24';
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const text = e.target.result;
+                parseSignalScopeCSV(text);
+            };
+            reader.onerror = function() {
+                console.error('File read error');
+                document.getElementById('csv-status').textContent = '✗ Read failed';
+                document.getElementById('csv-status').style.color = '#ef4444';
+                alert('Error reading file');
+            };
+            reader.readAsText(file);
+        }
+
+        function parseSignalScopeCSV(csvText) {
+            console.log('Parsing CSV, length:', csvText.length);
+            const lines = csvText.trim().split('\n');
+            const spectrum = [];
+            
+            console.log('Total lines:', lines.length);
+            
+            // Try to auto-detect format
+            let dataStartIndex = 0;
+            
+            // Find where data starts (skip comments and headers)
+            for (let i = 0; i < lines.length; i++) {
+                const trimmed = lines[i].trim();
+                if (!trimmed || trimmed.startsWith('#') || trimmed.startsWith('//')) {
+                    continue;
+                }
+                // Check if this looks like a header line
+                if (trimmed.toLowerCase().includes('frequency') || trimmed.toLowerCase().includes('freq')) {
+                    dataStartIndex = i + 1;
+                    console.log('Found header at line', i);
+                    break;
+                }
+                // If first line has numbers, assume no header
+                const parts = trimmed.split(/[,\t\s]+/);
+                if (parts.length >= 2 && !isNaN(parseFloat(parts[0])) && !isNaN(parseFloat(parts[1]))) {
+                    dataStartIndex = i;
+                    console.log('No header found, data starts at line', i);
+                    break;
+                }
+            }
+            
+            // Parse data lines
+            for (let i = dataStartIndex; i < lines.length; i++) {
+                const trimmed = lines[i].trim();
+                if (!trimmed || trimmed.startsWith('#')) continue;
+                
+                // Split by comma, tab, or multiple spaces
+                const parts = trimmed.split(/[,\t]+/).map(p => p.trim());
+                
+                if (parts.length >= 2) {
+                    const freq = parseFloat(parts[0]);
+                    const level = parseFloat(parts[1]);
+                    
+                    if (!isNaN(freq) && !isNaN(level) && freq > 0) {
+                        spectrum.push({ frequency: freq, level: level });
+                    }
+                }
+            }
+            
+            console.log('Parsed', spectrum.length, 'frequency points');
+            
+            if (spectrum.length > 0) {
+                console.log('First point:', spectrum[0]);
+                console.log('Last point:', spectrum[spectrum.length - 1]);
+                document.getElementById('csv-status').textContent = `✓ Loaded ${spectrum.length} bands`;
+                document.getElementById('csv-status').style.color = '#10b981';
+                processSpectrum(spectrum);
+            } else {
+                const error = 'Could not parse CSV. Expected format:\nFrequency (Hz), Level (dB)\n6.3, 42.5\n8, 43.2\n...';
+                console.error('Parsing failed');
+                alert(error);
+                document.getElementById('csv-status').textContent = '✗ Parse failed';
+                document.getElementById('csv-status').style.color = '#ef4444';
+            }
+        }
+
+        function processSpectrum(spectrum) {
+            // Calculate dB(Z) - unweighted sum
+            const dbZ = logSum(spectrum.map(s => s.level));
+            
+            // Calculate dB(A)
+            const aWeightedLevels = spectrum.map(s => s.level + aWeighting(s.frequency));
+            const dbA = logSum(aWeightedLevels);
+            
+            // Calculate dB(C)
+            const cWeightedLevels = spectrum.map(s => s.level + cWeighting(s.frequency));
+            const dbC = logSum(cWeightedLevels);
+            
+            // Detect tones
+            const tones = detectTones(spectrum);
+            
+            // Display results
+            displayResults(dbZ, dbA, dbC, spectrum, tones);
+            
+            // Auto-populate calculator
+            document.getElementById('dba-input').value = dbA.toFixed(1);
+            document.getElementById('dbc-input').value = dbC.toFixed(1);
+            document.getElementById('tone-input').value = tones.length > 0 ? 'true' : 'false';
+            calculate();
+        }
+
+        function displayResults(dbZ, dbA, dbC, spectrum, tones) {
+            // Show data display
+            document.getElementById('data-display').style.display = 'block';
+            
+            // Update overall levels
+            document.getElementById('dbz-value').textContent = dbZ.toFixed(1);
+            document.getElementById('dbc-value').textContent = dbC.toFixed(1);
+            document.getElementById('dba-value').textContent = dbA.toFixed(1);
+            document.getElementById('ca-diff-value').textContent = (dbC - dbA).toFixed(1) + ' dB';
+            
+            // Populate spectrum table
+            const tbody = document.getElementById('spectrum-tbody');
+            tbody.innerHTML = '';
+            
+            spectrum.forEach(s => {
+                const row = document.createElement('tr');
+                const aWeighted = s.level + aWeighting(s.frequency);
+                const cWeighted = s.level + cWeighting(s.frequency);
+                
+                const isTone = tones.some(t => t.frequency === s.frequency);
+                if (isTone) {
+                    row.classList.add('tone-detected');
+                }
+                
+                row.innerHTML = `
+                    <td>${s.frequency} Hz</td>
+                    <td>${s.level.toFixed(1)} dB</td>
+                    <td>${aWeighted.toFixed(1)} dB(A)</td>
+                    <td>${cWeighted.toFixed(1)} dB(C)</td>
+                    <td>${isTone ? '⚠️ TONE' : ''}</td>
+                `;
+                tbody.appendChild(row);
+            });
+            
+            // Show tone alert
+            if (tones.length > 0) {
+                document.getElementById('tone-alert').style.display = 'block';
+                const details = tones.map(t => 
+                    `${t.frequency} Hz (${t.prominence.toFixed(1)} dB above neighbors)`
+                ).join(', ');
+                document.getElementById('tone-details').textContent = 
+                    `Tones detected at: ${details}. +5 dB penalty will be applied.`;
+            } else {
+                document.getElementById('tone-alert').style.display = 'none';
+            }
+            
+            // Scroll to results
+            document.getElementById('data-display').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // WAV File Handler (basic - shows file info, real FFT analysis would require Web Audio API)
+        function handleWAVUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // For now, just show that WAV file was uploaded
+            // Real implementation would use Web Audio API for FFT analysis
+            alert(`WAV file "${file.name}" uploaded (${(file.size / 1024).toFixed(1)} KB)\n\n` +
+                  `Note: Full WAV analysis with FFT tone detection requires Web Audio API.\n` +
+                  `For now, please use SignalScope CSV export for detailed analysis.`);
+            
+            // TODO: Implement Web Audio API FFT analysis
+            // This would involve:
+            // 1. Decode audio file
+            // 2. Perform FFT
+            // 3. Calculate 1/3 octave bands
+            // 4. Detect tones
+            // 5. Populate spectrum data
+        }
+
+        // Calculator function
+        function calculate() {
+            const dbA = parseFloat(document.getElementById('dba-input').value);
+            const dbC = parseFloat(document.getElementById('dbc-input').value);
+            const hasTone = document.getElementById('tone-input').value === 'true';
+
+            // Calculate LF content
+            const lfContent = dbC - dbA;
+
+            // Determine penalties
+            const tonalPenalty = hasTone ? 5 : 0;
+            let lfPenalty = 0;
+            let lfDescription = '';
+            
+            if (lfContent > 20) {
+                lfPenalty = 10;
+                lfDescription = 'Very High LF Content (C-A > 20 dB)';
+            } else if (lfContent > 15) {
+                lfPenalty = 5;
+                lfDescription = 'High LF Content (C-A > 15 dB)';
+            } else if (lfContent > 10) {
+                lfPenalty = 3;
+                lfDescription = 'Moderate LF Content (C-A > 10 dB)';
+            } else {
+                lfPenalty = 0;
+                lfDescription = 'Normal LF Content (C-A ≤ 10 dB)';
+            }
+
+            // Calculate adjusted level
+            const dbAadj = dbA + tonalPenalty + lfPenalty;
+
+            // Display results
+            document.getElementById('result-box').style.display = 'block';
+            document.getElementById('result-value').textContent = dbAadj.toFixed(1) + ' dB(A)';
+            
+            document.getElementById('result-breakdown').innerHTML = `
+                <strong>Calculation Breakdown:</strong><br>
+                Base Level: ${dbA.toFixed(1)} dB(A)<br>
+                + Tonal Penalty: ${tonalPenalty} dB<br>
+                + LF Penalty: ${lfPenalty} dB (${lfDescription})<br>
+                C-A Difference: ${lfContent.toFixed(1)} dB
+            `;
+
+            // Determine status
+            let status = '';
+            let statusColor = '';
+            if (dbAadj >= 55) {
+                status = '⚠️ VIOLATION: Exceeds 55 dB(A) nighttime limit';
+                statusColor = '#ef4444';
+            } else if (dbAadj >= 50) {
+                status = '⚡ HIGH: Approaches nighttime limit';
+                statusColor = '#f59e0b';
+            } else {
+                status = '✅ COMPLIANT: Below nighttime limit';
+                statusColor = '#10b981';
+            }
+
+            document.getElementById('result-status').innerHTML = status;
+            document.getElementById('result-status').style.color = statusColor;
+        }
+
+        // Auto-calculate on load
+        window.onload = function() {
+            calculate();
+            setupDragAndDrop();
+        };
+
+        // Setup drag and drop
+        function setupDragAndDrop() {
+            const csvBox = document.getElementById('csv-box');
+            const wavBox = document.getElementById('wav-box');
+            
+            // CSV box drag handlers
+            csvBox.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                csvBox.classList.add('drag-over');
+            });
+            
+            csvBox.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                csvBox.classList.remove('drag-over');
+            });
+            
+            csvBox.addEventListener('drop', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                csvBox.classList.remove('drag-over');
+                
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    const file = files[0];
+                    if (file.name.endsWith('.csv') || file.name.endsWith('.txt')) {
+                        const reader = new FileReader();
+                        reader.onload = function(event) {
+                            parseSignalScopeCSV(event.target.result);
+                        };
+                        reader.readAsText(file);
+                        document.getElementById('csv-status').textContent = 'Loading...';
+                        document.getElementById('csv-status').style.color = '#fbbf24';
+                    } else {
+                        alert('Please drop a CSV or TXT file');
+                    }
+                }
+            });
+            
+            // WAV box drag handlers
+            wavBox.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                wavBox.classList.add('drag-over');
+            });
+            
+            wavBox.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                wavBox.classList.remove('drag-over');
+            });
+            
+            wavBox.addEventListener('drop', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                wavBox.classList.remove('drag-over');
+                
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    const file = files[0];
+                    if (file.name.endsWith('.wav') || file.name.endsWith('.wave')) {
+                        handleWAVUpload({target: {files: [file]}});
+                    } else {
+                        alert('Please drop a WAV file');
+                    }
+                }
+            });
+            
+            console.log('Drag-and-drop initialized');
+        }
+
+        // Auto-recalculate on input change
+        document.getElementById('dba-input').addEventListener('input', calculate);
+        document.getElementById('dbc-input').addEventListener('input', calculate);
+        document.getElementById('tone-input').addEventListener('change', calculate);
+    </script>
+</body>
+</html>

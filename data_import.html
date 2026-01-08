@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Import Your Data - Science Center Noise Mapping</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+            font-size: 15px;
+        }
+        
+        .navbar {
+            background: #2c3e50;
+            padding: 15px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 220px;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+        
+        .navbar ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .navbar li {
+            margin: 0;
+        }
+        
+        .navbar a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            padding: 10px 25px;
+            transition: background 0.3s, padding-left 0.3s;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            font-size: 14px;
+        }
+        
+        .navbar a:hover {
+            background: #34495e;
+            padding-left: 30px;
+        }
+        
+        .navbar a.active {
+            background: #667eea;
+            font-weight: 600;
+            border-left: 4px solid #fff;
+        }
+        
+        .main-content {
+            margin-left: 240px;
+            padding: 25px 40px;
+            max-width: 1600px;
+        }
+        
+        @media (max-width: 1920px) and (min-width: 1600px) {
+            .main-content {
+                max-width: 1400px;
+            }
+        }
+        
+        @media (max-width: 1599px) {
+            .main-content {
+                max-width: 1200px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .navbar {
+                position: static;
+                width: 100%;
+                height: auto;
+            }
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 2.2em;
+            line-height: 1.2;
+        }
+        
+        h2 {
+            color: #34495e;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-size: 1.6em;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 8px;
+            line-height: 1.3;
+        }
+        
+        h3 {
+            color: #34495e;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 1.3em;
+            line-height: 1.3;
+        }
+        
+        h4 {
+            color: #34495e;
+            margin-top: 15px;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+        
+        p {
+            margin-bottom: 15px;
+            line-height: 1.7;
+        }
+        
+        a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        
+        a:hover {
+            text-decoration: underline;
+        }
+        
+        .summary-box, .key-point, .note {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 18px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .improvement {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 18px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .inadequate-response {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 18px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+        
+        th, td {
+            padding: 10px 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        
+        th {
+            background: #2c3e50;
+            color: white;
+            font-weight: 600;
+        }
+        
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: "Courier New", monospace;
+            font-size: 0.9em;
+        }
+        
+        pre {
+            background: #f4f4f4;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin: 20px 0;
+            font-size: 0.9em;
+        }
+        
+        ul, ol {
+            margin-left: 30px;
+            margin-bottom: 15px;
+        }
+        
+        li {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            margin-left: 240px;
+            max-width: 1600px;
+            background: white;
+            padding: 25px 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                margin-left: 0;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+                                                <nav class="navbar">
+        <ul>
+            <li><a href="index.html">🏠 Home</a></li>
+            <li><a href="science_center_case.html">📋 Case Documentation</a></li>
+            <li><a href="welcome_to_neighborhood.html">🏘️ Welcome Letter</a></li>
+            <li><a href="community_complaints.html">👥 Community Complaints</a></li>
+            <li><a href="wall_transmission.html">🌊 Wall Transmission Viz</a></li>
+            <li><a href="interactive_noise_map.html">🗺️ Interactive Map</a></li>
+            <li><a href="data_import.html" class="active">📥 Data Import</a></li>
+            <li><a href="ansi_calculator_flowchart.html">🔢 ANSI Calculator</a></li>
+            <li><a href="potential_solutions.html">💡 Solutions</a></li>
+            <li><a href="comparative_standards.html">📊 Standards Comparison</a></li>
+            <li><a href="ansi_s12_9_part_4.html">📐 ANSI S12.9 Part 4</a></li>
+            <li><a href="penalty_application_guide.html">📋 Penalty Guide</a></li>
+            <li><a href="model_noise_ordinance.html">📖 Model Ordinance</a></li>
+            <li><a href="hvac_system_complete_schematic.html">🏭 HVAC Schematics</a></li>
+            <li><a href="technical_resources.html">📚 Technical Resources</a></li>
+            <li><a href="pe_ethics_health_safety.html">⚕️ PE Ethics</a></li>
+        </ul>
+    </nav>
+
+
+    <div class="main-content">
+        
+
+
+    <div class="sidebar">
+        <h2>Learn More</h2>
+        <a href="index.html">← Back to Main Page</a>
+        <a href="timeline.html">Project Timeline</a>
+        <a href="community_complaints.html">A Community Responds</a>
+        <a href="potential_solutions.html">Potential Solutions</a>
+        <a href="noise_map_integrated.html">Community Measurement Portal</a>
+        <a href="data_import.html">Import Your Data</a>
+        <a href="comparative_standards.html">Comparative Noise Standards</a>
+        <a href="decibel_scale.html">How Sound is Measured</a>
+        <a href="low_frequency_noise.html">Low Frequency Noise</a>
+        <a href="annoyance_penalties.html">Character Penalties</a>
+        <a href="noise_regulations.html">Noise Regulations</a>
+        <a href="acoustic_standards.html">Acoustic Standards</a>
+    </div>
+
+    <div class="container">
+        <div class="main-content">
+            <h1>Import Your Data</h1>
+            <p><strong>Contribute Your Measurements to the Community Noise Map</strong></p>
+
+            <div class="key-point">
+                <strong>Crowdsourced Data Builds Evidence:</strong> Every measurement helps document the extent of the noise problem. When multiple residents provide measurements from different locations, it creates irrefutable evidence of the issue's scope and validates individual complaints with scientific data.
+            </div>
+
+            <div class="drop-zone" id="drop-zone">
+                <div class="icon">📊</div>
+                <h3>Drop Your CSV File Here</h3>
+                <p>or click to browse</p>
+                <p style="font-size: 14px; color: #888; margin-top: 20px;">
+                    Supports: SignalScope X, generic CSV formats
+                </p>
+            </div>
+            <input type="file" id="file-input" accept=".csv" style="display: none;">
+
+            <div class="success-message" id="success-message">
+                ✓ File imported successfully! Your data has been added to the map.
+            </div>
+
+            <h2>Supported File Formats</h2>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">📱</div>
+                    <h3>SignalScope X</h3>
+                    <p>Professional iOS app with GPS and 1/3 octave band analysis</p>
+                    <p><strong>Auto-calculates:</strong></p>
+                    <ul style="text-align: left; font-size: 14px;">
+                        <li>dB(A) from bands</li>
+                        <li>dB(C) weighting</li>
+                        <li>Tonal penalties</li>
+                        <li>LF penalties</li>
+                        <li>Adjusted dB(A)</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📄</div>
+                    <h3>Generic CSV</h3>
+                    <p>Simple comma-separated values with location and dB level</p>
+                    <p><strong>Required columns:</strong></p>
+                    <ul style="text-align: left; font-size: 14px;">
+                        <li>Location name</li>
+                        <li>Latitude</li>
+                        <li>Longitude</li>
+                        <li>dB(A) level</li>
+                        <li>Frequency (optional)</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3>Manual Entry</h3>
+                    <p>Files without GPS can be placed manually</p>
+                    <p><strong>Options:</strong></p>
+                    <ul style="text-align: left; font-size: 14px;">
+                        <li>Click on map</li>
+                        <li>Enter coordinates</li>
+                        <li>Still calculates all metrics</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h2>SignalScope X: Professional Data Collection</h2>
+
+            <div class="note">
+                <strong>Recommended Tool:</strong> SignalScope X is a professional acoustic measurement app for iOS that provides calibrated measurements with 1/3 octave band analysis. It's used by acoustic consultants, engineers, and researchers worldwide.
+                <br><br>
+                <strong>Cost:</strong> $49.99 one-time purchase (Pro version)
+                <br><strong>Available:</strong> iOS App Store
+                <br><strong>Features:</strong> Calibrated SPL meter, 1/3 octave bands, GPS tagging, CSV export
+            </div>
+
+            <h3>What SignalScope X Provides</h3>
+            <table>
+                <tr>
+                    <th>Measurement</th>
+                    <th>Description</th>
+                    <th>Why It Matters</th>
+                </tr>
+                <tr>
+                    <td><strong>dB(Z)</strong></td>
+                    <td>Unweighted sound level</td>
+                    <td>Total acoustic energy including low frequencies</td>
+                </tr>
+                <tr>
+                    <td><strong>dB(A)</strong></td>
+                    <td>A-weighted level</td>
+                    <td>Standard for noise regulations</td>
+                </tr>
+                <tr>
+                    <td><strong>dB(C)</strong></td>
+                    <td>C-weighted level</td>
+                    <td>Shows low-frequency content (gap from dB(A))</td>
+                </tr>
+                <tr>
+                    <td><strong>1/3 Octave Bands</strong></td>
+                    <td>Frequency spectrum 6.3 Hz - 20 kHz</td>
+                    <td>Identifies tonal components like 63 Hz HVAC hum</td>
+                </tr>
+                <tr>
+                    <td><strong>GPS Coordinates</strong></td>
+                    <td>Latitude/longitude of measurement</td>
+                    <td>Precise location for mapping</td>
+                </tr>
+            </table>
+
+            <h3>How to Export from SignalScope X</h3>
+            <ol>
+                <li><strong>Take Measurement:</strong> Use the FFT analyzer with 1/3 octave bands</li>
+                <li><strong>Save Recording:</strong> Tap the save icon to save your measurement</li>
+                <li><strong>Export CSV:</strong> In the saved recordings list, tap the share icon</li>
+                <li><strong>Choose Format:</strong> Select "CSV" as the export format</li>
+                <li><strong>Save File:</strong> Save to Files app or email to yourself</li>
+                <li><strong>Import Here:</strong> Drop the CSV file in the import zone above</li>
+            </ol>
+
+            <div class="example">
+Example SignalScope X CSV header:
+
+"SignalScope X","2.8.2"
+"Start Date","2026-01-02 14:35:24"
+"Latitude:","37.558270º"
+"Longitude:","-122.288510º"
+"Overall Level:","56.67 dB"
+
+'Center Frequency','Level'
+6.3,45.2
+8,46.8
+10,48.1
+12.5,49.3
+...
+            </div>
+
+            <h2>Automatic Calculations</h2>
+
+            <p>When you import SignalScope X data, the system automatically calculates:</p>
+
+            <h3>1. A-Weighting & C-Weighting</h3>
+            <p>Converts 1/3 octave band data to dB(A) and dB(C) using IEC 61672-1 standard weighting curves:</p>
+            <ul>
+                <li><strong>dB(A):</strong> Attenuates low frequencies to match human hearing sensitivity</li>
+                <li><strong>dB(C):</strong> Minimal attenuation, captures low-frequency energy</li>
+                <li><strong>C-A Gap:</strong> Difference indicates low-frequency dominance</li>
+            </ul>
+
+            <h3>2. Tonal Penalty (+5 dB)</h3>
+            <p>Detects prominent pure tones in the spectrum:</p>
+            <ul>
+                <li><strong>Criterion:</strong> Any band ≥5 dB above both adjacent bands</li>
+                <li><strong>Typical:</strong> 63 Hz HVAC compressor tone</li>
+                <li><strong>Basis:</strong> ISO 1996-2:2017 (tonal penalties 3-6 dB)</li>
+                <li><strong>Why:</strong> Tones are more annoying than broadband noise at same level</li>
+            </ul>
+
+            <h3>3. Low-Frequency Penalty (+3 or +5 dB)</h3>
+            <p>Accounts for low-frequency annoyance based on C-A gap:</p>
+            <table>
+                <tr>
+                    <th>C-A Gap</th>
+                    <th>Penalty</th>
+                    <th>Interpretation</th>
+                </tr>
+                <tr>
+                    <td>3-10 dB</td>
+                    <td>+3 dB</td>
+                    <td>Moderate low-frequency content</td>
+                </tr>
+                <tr>
+                    <td>&gt;10 dB</td>
+                    <td>+5 dB</td>
+                    <td>Strong low-frequency dominance</td>
+                </tr>
+            </table>
+            <ul>
+                <li><strong>Research Basis:</strong> Persson Waye, Leventhall studies on LF annoyance</li>
+                <li><strong>Standard:</strong> ISO 7196:1995 recommends LF penalties for indoor noise</li>
+            </ul>
+
+            <h3>4. Adjusted dB(A)</h3>
+            <p><strong>Formula:</strong> Adjusted dB(A) = dB(A) + Tonal Penalty + LF Penalty</p>
+            <p>This value better represents actual annoyance and should be compared to ordinance limits.</p>
+
+            <div class="key-point">
+                <strong>Example from Harbortown Resident:</strong><br>
+                • dB(A): 44.2 dB (technically "compliant" with 50 dB limit)<br>
+                • dB(C): 55.1 dB (C-A gap = 10.9 dB)<br>
+                • Tonal Penalty: +5 dB (63 Hz tone detected)<br>
+                • LF Penalty: +5 dB (gap >10 dB)<br>
+                • <strong>Adjusted dB(A): 54.2 dB</strong><br>
+                <br>
+                This shows why "compliant" noise is still intolerable — the adjusted level violates County standards (40 dB with tonal penalty) and explains resident complaints.
+            </div>
+
+            <h2>Generic CSV Format</h2>
+
+            <p>If you're not using SignalScope X, you can create a simple CSV file with basic measurements:</p>
+
+            <div class="example">
+location,latitude,longitude,dB,frequency
+"My backyard",37.5585,-122.2895,52,63 Hz tone
+"Master bedroom window",37.5587,-122.2893,48,Low frequency hum
+"Front porch",37.5583,-122.2897,45,Constant rumble
+            </div>
+
+            <p><strong>Column requirements:</strong></p>
+            <ul>
+                <li><strong>location:</strong> Descriptive name (e.g., "Backyard", "Living room")</li>
+                <li><strong>latitude:</strong> Decimal degrees (e.g., 37.5585)</li>
+                <li><strong>longitude:</strong> Decimal degrees (e.g., -122.2895)</li>
+                <li><strong>dB:</strong> Sound level in dB(A) if possible</li>
+                <li><strong>frequency:</strong> (Optional) Description like "63 Hz tone" or "broadband"</li>
+            </ul>
+
+            <h2>Files Without GPS</h2>
+
+            <p>If your measurement file doesn't include GPS coordinates, the system will prompt you to:</p>
+
+            <ol>
+                <li><strong>Enter Location Name:</strong> Describe where you took the measurement</li>
+                <li><strong>Choose Placement Method:</strong>
+                    <ul>
+                        <li><strong>Map Click:</strong> Click on the map where you measured</li>
+                        <li><strong>Manual Entry:</strong> Enter latitude/longitude coordinates</li>
+                    </ul>
+                </li>
+                <li><strong>Data Added:</strong> Your measurement appears on the map with all calculated metrics</li>
+            </ol>
+
+            <h2>Measurement Best Practices</h2>
+
+            <div class="note">
+                <strong>For Valid Data Collection:</strong>
+                <ul>
+                    <li><strong>Calibration:</strong> Use calibrated equipment or calibrate app with known source</li>
+                    <li><strong>Location:</strong> Measure at property line or affected areas (outdoor spaces, windows)</li>
+                    <li><strong>Time:</strong> Nighttime measurements (10 PM - 7 AM) most relevant for complaints</li>
+                    <li><strong>Duration:</strong> Minimum 1-2 minutes per measurement to capture steady-state</li>
+                    <li><strong>Conditions:</strong> Note any other noise sources (traffic, wind, etc.)</li>
+                    <li><strong>Multiple Points:</strong> Take measurements at several locations for spatial coverage</li>
+                    <li><strong>Repeatability:</strong> Return to same spots on different days to verify consistency</li>
+                </ul>
+            </div>
+
+            <h2>What Happens After Import</h2>
+
+            <ol>
+                <li><strong>Data Processing:</strong> CSV file is parsed and analyzed
+                    <ul>
+                        <li>SignalScope X: Auto-calculates dB(A), dB(C), penalties, adjusted dB(A)</li>
+                        <li>Generic CSV: Uses provided dB values directly</li>
+                    </ul>
+                </li>
+                <li><strong>Map Visualization:</strong> Marker added to noise map
+                    <ul>
+                        <li>Color-coded by adjusted dB(A) level</li>
+                        <li>Clickable info window with all metrics</li>
+                        <li>Integrated with existing contours and measurements</li>
+                    </ul>
+                </li>
+                <li><strong>Confirmation:</strong> Alert displays all calculated values
+                    <ul>
+                        <li>Location and GPS coordinates</li>
+                        <li>dB(Z), dB(A), dB(C) levels</li>
+                        <li>C-A gap showing LF content</li>
+                        <li>Tonal and LF penalties applied</li>
+                        <li>Final adjusted dB(A)</li>
+                    </ul>
+                </li>
+                <li><strong>Community Map:</strong> Your data contributes to collective evidence
+                    <ul>
+                        <li>Shows spatial extent of noise problem</li>
+                        <li>Validates complaints with scientific measurements</li>
+                        <li>Provides evidence for enforcement action</li>
+                    </ul>
+                </li>
+            </ol>
+
+            <h2>Privacy & Data Use</h2>
+
+            <div class="key-point">
+                <strong>Your Data, Your Control:</strong>
+                <ul>
+                    <li>All data stays in your browser — nothing uploaded to servers</li>
+                    <li>GPS coordinates used only for map placement</li>
+                    <li>No personal information collected or stored</li>
+                    <li>Data can be used as evidence in complaints or legal action</li>
+                    <li>Consider removing or obscuring exact address if sharing publicly</li>
+                </ul>
+            </div>
+
+            <h2>Ready to Contribute?</h2>
+
+            <div style="text-align: center; margin: 40px 0;">
+                <a href="noise_map_integrated.html" class="button">View Community Map</a>
+                <button class="button" onclick="document.getElementById('file-input').click()">Upload CSV File</button>
+            </div>
+
+            <div class="note">
+                <strong>Questions?</strong> If you have issues importing data or questions about the process, reach out to your neighbors who have successfully imported measurements. The more data we collect, the stronger our case for enforcement action.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Setup drop zone
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        const successMessage = document.getElementById('success-message');
+
+        dropZone.addEventListener('click', () => fileInput.click());
+
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            
+            const file = e.dataTransfer.files[0];
+            if (file && file.name.endsWith('.csv')) {
+                handleFile(file);
+            } else {
+                alert('Please drop a CSV file');
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                handleFile(file);
+            }
+        });
+
+        function handleFile(file) {
+            successMessage.style.display = 'block';
+            setTimeout(() => {
+                alert(`File "${file.name}" received!\n\nTo visualize your data on the map, please use the Community Measurement Portal page where the full import functionality is available.`);
+                successMessage.style.display = 'none';
+            }, 1000);
+        }
+    </script>
+    </div>
+</body>
+</html>

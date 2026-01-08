@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Model Noise Ordinance</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; line-height: 1.5; color: #333; background: #f5f5f5; font-size: 14px; }
+        .navbar { background: #2c3e50; padding: 15px 0; position: fixed; left: 0; top: 0; width: 220px; height: 100vh; overflow-y: auto; z-index: 1000; }
+        .navbar ul { list-style: none; }
+        .navbar a { display: block; color: white; text-decoration: none; padding: 10px 25px; font-size: 13px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .navbar a:hover { background: #34495e; }
+        .navbar a.active { background: #667eea; font-weight: 600; border-left: 4px solid #fff; }
+        .main-content { margin-left: 240px; padding: 20px 30px; max-width: 1600px; }
+        h1 { color: #2c3e50; margin-bottom: 15px; font-size: 1.8em; }
+        h2 { color: #34495e; margin-top: 15px; margin-bottom: 10px; font-size: 1.3em; border-bottom: 2px solid #667eea; padding-bottom: 5px; }
+        h3 { color: #34495e; margin-top: 10px; margin-bottom: 8px; font-size: 1.1em; }
+        pre { background: #f4f4f4; padding: 12px; border-radius: 4px; font-size: 12px; line-height: 1.4; overflow-x: auto; }
+        .box { background: white; padding: 15px; margin: 15px 0; border-radius: 4px; border-left: 4px solid #667eea; }
+        .solution { border-left-color: #28a745; background: #d4edda; }
+        p { margin-bottom: 10px; }
+        ul { margin-left: 20px; }
+        li { margin-bottom: 4px; font-size: 13px; }
+    </style>
+</head>
+<body>
+                                        <nav class="navbar">
+        <ul>
+            <li><a href="index.html">🏠 Home</a></li>
+            <li><a href="science_center_case.html">📋 Case Documentation</a></li>
+            <li><a href="welcome_to_neighborhood.html">🏘️ Welcome Letter</a></li>
+            <li><a href="community_complaints.html">👥 Community Complaints</a></li>
+            <li><a href="wall_transmission.html">🌊 Wall Transmission Viz</a></li>
+            <li><a href="interactive_noise_map.html">🗺️ Interactive Map</a></li>
+            <li><a href="data_import.html">📥 Data Import</a></li>
+            <li><a href="ansi_calculator_flowchart.html">🔢 ANSI Calculator</a></li>
+            <li><a href="potential_solutions.html">💡 Solutions</a></li>
+            <li><a href="comparative_standards.html">📊 Standards Comparison</a></li>
+            <li><a href="ansi_s12_9_part_4.html">📐 ANSI S12.9 Part 4</a></li>
+            <li><a href="penalty_application_guide.html">📋 Penalty Guide</a></li>
+            <li><a href="model_noise_ordinance.html" class="active">📖 Model Ordinance</a></li>
+            <li><a href="hvac_system_complete_schematic.html">🏭 HVAC Schematics</a></li>
+            <li><a href="technical_resources.html">📚 Technical Resources</a></li>
+            <li><a href="pe_ethics_health_safety.html">⚕️ PE Ethics</a></li>
+        </ul>
+    </nav>
+
+    <div class="main-content">
+        <h1>Model Noise Ordinance: Proposed Improvements to SMMC 7.30</h1>
+        
+        <div class="box solution">
+            <h3>Key Improvements Over Current Ordinance</h3>
+            <ul style="margin-top: 8px;">
+                <li><strong>Lower base limit:</strong> 45 dB(A) nighttime (from 50 dB(A))</li>
+                <li><strong>Character penalties:</strong> +5 dB tonal, +5 dB low-frequency</li>
+                <li><strong>Elevated structures:</strong> Explicit measurement requirements</li>
+                <li><strong>ANSI S12.9 Part 4:</strong> Standardized methodology</li>
+                <li><strong>Rooftop equipment:</strong> Specific mitigation requirements</li>
+            </ul>
+        </div>
+
+        <h2>Proposed Language: § 7.30.050 - Measurement Procedures</h2>
+        <pre>
+(a) Measurement Location:
+    (1) At property line where noise source and receiving property are at similar elevations
+    (2) At the point of highest reading on receiving property for:
+        • Elevated noise sources (rooftop equipment, elevated structures)
+        • Sources with clear line-of-sight to upper-floor residences
+        • When complainant reports upper-floor impact
+
+(b) Measurement Methodology:
+    (1) Shall conform to ANSI S12.9 Part 4 (outdoor measurement standards)
+    (2) Shall include:
+        • dB(A) weighted measurement
+        • dB(C) or dB(Z) for low-frequency assessment
+        • 1/3 octave band analysis (31.5 Hz - 8 kHz)
+        • Duration: minimum 10 minutes continuous
+
+(c) Character-Based Penalties:
+    (1) Tonal Character: +5 dB when pure tone identified (ANSI S12.9 Part 4 criteria)
+    (2) Low-Frequency Content: +5 dB when dB(C) - dB(A) > 20 dB
+    (3) Impulsive Character: +5 dB for repetitive impacts/impulses
+    (4) Multiple penalties may apply cumulatively</pre>
+
+        <h2>§ 7.30.XXX - Rooftop Equipment Acoustic Mitigation (NEW)</h2>
+        <pre>
+(a) Applicability:
+    New or replacement rooftop HVAC equipment on structures within 1,000 feet 
+    of residential zoning must demonstrate compliance at receiving properties.
+
+(b) Design Requirements:
+    (1) Acoustic enclosures with STC 30+ walls
+    (2) Acoustic louvers providing minimum 15 dB insertion loss
+    (3) Design by qualified acoustic consultant (PE or INCE Board Certified)
+    (4) Account for low-frequency content (31.5-250 Hz) and tonal characteristics
+
+(c) Verification:
+    (1) Post-installation measurements at receiving properties
+    (2) Before/after comparison demonstrating compliance
+    (3) Measurements per ANSI S12.9 Part 4 with character penalties</pre>
+
+        <h2>§ 7.30.040 - Maximum Permissible Sound Levels (REVISED)</h2>
+        <pre>
+Residential Receiving Properties:
+    Daytime (7am-10pm):   50 dB(A) + applicable character penalties
+    Nighttime (10pm-7am): 45 dB(A) + applicable character penalties
+
+Commercial/Industrial Receiving Properties:
+    All hours:            60 dB(A) + applicable character penalties</pre>
+
+        <p style="margin-top: 15px;"><strong>Rationale:</strong> Aligns San Mateo with Palo Alto, Mountain View, Menlo Park standards. Addresses elevated source gap. Adopts modern acoustic science (ANSI S12.9 Part 4). Requires proper rooftop equipment design from the start.</p>
+    </div>
+</body>
+</html>

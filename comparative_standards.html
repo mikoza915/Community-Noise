@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comparative Standards</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; line-height: 1.5; color: #333; background: #f5f5f5; font-size: 14px; }
+        .navbar { background: #2c3e50; padding: 15px 0; position: fixed; left: 0; top: 0; width: 220px; height: 100vh; overflow-y: auto; z-index: 1000; }
+        .navbar ul { list-style: none; }
+        .navbar a { display: block; color: white; text-decoration: none; padding: 10px 25px; font-size: 13px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .navbar a:hover { background: #34495e; }
+        .navbar a.active { background: #667eea; font-weight: 600; border-left: 4px solid #fff; }
+        .main-content { margin-left: 240px; padding: 20px 30px; max-width: 1600px; }
+        h1 { color: #2c3e50; margin-bottom: 15px; font-size: 1.8em; }
+        h2 { color: #34495e; margin-top: 15px; margin-bottom: 10px; font-size: 1.3em; border-bottom: 2px solid #667eea; padding-bottom: 5px; }
+        p { margin-bottom: 10px; }
+        table { width: 100%; border-collapse: collapse; font-size: 12px; margin: 10px 0; }
+        th, td { padding: 6px 8px; border: 1px solid #ddd; text-align: left; }
+        th { background: #2c3e50; color: white; }
+        .box { background: white; padding: 15px; margin: 15px 0; border-radius: 4px; border-left: 4px solid #667eea; }
+        ul { margin-left: 20px; }
+        li { margin-bottom: 4px; font-size: 13px; }
+    </style>
+</head>
+<body>
+                                        <nav class="navbar">
+        <ul>
+            <li><a href="index.html">🏠 Home</a></li>
+            <li><a href="science_center_case.html">📋 Case Documentation</a></li>
+            <li><a href="welcome_to_neighborhood.html">🏘️ Welcome Letter</a></li>
+            <li><a href="community_complaints.html">👥 Community Complaints</a></li>
+            <li><a href="wall_transmission.html">🌊 Wall Transmission Viz</a></li>
+            <li><a href="interactive_noise_map.html">🗺️ Interactive Map</a></li>
+            <li><a href="data_import.html">📥 Data Import</a></li>
+            <li><a href="ansi_calculator_flowchart.html">🔢 ANSI Calculator</a></li>
+            <li><a href="potential_solutions.html">💡 Solutions</a></li>
+            <li><a href="comparative_standards.html" class="active">📊 Standards Comparison</a></li>
+            <li><a href="ansi_s12_9_part_4.html">📐 ANSI S12.9 Part 4</a></li>
+            <li><a href="penalty_application_guide.html">📋 Penalty Guide</a></li>
+            <li><a href="model_noise_ordinance.html">📖 Model Ordinance</a></li>
+            <li><a href="hvac_system_complete_schematic.html">🏭 HVAC Schematics</a></li>
+            <li><a href="technical_resources.html">📚 Technical Resources</a></li>
+            <li><a href="pe_ethics_health_safety.html">⚕️ PE Ethics</a></li>
+        </ul>
+    </nav>
+
+    <div class="main-content">
+        <h1>Comparative Standards: Bay Area Municipal Noise Ordinances</h1>
+        
+        <p><strong>Research:</strong> Analysis of 48+ Bay Area jurisdictions reveals San Mateo's ordinance is less protective than peer cities.</p>
+
+        <h2>Key Comparison: Residential Limits (Nighttime)</h2>
+        
+        <table>
+            <tr><th>Jurisdiction</th><th>Limit (dB)</th><th>Time Period</th><th>Penalties</th><th>Elevated Structures</th></tr>
+            <tr style="background: #d4edda;"><td><strong>Palo Alto</strong></td><td>45 dB(A)</td><td>10pm-7am</td><td>Tonal +5 dB</td><td>Specified</td></tr>
+            <tr style="background: #d4edda;"><td><strong>Mountain View</strong></td><td>45 dB(A)</td><td>10pm-7am</td><td>Tonal +5 dB</td><td>Specified</td></tr>
+            <tr style="background: #d4edda;"><td><strong>Menlo Park</strong></td><td>45 dB(A)</td><td>10pm-7am</td><td>Character-based</td><td>Yes</td></tr>
+            <tr style="background: #fff3cd;"><td><strong>San Mateo</strong></td><td>50 dB(A)</td><td>10pm-7am</td><td>None specified</td><td>No</td></tr>
+            <tr><td>Redwood City</td><td>50 dB(A)</td><td>10pm-7am</td><td>Impulsive +5 dB</td><td>General language</td></tr>
+            <tr><td>San Carlos</td><td>50 dB(A)</td><td>10pm-7am</td><td>None</td><td>No</td></tr>
+        </table>
+
+        <div class="box">
+            <h2>What Other Cities Do Better</h2>
+            <p><strong>1. Lower Base Limits:</strong> 45 dB(A) (Palo Alto, Mountain View, Menlo Park) vs. San Mateo's 50 dB(A)</p>
+            <p><strong>2. Character Penalties:</strong> +5 dB for tonal, impulsive, or low-frequency content</p>
+            <p><strong>3. Elevated Structures:</strong> Explicit language about measuring at receiving point for elevated sources</p>
+            <p><strong>4. Frequency Analysis:</strong> Some require 1/3 octave band measurements</p>
+            <p><strong>5. ANSI Standards:</strong> Reference to ANSI S12.9 for measurement methodology</p>
+        </div>
+
+        <h2>San Mateo's Gaps</h2>
+        
+        <table>
+            <tr><th>Issue</th><th>Current SMMC 7.30</th><th>Peer Cities</th><th>Impact</th></tr>
+            <tr><td>Base limit</td><td>50 dB(A)</td><td>45 dB(A)</td><td>+5 dB more permissive</td></tr>
+            <tr><td>Character penalties</td><td>Not specified</td><td>+5 dB tonal/LF</td><td>Ignores annoyance factors</td></tr>
+            <tr><td>Elevated sources</td><td>Silent on issue</td><td>Explicit provisions</td><td>Ground-level loophole</td></tr>
+            <tr><td>Measurement standards</td><td>Generic "sound level meter"</td><td>ANSI S12.9 Part 4</td><td>Inconsistent methodology</td></tr>
+        </table>
+
+        <p style="margin-top: 15px;"><strong>Recommendation:</strong> Adopt provisions from Palo Alto/Mountain View model: 45 dB(A) base + character penalties + elevated structure language + ANSI methodology.</p>
+    </div>
+</body>
+</html>

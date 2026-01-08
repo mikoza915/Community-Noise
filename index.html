@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>San Mateo Science Center: Longfellow Is a Noisy Neighbor</title>
+    <script>
+        // Define initMap in global scope BEFORE loading Google Maps
+        let map;
+        let measurementMarkers = [];
+        let contourCircles = [];
+        let measurementData = [];
+        
+        // Sample measurement data (you can replace with actual data)
+        const sampleMeasurements = [
+            { lat: 37.5598266, lng: -122.2870157, location: "Building 901", dB: 48.2, frequency: "63 Hz tone" },
+            { lat: 37.5595, lng: -122.2868, location: "Building 951", dB: 51.5, frequency: "63 Hz tone" },
+            { lat: 37.5600, lng: -122.2875, location: "Mariners Island Blvd", dB: 45.8, frequency: "Low freq" },
+            { lat: 37.5590, lng: -122.2880, location: "Residential (200m)", dB: 38.5, frequency: "Ambient" },
+            { lat: 37.5585, lng: -122.2885, location: "Residential (350m)", dB: 36.2, frequency: "Ambient" }
+        ];
+        
+        // Sample affected residential areas - removed per user request
+        const affectedAreas = [];
+        
+        function initMap() {
+            console.log('Initializing map...');
+            
+            // San Mateo Science Center buildings - two HVAC point sources
+            // Building 901 (north building)
+            const building901 = { lat: 37.5600, lng: -122.2870 };
+            // Building 951 (south building)  
+            const building951 = { lat: 37.5596, lng: -122.2871 };
+            
+            // Center point between buildings for map
+            const scienceCenter = { lat: 37.5598266, lng: -122.2870157 };
+            
+            // Initialize map with 3D controls
+            map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 16,
+                center: scienceCenter,
+                mapTypeId: 'satellite',  // Start with satellite for 3D buildings
+                tilt: 45,  // Enable 45-degree view for 3D
+                heading: 0,  // Initial rotation angle (0-360)
+                rotateControl: true,  // Enable rotation control
+                mapTypeControl: true,  // Allow switching between map types
+                mapTypeControlOptions: {
+                    style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
+                    position: google.maps.ControlPosition.TOP_RIGHT,
+                    mapTypeIds: ['roadmap', 'satellite', 'hybrid', 'terrain']
+                },
+                fullscreenControl: true,
+                streetViewControl: true,
+                zoomControl: true,
+                scaleControl: true
+            });
+            
+            console.log('Map created');
+            
+            // Add HVAC source markers for both buildings
+            // Building 901 - North Building
+            const source901 = new google.maps.Marker({
+                position: building901,
+                map: map,
+                title: "Building 901 - HVAC Source",
+                icon: {
+                    path: google.maps.SymbolPath.CIRCLE,
+                    scale: 10,
+                    fillColor: '#e63946',
+                    fillOpacity: 1,
+                    strokeColor: 'white',
+                    strokeWeight: 3
+                },
+                label: {
+                    text: '901',
+                    color: 'white',
+                    fontSize: '10px',
+                    fontWeight: 'bold'
+                }
+            });
+            
+            const info901 = new google.maps.InfoWindow({
+                content: "<b>Building 901</b><br>Mariners Island Blvd<br><em>HVAC Point Source: 100 dB(A) @ 10 ft</em>"
+            });
+            
+            source901.addListener("click", () => {
+                info901.open(map, source901);
+            });
+            
+            // Building 951 - South Building
+            const source951 = new google.maps.Marker({
+                position: building951,
+                map: map,
+                title: "Building 951 - HVAC Source",
+                icon: {
+                    path: google.maps.SymbolPath.CIRCLE,
+                    scale: 10,
+                    fillColor: '#e63946',
+                    fillOpacity: 1,
+                    strokeColor: 'white',
+                    strokeWeight: 3
+                },
+                label: {
+                    text: '951',
+                    color: 'white',
+                    fontSize: '10px',
+                    fontWeight: 'bold'
+                }
+            });
+            
+            const info951 = new google.maps.InfoWindow({
+                content: "<b>Building 951</b><br>Mariners Island Blvd<br><em>HVAC Point Source: 100 dB(A) @ 10 ft</em>"
+            });
+            
+            source951.addListener("click", () => {
+                info951.open(map, source951);
+            });
+            
+            console.log('Source markers added for both buildings');
+            
+            // Add noise contour circles for each building
+            // Point source: 100 dB(A) at 10 feet (3.05m)
+            // Using inverse square law: L2 = L1 - 20*log10(r2/r1)
+            const contours = [
+                { radius: 3, dB: 100, color: '#1a0033', fillColor: 'rgba(26, 0, 51, 0.3)', label: '100 dB(A) @ 10 ft' },
+                { radius: 30, dB: 60, color: '#6600cc', fillColor: 'rgba(102, 0, 204, 0.25)', label: '60 dB(A) @ 100 ft' },
+                { radius: 54, dB: 55, color: '#cc0033', fillColor: 'rgba(204, 0, 51, 0.2)', label: '55 dB(A) @ 177 ft' },
+                { radius: 96, dB: 50, color: '#ff6633', fillColor: 'rgba(255, 102, 51, 0.15)', label: '50 dB(A) @ 315 ft' },
+                { radius: 171, dB: 45, color: '#ff9933', fillColor: 'rgba(255, 153, 51, 0.12)', label: '45 dB(A) @ 561 ft' },
+                { radius: 305, dB: 40, color: '#ffff00', fillColor: 'rgba(255, 255, 0, 0.1)', label: '40 dB(A) @ 1000 ft' },
+                { radius: 542, dB: 35, color: '#99ff66', fillColor: 'rgba(153, 255, 102, 0.08)', label: '35 dB(A) @ 1778 ft (Limit)' }
+            ];
+            
+            // Create contours for Building 901
+            contours.forEach(contour => {
+                const circle901 = new google.maps.Circle({
+                    strokeColor: contour.color,
+                    strokeOpacity: 0.8,
+                    strokeWeight: 2,
+                    fillColor: contour.fillColor,
+                    fillOpacity: 0.35,
+                    map: map,
+                    center: building901,
+                    radius: contour.radius
+                });
+                
+                contourCircles.push(circle901);
+                
+                const contourInfo901 = new google.maps.InfoWindow({
+                    content: `<strong>Building 901: ${contour.label}</strong><br>
+                             Radius: ${contour.radius}m (${Math.round(contour.radius * 3.28084)} ft)<br>
+                             Sound Level: ${contour.dB} dB(A)`
+                });
+                
+                circle901.addListener('click', function(event) {
+                    contourInfo901.setPosition(event.latLng);
+                    contourInfo901.open(map);
+                });
+            });
+            
+            // Create contours for Building 951
+            contours.forEach(contour => {
+                const circle951 = new google.maps.Circle({
+                    strokeColor: contour.color,
+                    strokeOpacity: 0.8,
+                    strokeWeight: 2,
+                    fillColor: contour.fillColor,
+                    fillOpacity: 0.35,
+                    map: map,
+                    center: building951,
+                    radius: contour.radius
+                });
+                
+                contourCircles.push(circle951);
+                
+                const contourInfo951 = new google.maps.InfoWindow({
+                    content: `<strong>Building 951: ${contour.label}</strong><br>
+                             Radius: ${contour.radius}m (${Math.round(contour.radius * 3.28084)} ft)<br>
+                             Sound Level: ${contour.dB} dB(A)`
+                });
+                
+                circle951.addListener('click', function(event) {
+                    contourInfo951.setPosition(event.latLng);
+                    contourInfo951.open(map);
+                });
+            });
+            
+            console.log('Contours added for both buildings');
+            
+            // Load sample measurement markers
+            loadMeasurements(sampleMeasurements);
+            
+            console.log('All map features loaded successfully!');
+            
+            // Add click listener for manual marker placement
+            map.addListener('click', function(event) {
+                if (window.pendingMeasurement) {
+                    window.pendingMeasurement.lat = event.latLng.lat();
+                    window.pendingMeasurement.lng = event.latLng.lng();
+                    
+                    measurementData.push(window.pendingMeasurement);
+                    loadMeasurements(measurementData);
+                    
+                    alert(`Placed measurement: ${window.pendingMeasurement.location}
+Location: ${window.pendingMeasurement.lat.toFixed(6)}, ${window.pendingMeasurement.lng.toFixed(6)}
+dB(A): ${window.pendingMeasurement.dB.toFixed(1)}`);
+                    
+                    window.pendingMeasurement = null;
+                }
+            });
+        }
+        
+        function loadMeasurements(data) {
+            // Clear existing markers
+            measurementMarkers.forEach(marker => marker.setMap(null));
+            measurementMarkers = [];
+            measurementData = data;
+            
+            data.forEach(point => {
+                const marker = new google.maps.Marker({
+                    position: { lat: point.lat, lng: point.lng },
+                    map: map,
+                    title: point.location,
+                    icon: {
+                        path: google.maps.SymbolPath.CIRCLE,
+                        scale: 8,
+                        fillColor: getColorForDB(point.adjustedDbA || point.dB),
+                        fillOpacity: 0.9,
+                        strokeColor: 'white',
+                        strokeWeight: 2
+                    }
+                });
+                
+                const infoContent = `
+                    <div style="font-family: Calibri, Arial;">
+                        <h4 style="margin: 0 0 10px 0; color: #1F4788;">${point.location}</h4>
+                        <p style="margin: 5px 0;"><strong>dB(A):</strong> ${point.dB.toFixed(1)} dB</p>
+                        ${point.dbC ? `<p style="margin: 5px 0;"><strong>dB(C):</strong> ${point.dbC.toFixed(1)} dB</p>` : ''}
+                        ${point.dbZ ? `<p style="margin: 5px 0;"><strong>dB(Z):</strong> ${point.dbZ.toFixed(1)} dB (unweighted)</p>` : ''}
+                        ${point.adjustedDbA ? `<p style="margin: 5px 0; color: #e63946;"><strong>Adjusted dB(A):</strong> ${point.adjustedDbA.toFixed(1)} dB</p>` : ''}
+                        ${point.tonalPenalty ? `<p style="margin: 5px 0; font-size: 11px;">• Tonal penalty: +${point.tonalPenalty} dB</p>` : ''}
+                        ${point.lfPenalty ? `<p style="margin: 5px 0; font-size: 11px;">• Low-freq penalty: +${point.lfPenalty} dB</p>` : ''}
+                        ${point.frequency ? `<p style="margin: 5px 0;"><strong>Characteristics:</strong> ${point.frequency}</p>` : ''}
+                    </div>
+                `;
+                
+                const infoWindow = new google.maps.InfoWindow({
+                    content: infoContent
+                });
+                
+                marker.addListener('click', () => {
+                    infoWindow.open(map, marker);
+                });
+                
+                measurementMarkers.push(marker);
+            });
+            
+            console.log(`Loaded ${data.length} measurement markers`);
+        }
+        
+        function getColorForDB(dB) {
+            // Professional noise map color gradient (matching diagram)
+            if (dB >= 67.5) return '#1a0033';  // Very dark purple
+            if (dB >= 65.0) return '#330066';  // Dark purple
+            if (dB >= 62.5) return '#4d0099';  // Purple
+            if (dB >= 60.0) return '#6600cc';  // Purple-blue
+            if (dB >= 57.5) return '#7700cc';  // Light purple
+            if (dB >= 55.0) return '#cc0033';  // Dark red
+            if (dB >= 52.5) return '#ff0033';  // Red
+            if (dB >= 50.0) return '#ff3366';  // Light red
+            if (dB >= 47.5) return '#ff6633';  // Dark orange
+            if (dB >= 45.0) return '#ff9933';  // Orange
+            if (dB >= 42.5) return '#ffcc33';  // Light orange
+            if (dB >= 40.0) return '#ffff00';  // Yellow
+            if (dB >= 37.5) return '#ccff33';  // Yellow-green
+            if (dB >= 35.0) return '#99ff66';  // Light green
+            return '#66cc66';  // Green
+        }
+        
+        // Layer toggle functions
+        function toggleContours(show) {
+            contourCircles.forEach(circle => {
+                circle.setMap(show ? map : null);
+            });
+        }
+        
+        function toggleMeasurements(show) {
+            measurementMarkers.forEach(marker => {
+                marker.setMap(show ? map : null);
+            });
+        }
+        
+        // CSV Import functionality
+        function setupDropZone() {
+            const dropZone = document.getElementById('drop-zone');
+            const fileInput = document.getElementById('file-input');
+            
+            dropZone.addEventListener('click', () => fileInput.click());
+            
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropZone.classList.add('dragover');
+            });
+            
+            dropZone.addEventListener('dragleave', () => {
+                dropZone.classList.remove('dragover');
+            });
+            
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('dragover');
+                
+                const file = e.dataTransfer.files[0];
+                if (file && file.name.endsWith('.csv')) {
+                    processCSV(file);
+                } else {
+                    alert('Please drop a CSV file');
+                }
+            });
+            
+            fileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    processCSV(file);
+                }
+            });
+        }
+        
+        function processCSV(file) {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                const text = e.target.result;
+                
+                // Check if it's a SignalScope X file
+                if (text.includes('SignalScope X')) {
+                    const data = parseSignalScopeX(text);
+                    if (data) {
+                        // If no GPS, prompt for location
+                        if (!data.lat || !data.lng) {
+                            promptForLocation(data, file.name);
+                        } else {
+                            measurementData.push(data);
+                            loadMeasurements(measurementData);
+                            alert(`Loaded measurement from ${file.name}
+Location: ${data.location}
+GPS: ${data.lat.toFixed(6)}, ${data.lng.toFixed(6)}
+dB(Z): ${data.dbZ.toFixed(1)} (unweighted)
+dB(A): ${data.dB.toFixed(1)}
+dB(C): ${data.dbC.toFixed(1)}
+C-A Gap: ${(data.dbC - data.dB).toFixed(1)} dB
+Tonal Penalty: +${data.tonalPenalty} dB
+LF Penalty: +${data.lfPenalty} dB
+Adjusted dB(A): ${data.adjustedDbA.toFixed(1)} dB`);
+                        }
+                    }
+                } else {
+                    // Try simple CSV format
+                    const data = parseSimpleCSV(text);
+                    if (data.length > 0) {
+                        measurementData = measurementData.concat(data);
+                        loadMeasurements(measurementData);
+                        alert(`Loaded ${data.length} measurement points from ${file.name}`);
+                    } else {
+                        alert('No valid data found in CSV');
+                    }
+                }
+            };
+            
+            reader.readAsText(file);
+        }
+        
+        function parseSignalScopeX(text) {
+            const lines = text.split('\n');
+            const data = {
+                location: 'Measurement',
+                lat: null,
+                lng: null,
+                dbZ: 0,
+                dB: 0,  // This will be dB(A)
+                dbC: 0,
+                frequency: 'SignalScope X',
+                octaveBands: {}
+            };
+            
+            // Extract GPS coordinates
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i];
+                
+                if (line.includes('Latitude:')) {
+                    const match = line.match(/([+-]?\d+\.\d+)º/);
+                    if (match) data.lat = parseFloat(match[1]);
+                }
+                
+                if (line.includes('Longitude:')) {
+                    const match = line.match(/([+-]?\d+\.\d+)º/);
+                    if (match) data.lng = parseFloat(match[1]);
+                }
+                
+                if (line.includes('Overall Level:')) {
+                    const match = line.match(/(\d+\.\d+)/);
+                    if (match) data.dbZ = parseFloat(match[1]);
+                }
+                
+                if (line.includes('Start Date:')) {
+                    const match = line.match(/"([^"]+)"/);
+                    if (match) data.location = match[1];
+                }
+            }
+            
+            // Extract 1/3 octave band data and calculate A and C weighting
+            let octaveDataStartIndex = -1;
+            for (let i = 0; i < lines.length; i++) {
+                if (lines[i].includes("'Center Frequency','Level'")) {
+                    octaveDataStartIndex = i + 1;
+                    break;
+                }
+            }
+            
+            if (octaveDataStartIndex > 0) {
+                // A-weighting corrections (dB) for 1/3 octave bands (6.3 Hz and above only)
+                const aWeighting = {
+                    6.3: -26.2, 8: -22.5, 10: -19.1, 12.5: -16.1, 16: -13.4, 20: -10.9,
+                    25: -8.6, 31.5: -6.6, 40: -4.8, 50: -3.2, 63: -1.9,
+                    80: -0.8, 100: 0.0, 125: 0.6, 160: 1.0, 200: 1.2,
+                    250: 1.3, 315: 1.2, 400: 1.0, 500: 0.5, 630: 0.0,
+                    800: -0.6, 1000: -1.2, 1250: -1.9, 1600: -2.9, 2000: -3.9,
+                    2500: -5.1, 3150: -6.6, 4000: -8.1, 5000: -8.7, 6300: -9.3,
+                    8000: -10.0, 10000: -10.5, 12500: -11.2, 16000: -12.4, 20000: -14.3
+                };
+                
+                // C-weighting corrections (dB) (6.3 Hz and above only)
+                const cWeighting = {
+                    6.3: -2.4, 8: -1.6, 10: -1.0, 12.5: -0.6, 16: -0.3, 20: -0.2,
+                    25: -0.1, 31.5: 0.0, 40: 0.0, 50: 0.0, 63: 0.0,
+                    80: 0.0, 100: 0.0, 125: 0.0, 160: 0.0, 200: 0.0,
+                    250: 0.0, 315: 0.0, 400: 0.0, 500: 0.0, 630: 0.0,
+                    800: -0.1, 1000: -0.2, 1250: -0.3, 1600: -0.5, 2000: -0.8,
+                    2500: -1.3, 3150: -2.0, 4000: -3.0, 5000: -4.4, 6300: -6.2,
+                    8000: -8.5, 10000: -11.2, 12500: -14.4, 16000: -18.4, 20000: -23.0
+                };
+                
+                let sumA = 0;
+                let sumC = 0;
+                let bandCount = 0;
+                const bandLevels = [];
+                
+                // Read octave band data (6.3 Hz and above only)
+                for (let i = octaveDataStartIndex; i < lines.length; i++) {
+                    const line = lines[i].trim();
+                    if (!line || line.startsWith("'") || line.startsWith('Equivalent')) break;
+                    
+                    const parts = line.split(',');
+                    if (parts.length >= 2) {
+                        const freq = parseFloat(parts[0]);
+                        const level = parseFloat(parts[1]);
+                        
+                        // Only use bands from 6.3 Hz and above
+                        if (!isNaN(freq) && !isNaN(level) && level > -100 && freq >= 6.3) {
+                            data.octaveBands[freq] = level;
+                            bandLevels.push({ freq: freq, level: level });
+                            
+                            // Calculate weighted sum
+                            const aWeight = aWeighting[freq] || 0;
+                            const cWeight = cWeighting[freq] || 0;
+                            
+                            sumA += Math.pow(10, (level + aWeight) / 10);
+                            sumC += Math.pow(10, (level + cWeight) / 10);
+                            bandCount++;
+                        }
+                    }
+                }
+                
+                if (bandCount > 0) {
+                    data.dB = 10 * Math.log10(sumA);  // dB(A)
+                    data.dbC = 10 * Math.log10(sumC);  // dB(C)
+                    
+                    // Calculate tonal penalty (check for prominent tones)
+                    let tonalPenalty = 0;
+                    for (let i = 1; i < bandLevels.length - 1; i++) {
+                        const current = bandLevels[i].level;
+                        const prev = bandLevels[i-1].level;
+                        const next = bandLevels[i+1].level;
+                        
+                        // Tone detected if band is 5+ dB above adjacent bands
+                        if (current - prev >= 5 && current - next >= 5) {
+                            tonalPenalty = 5;
+                            data.frequency = `Tone at ${bandLevels[i].freq} Hz`;
+                            break;
+                        }
+                    }
+                    
+                    // Calculate low-frequency penalty based on C-A difference
+                    const caGap = data.dbC - data.dB;
+                    let lfPenalty = 0;
+                    if (caGap > 10) {
+                        lfPenalty = 5;
+                    } else if (caGap > 3) {
+                        lfPenalty = 3;
+                    }
+                    
+                    // Store penalties
+                    data.tonalPenalty = tonalPenalty;
+                    data.lfPenalty = lfPenalty;
+                    data.adjustedDbA = data.dB + tonalPenalty + lfPenalty;
+                }
+            }
+            
+            return data.lat !== null ? data : data;  // Return even without GPS for manual placement
+        }
+        
+        function promptForLocation(data, filename) {
+            const locationName = prompt(`No GPS data in ${filename}.
+Enter location name:`, data.location || 'Measurement');
+            
+            if (!locationName) return;
+            
+            data.location = locationName;
+            
+            const useMapClick = confirm('Click OK to place marker by clicking on map, or Cancel to enter coordinates manually.');
+            
+            if (useMapClick) {
+                alert('Click anywhere on the map to place this measurement.');
+                window.pendingMeasurement = data;
+            } else {
+                const mapCenter = map.getCenter();
+                const lat = prompt('Enter latitude:', mapCenter.lat().toFixed(6));
+                const lng = prompt('Enter longitude:', mapCenter.lng().toFixed(6));
+                
+                if (lat && lng) {
+                    data.lat = parseFloat(lat);
+                    data.lng = parseFloat(lng);
+                    
+                    measurementData.push(data);
+                    loadMeasurements(measurementData);
+                    
+                    alert(`Added measurement: ${locationName}
+dB(Z): ${data.dbZ ? data.dbZ.toFixed(1) : 'N/A'}
+dB(A): ${data.dB.toFixed(1)}
+dB(C): ${data.dbC ? data.dbC.toFixed(1) : 'N/A'}`);
+                }
+            }
+        }
+        
+        function parseSimpleCSV(text) {
+            const lines = text.split('\n');
+            const data = [];
+            
+            // Expected CSV format: location, lat, lng, dB, frequency
+            // Skip header row
+            for (let i = 1; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (!line) continue;
+                
+                const parts = line.split(',');
+                if (parts.length >= 4) {
+                    const point = {
+                        location: parts[0].trim(),
+                        lat: parseFloat(parts[1]),
+                        lng: parseFloat(parts[2]),
+                        dB: parseFloat(parts[3]),
+                        frequency: parts[4] ? parts[4].trim() : 'Unknown'
+                    };
+                    
+                    if (!isNaN(point.lat) && !isNaN(point.lng) && !isNaN(point.dB)) {
+                        data.push(point);
+                    }
+                }
+            }
+            
+            return data;
+        }
+        
+        function calculateMonthsSince() {
+            const startDate = new Date('2024-06-18');
+            const today = new Date();
+            
+            const years = today.getFullYear() - startDate.getFullYear();
+            const months = today.getMonth() - startDate.getMonth();
+            const totalMonths = years * 12 + months;
+            
+            const elements = document.getElementsByClassName('months-since');
+            for (let elem of elements) {
+                elem.textContent = totalMonths;
+            }
+        }
+        
+        // Run when page loads
+        window.addEventListener('DOMContentLoaded', function() {
+            calculateMonthsSince();
+        });
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBqbxjxnDBeBHjH40-yPINadIDcEOBHsYU&callback=initMap&v=weekly" async defer></script>
+    <style>
+        body {
+            font-family: Calibri, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            color: #333;
+            display: flex;
+        }
+        .sidebar {
+            width: 420px;
+            background-color: #1F4788;
+            color: white;
+            padding: 30px 20px;
+            min-height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            overflow-y: auto;
+        }
+        .sidebar h2 {
+            color: white;
+            margin-top: 0;
+            font-size: 1.3em;
+            border-bottom: 2px solid #fff;
+            padding-bottom: 10px;
+        }
+        .sidebar a {
+            color: #e8f4f8;
+            text-decoration: none;
+            display: block;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            transition: color 0.3s;
+            white-space: nowrap;
+        }
+        .sidebar a:hover {
+            color: #fff;
+            padding-left: 5px;
+        }
+        .container {
+            margin-left: 420px;
+            display: flex;
+            width: calc(100% - 420px);
+        }
+        .main-content {
+            flex: 1;
+            padding: 40px;
+            max-width: 900px;
+        }
+        .map-sidebar {
+            width: 500px;
+            position: sticky;
+            top: 20px;
+            height: calc(100vh - 40px);
+            margin: 20px;
+        }
+        #map {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        .map-controls {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+            z-index: 1000;
+            min-width: 200px;
+        }
+        .map-controls h3 {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            color: #1F4788;
+        }
+        .map-controls label {
+            display: block;
+            margin: 8px 0;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .map-controls input[type="checkbox"] {
+            margin-right: 8px;
+        }
+        #map {
+            width: 100%;
+            height: 100%;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        h1 {
+            color: #1F4788;
+            border-bottom: 3px solid #1F4788;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #2C5AA0;
+            margin-top: 30px;
+        }
+        .summary-box {
+            background-color: #f0f4f8;
+            border-left: 4px solid #1F4788;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .key-point {
+            background-color: #fff3cd;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        ul {
+            margin: 10px 0;
+        }
+        li {
+            margin: 8px 0;
+        }
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #ccc;
+            font-size: 0.9em;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Learn More</h2>
+        <a href="timeline.html">Project Timeline</a>
+        <a href="community_complaints.html">A Community Responds</a>
+        <a href="potential_solutions.html">Potential Solutions</a>
+        <a href="noise_map_integrated.html">Community Measurement Portal</a>
+        <a href="data_import.html">Import Your Data</a>
+        <a href="comparative_standards.html">Comparative Noise Standards</a>
+        <a href="decibel_scale.html">How Sound is Measured</a>
+        <a href="low_frequency_noise.html">Low Frequency Noise -- The Silent Menace</a>
+        <a href="annoyance_penalties.html">Hum, Whine, and Whoosh -- Why Character Matters</a>
+        <a href="noise_regulations.html">Noise Regulations -- No Good Deed Goes Unpunished</a>
+        <a href="acoustic_standards.html">Acoustic Standards</a>
+
+    </div>
+
+    <div class="container">
+    <div class="main-content">
+    <h1>San Mateo Science Center: A Cautionary Tale</h1>
+    <p><strong>A Story of Community Disregard and Broken Promises by Longfellow Real Estate Partners and the City of San Mateo</strong></p>
+
+    <div class="summary-box">
+        <h3 style="margin-top: 0;">The Problem</h3>
+        <p>Longfellow Real Estate Partners redeveloped the San Mateo Science Center with complete disregard for the surrounding residential community. Despite being explicitly warned about noise concerns in January 2022, they installed rooftop HVAC equipment that now produces constant, intrusive low-frequency noise affecting nearby homes 24/7. When residents complained, Longfellow's response has been minimal, inadequate, and dismissive. The problem has persisted for <span class="months-since">19</span> months with no meaningful resolution.</p>
+    </div>
+
+    <h2>A Pattern of Disregard</h2>
+    
+    <ul>
+        <li><strong>January 2022:</strong> Community explicitly warned Longfellow about HVAC noise concerns and requested equipment be located away from residential areas</li>
+        <li><strong>Community request ignored:</strong> Equipment was installed exactly where residents asked it not to be</li>
+        <li><strong>No meaningful engagement:</strong> When the predicted problems materialized in June 2024, Longfellow's response was a single inadequate technical memo</li>
+        <li><strong>Zero accountability:</strong> <span class="months-since">19</span> months later, the noise continues unabated with no real effort to resolve the issue</li>
+    </ul>
+
+    <h2>Impact on the Community</h2>
+
+    <ul>
+        <li><strong>Sleep disruption:</strong> Constant low-frequency hum audible inside homes, particularly at night</li>
+        <li><strong>Loss of property enjoyment:</strong> Cannot use outdoor spaces without intrusive mechanical noise</li>
+        <li><strong>Stress and frustration:</strong> <span class="months-since">19</span> months of unresolved complaints and bureaucratic runaround</li>
+        <li><strong>Diminished property values:</strong> Who wants to buy a home next to industrial-level noise?</li>
+    </ul>
+
+    <div class="key-point">
+        <h3 style="margin-top: 0;">They Were Warned</h3>
+        <p><strong>January 2022:</strong> During the planning process, community members with technical expertise explicitly warned Longfellow that rooftop HVAC equipment would create noise problems for nearby residents. The community specifically requested that utility structures be moved to Baker Way, away from residential properties.</p>
+        <p><strong>Longfellow's response:</strong> Ignored the warnings. Installed the equipment anyway. Now residents live with the exact problem they predicted.</p>
+    </div>
+
+    <h2>Timeline of Broken Promises</h2>
+
+    <ol>
+        <li><strong>January 2022:</strong> Community warns about noise, asks for equipment relocation → Request ignored</li>
+        <li><strong>April 2022:</strong> Environmental review omits any meaningful analysis of rooftop HVAC noise</li>
+        <li><strong>June 2024:</strong> Residents file formal complaints about the exact noise problem they predicted</li>
+        <li><strong>July 2024:</strong> Longfellow's consultant provides a one-page memo using flawed methodology</li>
+        <li><strong>December 2024:</strong> Six months later, problem remains unresolved, no meaningful action taken</li>
+    </ol>
+
+    <h2>What Residents Deserve</h2>
+
+    <ul>
+        <li><strong>Real solutions:</strong> Actual noise mitigation, not more studies or excuses</li>
+        <li><strong>Accountability:</strong> Acknowledgment that Longfellow created this problem after being warned</li>
+        <li><strong>Timely action:</strong> The problem has persisted for six months—that's long enough</li>
+        <li><strong>Respect:</strong> The community's concerns should be taken seriously, not dismissed</li>
+        <li><strong>Good neighbors:</strong> Corporate citizens should act like good neighbors in the communities where they operate</li>
+    </ul>
+
+    <div class="footer">
+        <p><strong>The Bottom Line:</strong> Longfellow Real Estate Partners was warned about noise problems, ignored those warnings, created the exact problems residents predicted, and has failed to meaningfully address the issue for six months and counting.</p>
+        <p><strong>Property:</strong> San Mateo Science Center, 901/951 Mariners Island Boulevard<br>
+        <strong>Developer:</strong> Longfellow Real Estate Partners<br>
+        <strong>Code Enforcement Case:</strong> CE-2024-000294 (filed June 15, 2024)</p>
+    </div>
+    </div>
+    
+    <div class="map-sidebar">
+        <div id="map" style="width: 100%; height: 100%; border-radius: 8px; position: relative;">
+            <!-- Map controls -->
+            <div class="map-controls">
+                <h3>Map Layers</h3>
+                <label>
+                    <input type="checkbox" id="toggle-contours" checked onchange="toggleContours(this.checked)">
+                    Noise Contours
+                </label>
+                <label>
+                    <input type="checkbox" id="toggle-measurements" checked onchange="toggleMeasurements(this.checked)">
+                    Measurement Points
+                </label>
+                <hr style="margin: 15px 0; border: 0; border-top: 1px solid #ddd;">
+                <h3 style="font-size: 0.9em; margin-top: 10px;">3D Controls</h3>
+                <p style="font-size: 11px; margin: 5px 0; line-height: 1.4;">
+                    • <strong>Rotate:</strong> Hold Shift + drag<br>
+                    • <strong>Tilt:</strong> Hold Ctrl + drag<br>
+                    • <strong>Reset view:</strong> Double-click compass
+                </p>
+            </div>
+        </div>
+    </div>
+    </div>
+</body>
+</html>

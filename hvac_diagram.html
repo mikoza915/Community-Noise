@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HVAC System Diagram - Understanding Commercial Noise Sources</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+            font-size: 15px;
+        }
+        
+        .navbar {
+            background: #2c3e50;
+            padding: 15px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 220px;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+        
+        .navbar ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .navbar li {
+            margin: 0;
+        }
+        
+        .navbar a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            padding: 10px 25px;
+            transition: background 0.3s, padding-left 0.3s;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            font-size: 14px;
+        }
+        
+        .navbar a:hover {
+            background: #34495e;
+            padding-left: 30px;
+        }
+        
+        .navbar a.active {
+            background: #667eea;
+            font-weight: 600;
+            border-left: 4px solid #fff;
+        }
+        
+        .main-content {
+            margin-left: 240px;
+            padding: 25px 40px;
+            max-width: 1600px;
+        }
+        
+        @media (max-width: 1920px) and (min-width: 1600px) {
+            .main-content {
+                max-width: 1400px;
+            }
+        }
+        
+        @media (max-width: 1599px) {
+            .main-content {
+                max-width: 1200px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .navbar {
+                position: static;
+                width: 100%;
+                height: auto;
+            }
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 2.2em;
+            line-height: 1.2;
+        }
+        
+        h2 {
+            color: #34495e;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-size: 1.6em;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 8px;
+            line-height: 1.3;
+        }
+        
+        h3 {
+            color: #34495e;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 1.3em;
+            line-height: 1.3;
+        }
+        
+        h4 {
+            color: #34495e;
+            margin-top: 15px;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+        
+        p {
+            margin-bottom: 15px;
+            line-height: 1.7;
+        }
+        
+        a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        
+        a:hover {
+            text-decoration: underline;
+        }
+        
+        .summary-box, .key-point, .note {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 18px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .improvement {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 18px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .inadequate-response {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 18px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+        
+        th, td {
+            padding: 10px 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        
+        th {
+            background: #2c3e50;
+            color: white;
+            font-weight: 600;
+        }
+        
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: "Courier New", monospace;
+            font-size: 0.9em;
+        }
+        
+        pre {
+            background: #f4f4f4;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin: 20px 0;
+            font-size: 0.9em;
+        }
+        
+        ul, ol {
+            margin-left: 30px;
+            margin-bottom: 15px;
+        }
+        
+        li {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            margin-left: 240px;
+            max-width: 1600px;
+            background: white;
+            padding: 25px 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                margin-left: 0;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏭 Commercial HVAC System Diagram</h1>
+            <p>Understanding the Noise Sources in Large-Scale Building Systems</p>
+        </div>
+        
+                                            <nav class="navbar">
+        <ul>
+            <li><a href="index.html">🏠 Home</a></li>
+            <li><a href="science_center_case.html">📋 Case Documentation</a></li>
+            <li><a href="welcome_to_neighborhood.html">🏘️ Welcome Letter</a></li>
+            <li><a href="community_complaints.html">👥 Community Complaints</a></li>
+            <li><a href="wall_transmission.html">🌊 Wall Transmission Viz</a></li>
+            <li><a href="interactive_noise_map.html">🗺️ Interactive Map</a></li>
+            <li><a href="data_import.html">📥 Data Import</a></li>
+            <li><a href="ansi_calculator_flowchart.html">🔢 ANSI Calculator</a></li>
+            <li><a href="potential_solutions.html">💡 Solutions</a></li>
+            <li><a href="comparative_standards.html">📊 Standards Comparison</a></li>
+            <li><a href="ansi_s12_9_part_4.html">📐 ANSI S12.9 Part 4</a></li>
+            <li><a href="penalty_application_guide.html">📋 Penalty Guide</a></li>
+            <li><a href="model_noise_ordinance.html">📖 Model Ordinance</a></li>
+            <li><a href="hvac_system_complete_schematic.html">🏭 HVAC Schematics</a></li>
+            <li><a href="technical_resources.html">📚 Technical Resources</a></li>
+            <li><a href="pe_ethics_health_safety.html">⚕️ PE Ethics</a></li>
+        </ul>
+    </nav>
+        
+        <div class="content">
+            <div class="intro-box">
+                <h2 style="margin-top: 0;">About This Diagram</h2>
+                <p>This schematic illustrates a typical large-scale commercial HVAC (Heating, Ventilation, and Air Conditioning) system commonly installed on rooftops of office buildings, laboratories, and mixed-use facilities. The San Mateo Science Center uses a system similar to this configuration.</p>
+                <p><strong>Key features:</strong></p>
+                <ul>
+                    <li><strong>Blue arrows:</strong> Chilled water circulation (42°F supply, 55°F return)</li>
+                    <li><strong>Red dashed arrows:</strong> Air flow (supply and return)</li>
+                    <li><strong>🔊 symbols:</strong> Major noise sources with sound pressure levels</li>
+                    <li><strong>⚡ values:</strong> Electrical power consumption in kilowatts</li>
+                </ul>
+            </div>
+            
+            <h2>System Schematic</h2>
+            <div class="diagram-container">
+                <object data="hvac_system_diagram.svg" type="image/svg+xml" style="width: 100%; height: auto;">
+                    <img src="hvac_system_diagram.svg" alt="HVAC System Diagram" style="width: 100%;">
+                </object>
+            </div>
+            
+            <h2>Major Components and Noise Characteristics</h2>
+            
+            <div class="component-box">
+                <h3>1. Chiller Unit (88-95 dB @ 3 feet)</h3>
+                <p><strong>Function:</strong> Removes heat from water circulation loop to provide chilled water for air handlers</p>
+                <p><strong>Noise Sources:</strong></p>
+                <ul>
+                    <li><strong>Compressor (85-95 dB):</strong> Scroll or screw type, 150-300 kW power draw
+                        <ul>
+                            <li>Dominant frequencies: 60 Hz (motor), 120 Hz (2x motor frequency)</li>
+                            <li>Strong low-frequency tonal components</li>
+                            <li>Mechanical vibration transmitted through mounting structure</li>
+                        </ul>
+                    </li>
+                    <li><strong>Condenser (80-88 dB):</strong> Heat rejection through air-cooled or water-cooled process
+                        <ul>
+                            <li>Fan noise (broadband with blade pass frequency tone)</li>
+                            <li>Refrigerant flow noise</li>
+                        </ul>
+                    </li>
+                </ul>
+                <div class="noise-alert">
+                    <strong>⚠️ Why This Matters:</strong> The 60 Hz and 120 Hz tones are exactly what residents describe as "constant hum." A-weighting applies -26 dB correction at 63 Hz, severely underestimating annoyance.
+                </div>
+            </div>
+            
+            <div class="component-box">
+                <h3>2. Cooling Tower (82-90 dB - Water-Cooled Systems Only)</h3>
+                <p><strong>Function:</strong> Rejects heat from condenser water to atmosphere via evaporation</p>
+                <p><strong>Noise Sources:</strong></p>
+                <ul>
+                    <li><strong>Fan (82-90 dB):</strong> Large propeller fan, 20-50 kW
+                        <ul>
+                            <li>Broadband "whoosh" with blade pass frequency tone</li>
+                            <li>Low-frequency dominated (31.5-250 Hz)</li>
+                        </ul>
+                    </li>
+                    <li><strong>Water (75-80 dB):</strong> Water falling onto fill material
+                        <ul>
+                            <li>Broadband splashing noise</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="component-box">
+                <h3>3. Air Handling Units / AHU (75-85 dB)</h3>
+                <p><strong>Function:</strong> Circulate conditioned air through building, contain filters, cooling coils, fans</p>
+                <p><strong>Noise Sources:</strong></p>
+                <ul>
+                    <li><strong>Supply/Return Fans:</strong> 30-75 kW each
+                        <ul>
+                            <li>Centrifugal blower noise</li>
+                            <li>Blade pass frequency tones</li>
+                            <li>Air turbulence in ductwork</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="component-box">
+                <h3>4. Pumps (70-80 dB)</h3>
+                <p><strong>Function:</strong> Circulate chilled water between chiller and air handlers</p>
+                <p><strong>Noise Sources:</strong></p>
+                <ul>
+                    <li>Motor noise (60 Hz fundamental)</li>
+                    <li>Impeller/cavitation noise</li>
+                    <li>Pipe vibration and water flow noise</li>
+                </ul>
+            </div>
+            
+            <div class="component-box">
+                <h3>5. Exhaust Fans (72-82 dB)</h3>
+                <p><strong>Function:</strong> Exhaust stale air, bring in fresh air</p>
+                <p><strong>Noise Sources:</strong></p>
+                <ul>
+                    <li>Fan motor and blade noise</li>
+                    <li>Air velocity through louvers</li>
+                </ul>
+            </div>
+            
+            <h2>Noise Level Comparisons</h2>
+            
+            <table>
+                <tr>
+                    <th>Location</th>
+                    <th>Typical Level</th>
+                    <th>Context</th>
+                </tr>
+                <tr>
+                    <td>At equipment (3 ft)</td>
+                    <td>88-95 dB(A)</td>
+                    <td>Equivalent to lawnmower, motorcycle</td>
+                </tr>
+                <tr>
+                    <td>Rooftop perimeter (10 ft)</td>
+                    <td>80-88 dB(A)</td>
+                    <td>Heavy truck traffic, alarm clock</td>
+                </tr>
+                <tr>
+                    <td>Ground level (30 ft)</td>
+                    <td>70-78 dB(A)</td>
+                    <td>Vacuum cleaner, busy restaurant</td>
+                </tr>
+                <tr>
+                    <td>Property line (200 ft)</td>
+                    <td>55-65 dB(A)</td>
+                    <td>Normal conversation, office environment</td>
+                </tr>
+                <tr>
+                    <td>Residential (500 ft)</td>
+                    <td>45-55 dB(A)</td>
+                    <td>Quiet suburb, moderate rainfall</td>
+                </tr>
+                <tr>
+                    <td style="background: #fff3cd;"><strong>San Mateo Nighttime Limit</strong></td>
+                    <td style="background: #fff3cd;"><strong>50 dB(A)</strong></td>
+                    <td style="background: #fff3cd;"><strong>Residential zones (Zone 2)</strong></td>
+                </tr>
+            </table>
+            
+            <h2>Combined Noise Effects</h2>
+            
+            <div class="intro-box">
+                <h3>Sound Addition (Not Simple Addition!)</h3>
+                <p>Multiple noise sources do NOT add arithmetically. Sound levels combine logarithmically:</p>
+                <ul>
+                    <li>Two identical 90 dB sources = <strong>93 dB</strong> (not 180 dB!)</li>
+                    <li>Four identical 90 dB sources = <strong>96 dB</strong></li>
+                    <li>90 dB + 80 dB = <strong>90.4 dB</strong> (quieter source barely contributes)</li>
+                </ul>
+                <p><strong>Formula:</strong> L<sub>total</sub> = 10 × log<sub>10</sub>(10<sup>L₁/10</sup> + 10<sup>L₂/10</sup> + ...)</p>
+                <p><strong>Practical Result:</strong> Combined rooftop HVAC system typically 3-6 dB higher than loudest single component.</p>
+            </div>
+            
+            <h2>Distance Attenuation</h2>
+            
+            <div class="component-box">
+                <h3>Inverse Square Law</h3>
+                <p>Sound decreases by approximately <strong>6 dB per doubling of distance</strong> in open field conditions:</p>
+                <ul>
+                    <li>At 10 feet: 90 dB</li>
+                    <li>At 20 feet: 84 dB (-6 dB)</li>
+                    <li>At 40 feet: 78 dB (-6 dB)</li>
+                    <li>At 80 feet: 72 dB (-6 dB)</li>
+                    <li>At 160 feet: 66 dB (-6 dB)</li>
+                    <li>At 320 feet: 60 dB (-6 dB)</li>
+                    <li>At 640 feet: 54 dB (-6 dB)</li>
+                </ul>
+                <div class="noise-alert">
+                    <strong>⚠️ Real-World Factors:</strong>
+                    <ul>
+                        <li><strong>Ground effect:</strong> Can reduce attenuation at low frequencies</li>
+                        <li><strong>Wind:</strong> Downwind propagation can extend noise farther</li>
+                        <li><strong>Temperature inversion:</strong> Nighttime conditions can focus sound toward ground</li>
+                        <li><strong>Multiple sources:</strong> Several pieces of equipment reduce effective attenuation</li>
+                        <li><strong>Reflections:</strong> Nearby buildings can reflect sound, reducing attenuation</li>
+                    </ul>
+                    <p><strong>Result:</strong> Actual attenuation often less than ideal -6 dB/doubling, especially at night and for low frequencies.</p>
+                </div>
+            </div>
+            
+            <h2>Power Consumption</h2>
+            
+            <div class="component-box">
+                <h3>Typical System Energy Use</h3>
+                <table>
+                    <tr>
+                        <th>Component</th>
+                        <th>Power (kW)</th>
+                        <th>% of Total</th>
+                    </tr>
+                    <tr>
+                        <td>Chiller Compressor</td>
+                        <td>150-300</td>
+                        <td>60-70%</td>
+                    </tr>
+                    <tr>
+                        <td>Air Handler Fans (multiple)</td>
+                        <td>60-150</td>
+                        <td>20-30%</td>
+                    </tr>
+                    <tr>
+                        <td>Chilled Water Pumps</td>
+                        <td>15-40</td>
+                        <td>5-10%</td>
+                    </tr>
+                    <tr>
+                        <td>Cooling Tower Fans</td>
+                        <td>20-50</td>
+                        <td>5-10%</td>
+                    </tr>
+                    <tr>
+                        <td>Exhaust Fans</td>
+                        <td>10-30</td>
+                        <td>2-5%</td>
+                    </tr>
+                    <tr style="background: #e3f2fd;">
+                        <td><strong>TOTAL SYSTEM</strong></td>
+                        <td><strong>255-570</strong></td>
+                        <td><strong>100%</strong></td>
+                    </tr>
+                </table>
+                <p><strong>24/7 Operation Cost:</strong> At $0.15/kWh, a 400 kW system costs <strong>~$43,000/month</strong> or <strong>~$525,000/year</strong> in electricity.</p>
+            </div>
+            
+            <h2>Why Low-Frequency Noise is Problematic</h2>
+            
+            <div class="noise-alert">
+                <h3>⚠️ The 60 Hz Problem</h3>
+                <p><strong>Motor fundamental frequency: 60 Hz (AC line frequency)</strong></p>
+                <ul>
+                    <li><strong>A-weighting correction at 63 Hz: -26 dB</strong>
+                        <ul>
+                            <li>Actual 80 dB at 63 Hz → Measured as 54 dB(A)</li>
+                            <li>Severely underestimates human annoyance</li>
+                        </ul>
+                    </li>
+                    <li><strong>Wall transmission:</strong> Low frequencies penetrate building envelopes easily
+                        <ul>
+                            <li>High frequencies: -30 to -40 dB through walls</li>
+                            <li>Low frequencies: -15 to -20 dB through walls</li>
+                        </ul>
+                    </li>
+                    <li><strong>Room resonances:</strong> Indoor standing waves can amplify low frequencies by +10 to +20 dB at certain locations</li>
+                    <li><strong>Tonal character:</strong> Pure tones 5-10 dB more annoying than broadband noise</li>
+                </ul>
+                <p><strong>Result:</strong> 60 Hz motor hum is exactly what creates "I can hear it but can't measure it" situations when only A-weighted measurements are used.</p>
+            </div>
+            
+            <h2>San Mateo Science Center Application</h2>
+            
+            <div class="component-box">
+                <p>The San Mateo Science Center (Buildings 901 and 951) operates a system very similar to this diagram:</p>
+                <ul>
+                    <li><strong>Rooftop chillers:</strong> Operating 24/7 for laboratory climate control</li>
+                    <li><strong>Distance to Harbortown residences:</strong> ~620-750 feet</li>
+                    <li><strong>Expected attenuation:</strong> 90 dB at source → ~54-58 dB at residences (before penalties)</li>
+                    <li><strong>With penalties:</strong>
+                        <ul>
+                            <li>+5 dB low-frequency (C-A differential > 10 dB)</li>
+                            <li>+5 dB tonal (63 Hz motor hum)</li>
+                            <li><strong>Adjusted level: 64-68 dB(A)</strong></li>
+                        </ul>
+                    </li>
+                    <li><strong>San Mateo limit (Zone 2 nighttime):</strong> 50 dB(A)</li>
+                    <li><strong>Violation:</strong> 14-18 dB over limit (when properly assessed)</li>
+                </ul>
+            </div>
+            
+            <h2>Related Resources</h2>
+            
+            <ul>
+                <li><a href="ansi_s12_9_part_4.html">ANSI S12.9 Part 4</a> - Why character penalties are necessary</li>
+                <li><a href="penalty_application_guide.html">Penalty Application Guide</a> - How to apply adjustments</li>
+                <li><a href="potential_solutions.html">Potential Solutions</a> - Mitigation strategies for HVAC noise</li>
+                <li><a href="technical_resources.html">Technical Resources</a> - Measurement equipment and procedures</li>
+            </ul>
+            
+        </div>
+    </div>
+</body>
+</html>

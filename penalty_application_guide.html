@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Character Penalty Guide</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; line-height: 1.5; color: #333; background: #f5f5f5; font-size: 14px; }
+        .navbar { background: #2c3e50; padding: 15px 0; position: fixed; left: 0; top: 0; width: 220px; height: 100vh; overflow-y: auto; z-index: 1000; }
+        .navbar ul { list-style: none; }
+        .navbar a { display: block; color: white; text-decoration: none; padding: 10px 25px; font-size: 13px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .navbar a:hover { background: #34495e; }
+        .navbar a.active { background: #667eea; font-weight: 600; border-left: 4px solid #fff; }
+        .main-content { margin-left: 240px; padding: 20px 30px; max-width: 1600px; }
+        h1 { color: #2c3e50; margin-bottom: 15px; font-size: 1.8em; }
+        h2 { color: #34495e; margin-top: 15px; margin-bottom: 10px; font-size: 1.3em; border-bottom: 2px solid #667eea; padding-bottom: 5px; }
+        table { width: 100%; border-collapse: collapse; font-size: 12px; margin: 10px 0; }
+        th, td { padding: 6px 8px; border: 1px solid #ddd; text-align: left; }
+        th { background: #2c3e50; color: white; }
+        .box { background: white; padding: 15px; margin: 15px 0; border-radius: 4px; border-left: 4px solid #667eea; }
+        .example { background: #fff3cd; border-left-color: #ffc107; }
+        p { margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+                                        <nav class="navbar">
+        <ul>
+            <li><a href="index.html">🏠 Home</a></li>
+            <li><a href="science_center_case.html">📋 Case Documentation</a></li>
+            <li><a href="welcome_to_neighborhood.html">🏘️ Welcome Letter</a></li>
+            <li><a href="community_complaints.html">👥 Community Complaints</a></li>
+            <li><a href="wall_transmission.html">🌊 Wall Transmission Viz</a></li>
+            <li><a href="interactive_noise_map.html">🗺️ Interactive Map</a></li>
+            <li><a href="data_import.html">📥 Data Import</a></li>
+            <li><a href="ansi_calculator_flowchart.html">🔢 ANSI Calculator</a></li>
+            <li><a href="potential_solutions.html">💡 Solutions</a></li>
+            <li><a href="comparative_standards.html">📊 Standards Comparison</a></li>
+            <li><a href="ansi_s12_9_part_4.html">📐 ANSI S12.9 Part 4</a></li>
+            <li><a href="penalty_application_guide.html" class="active">📋 Penalty Guide</a></li>
+            <li><a href="model_noise_ordinance.html">📖 Model Ordinance</a></li>
+            <li><a href="hvac_system_complete_schematic.html">🏭 HVAC Schematics</a></li>
+            <li><a href="technical_resources.html">📚 Technical Resources</a></li>
+            <li><a href="pe_ethics_health_safety.html">⚕️ PE Ethics</a></li>
+        </ul>
+    </nav>
+
+    <div class="main-content">
+        <h1>Character Penalty Application Guide</h1>
+        
+        <p><strong>Purpose:</strong> Penalties account for increased annoyance beyond simple loudness. Same dB(A) level can be much more annoying with tonal or low-frequency content.</p>
+
+        <h2>Three Main Penalty Types</h2>
+        
+        <table>
+            <tr><th>Penalty Type</th><th>Criteria</th><th>Amount</th><th>HVAC Examples</th></tr>
+            <tr><td><strong>+5 dB Tonal</strong></td><td>Pure tone prominence per ANSI S12.9 Annex C</td><td>+3 to +6 dB (use +5 typical)</td><td>63 Hz cooling tower hum, fan blade pass (120 Hz), compressor whine</td></tr>
+            <tr><td><strong>+5 dB Low-Frequency</strong></td><td>dB(C) - dB(A) > 20 dB</td><td>+5 dB</td><td>31.5-63 Hz rumble penetrates walls, felt as much as heard</td></tr>
+            <tr><td><strong>+5 dB Impulsive</strong></td><td>Repetitive impacts, clanks, bangs</td><td>+5 dB</td><td>Compressor cycling, damper slamming, fan startup transients</td></tr>
+        </table>
+
+        <h2>How to Determine Penalties from Measurements</h2>
+        
+        <table>
+            <tr><th>Step</th><th>Action</th><th>Tool/Data Required</th></tr>
+            <tr><td>1</td><td>Measure base dB(A) level</td><td>Sound level meter (ISO/IEC 61672)</td></tr>
+            <tr><td>2</td><td>Measure dB(C) or dB(Z) level</td><td>Same meter, different weighting</td></tr>
+            <tr><td>3</td><td>Calculate dB(C) - dB(A)</td><td>If > 20 dB → +5 dB LF penalty</td></tr>
+            <tr><td>4</td><td>Examine 1/3 octave bands</td><td>FFT analyzer or spectrum display</td></tr>
+            <tr><td>5</td><td>Check for pure tone (ANSI Annex C)</td><td>If tone stands out > 5 dB → +5 dB tonal penalty</td></tr>
+            <tr><td>6</td><td>Listen for impulsive character</td><td>If repetitive impacts → +5 dB impulsive penalty</td></tr>
+            <tr><td>7</td><td>Sum applicable penalties</td><td>Total = base dB(A) + penalties</td></tr>
+        </table>
+
+        <div class="box example">
+            <h2>Example: San Mateo Science Center</h2>
+            <p><strong>Measured at 3rd-floor residence (proper location):</strong></p>
+            <p>Base dB(A): 58 dB(A) | dB(C): 81 dB(C) | dB(C) - dB(A) = 23 dB</p>
+            <p>1/3 octave spectrum shows prominent 63 Hz tone standing 8 dB above adjacent bands</p>
+            <p style="margin-top: 10px;"><strong>Penalties:</strong></p>
+            <p>+5 dB (Low-Frequency): dB(C) - dB(A) = 23 dB > 20 dB threshold</p>
+            <p>+5 dB (Tonal): 63 Hz tone prominence exceeds ANSI criteria</p>
+            <p style="margin-top: 10px; font-size: 16px;"><strong>Total: 58 + 5 + 5 = 68 dB(A) vs. 50 dB(A) limit = +18 dB VIOLATION</strong></p>
+        </div>
+
+        <h2>Why Penalties Matter</h2>
+        
+        <table>
+            <tr><th>Without Penalties</th><th>With Penalties</th><th>Real-World Impact</th></tr>
+            <tr><td>58 dB(A)</td><td>68 dB(A)</td><td>Persistent 63 Hz tone → sleep disruption, annoyance</td></tr>
+            <tr><td>Claims: "Within 50 dB limit"</td><td>Reality: +18 dB over limit</td><td>Low-frequency content penetrates walls, windows</td></tr>
+            <tr><td>Ground measurement: 48 dB(A)</td><td>Upper-floor + penalties: 68 dB(A)</td><td>20 dB difference in assessment!</td></tr>
+        </table>
+    </div>
+</body>
+</html>

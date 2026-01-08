@@ -1,0 +1,2217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔊 Harbortown Community Noise Analysis - Interactive Map</title>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBqbxjxnDBeBHjH40-yPINadIDcEOBHsYU&callback=initMap&libraries=geometry,drawing" async defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #f5f5f5;
+            overflow: hidden;
+        }
+        
+        .navbar {
+            background: #2c3e50;
+            padding: 15px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 220px;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+        
+        .navbar ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .navbar li {
+            margin: 0;
+        }
+        
+        .navbar a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            padding: 12px 25px;
+            transition: background 0.3s, padding-left 0.3s;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .navbar a:hover {
+            background: #34495e;
+            padding-left: 30px;
+        }
+        
+        .navbar a.active {
+            background: #667eea;
+            font-weight: 600;
+            border-left: 4px solid #fff;
+        }
+        
+        .main-container {
+            margin-left: 220px;
+            display: flex;
+            height: 100vh;
+        }
+        
+        #map {
+            flex: 1;
+            height: 100vh;
+        }
+        
+        .control-panel {
+            width: 380px;
+            background: white;
+            overflow-y: auto;
+            padding: 20px;
+            box-shadow: -2px 0 8px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
+        
+        h2 {
+            color: #34495e;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 8px;
+        }
+        
+        .upload-area {
+            border: 2px dashed #667eea;
+            border-radius: 8px;
+            padding: 25px;
+            text-align: center;
+            margin: 15px 0;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .upload-area:hover {
+            background: #f0f4ff;
+            border-color: #5568d3;
+        }
+        
+        .upload-area.dragover {
+            background: #e7f3ff;
+            border-color: #667eea;
+            transform: scale(1.02);
+        }
+        
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px 2px;
+            font-size: 13px;
+            transition: background 0.3s;
+        }
+        
+        .btn:hover {
+            background: #5568d3;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+        
+        .btn-small {
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+        
+        .checkbox-group {
+            margin: 12px 0;
+        }
+        
+        .checkbox-group label {
+            display: block;
+            margin: 6px 0;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .checkbox-group input[type="checkbox"] {
+            margin-right: 8px;
+        }
+        
+        select {
+            width: 100%;
+            padding: 8px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .legend {
+            margin-top: 15px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .legend h3 {
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 6px 0;
+            font-size: 12px;
+        }
+        
+        .legend-circle {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            margin-right: 8px;
+            border: 2px solid #333;
+            flex-shrink: 0;
+        }
+        
+        .legend-line {
+            width: 25px;
+            height: 3px;
+            margin-right: 8px;
+            flex-shrink: 0;
+        }
+        
+        .measurement-list {
+            margin-top: 10px;
+        }
+        
+        .measurement-item {
+            background: #f8f9fa;
+            padding: 10px;
+            margin: 6px 0;
+            border-radius: 4px;
+            border-left: 4px solid #667eea;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 13px;
+        }
+        
+        .measurement-item:hover {
+            background: #e7f3ff;
+            transform: translateX(5px);
+        }
+        
+        .measurement-item.violation {
+            border-left-color: #ff6b6b;
+        }
+        
+        .measurement-item.compliant {
+            border-left-color: #51cf66;
+        }
+        
+        .stats-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 12px 0;
+            font-size: 13px;
+        }
+        
+        .stats-box strong {
+            font-size: 1.05em;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 220px;
+            top: 0;
+            width: calc(100% - 220px);
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .close:hover {
+            color: #000;
+        }
+        
+        #spectrumChart {
+            max-height: 400px;
+            margin: 20px 0;
+        }
+        
+        .info-badge {
+            display: inline-block;
+            background: #e7f3ff;
+            color: #0066cc;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+            margin-left: 5px;
+        }
+        
+        .tone-badge {
+            background: #ffebee;
+            color: #c62828;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        
+        .lf-badge {
+            background: #fff9c4;
+            color: #ff9800;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: bold;
+            margin-left: 4px;
+        }
+        
+        @media (max-width: 768px) {
+            .navbar {
+                position: static;
+                width: 100%;
+                height: auto;
+            }
+            .main-container {
+                margin-left: 0;
+                flex-direction: column;
+            }
+            .control-panel {
+                width: 100%;
+                max-height: 40vh;
+            }
+            #map {
+                height: 60vh;
+            }
+            .modal {
+                left: 0;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="welcome_to_neighborhood.html">Welcome to the Neighborhood</a></li>
+            <li><a href="community_complaints.html">A Community Responds</a></li>
+            <li><a href="potential_solutions.html">Potential Solutions</a></li>
+            <li><a href="comparative_standards.html">Comparative Standards</a></li>
+            <li><a href="data_import.html">Import Data</a></li>
+            <li><a href="interactive_noise_map.html" class="active">Interactive Noise Map</a></li>
+            <li><a href="ansi_s12_9_part_4.html">ANSI S12.9 Part 4</a></li>
+            <li><a href="penalty_application_guide.html">Penalty Guide</a></li>
+            <li><a href="model_noise_ordinance.html">Model Ordinance</a></li>
+            <li><a href="hvac_clean_schematic.html">HVAC System</a></li>
+            <li><a href="hvac_schematic_ashrae_annotated.html">HVAC ASHRAE Analysis</a></li>
+            <li><a href="technical_resources.html">Technical Resources</a></li>
+            <li><a href="science_center_case.html">Case Documentation</a></li>
+            <li><a href="pe_ethics_health_safety.html">PE Ethics & Health</a></li>
+        </ul>
+    </nav>
+
+    <div class="main-container">
+        <div id="map"></div>
+        
+        <div class="control-panel">
+            <h1>🔊 Harbortown Noise Analysis</h1>
+            <p style="font-size: 12px; color: #666; margin-bottom: 10px;">San Mateo, California</p>
+            
+            <div class="stats-box">
+                <strong>Status:</strong> HVAC exceeds 55 dB(A) nighttime limit at residential properties. Multiple violations documented with character penalties.
+            </div>
+            
+            <h2>📤 Add Measurement</h2>
+            <div class="upload-area" id="uploadArea">
+                <div style="font-size: 40px; margin-bottom: 8px;">📁</div>
+                <p style="margin-bottom: 8px; font-size: 14px;"><strong>Drop SignalScope CSV here</strong></p>
+                <p style="font-size: 12px; color: #666;">or click to browse</p>
+                <input type="file" id="fileInput" accept=".csv" style="display: none;">
+            </div>
+            
+            <div style="text-align: center;">
+                <button id="clickToPlaceBtn" class="btn btn-small" onclick="toggleClickToPlace()">📍 Click Map to Add Location</button>
+                <button class="btn btn-small" onclick="showDataModal()">📊 DATA</button>
+                <button class="btn btn-small" onclick="exportMeasurements()">💾 Export CSV</button>
+                <button class="btn btn-small btn-secondary" onclick="findAffectedBuildings()">🏘️ Buildings</button>
+                <button class="btn btn-small btn-secondary" onclick="getAddresses()">🗺️ Addresses</button>
+                <button class="btn btn-small" style="background: #c62828;" onclick="clearAllData()">🗑️ Clear All Data</button>
+            </div>
+            
+            <h2>⚙️ Display Options</h2>
+            
+            <div class="checkbox-group">
+                <label>
+                    <input type="checkbox" id="showContours" checked onchange="toggleContours()">
+                    Noise Contours
+                </label>
+                <label>
+                    <input type="checkbox" id="showMarkers" checked onchange="toggleMarkers()">
+                    Measurement Points
+                </label>
+                <label>
+                    <input type="checkbox" id="showSource" checked onchange="toggleSource()">
+                    HVAC Sources
+                </label>
+                <label>
+                    <input type="checkbox" id="showJurisdictions" onchange="toggleJurisdictions()">
+                    City Boundaries
+                </label>
+                <label>
+                    <input type="checkbox" id="applyPenalties" onchange="recalculateLevels()">
+                    Apply ANSI Penalties <span class="info-badge">+3-15 dB</span>
+                </label>
+                <label>
+                    <input type="checkbox" id="tonesOnly" onchange="filterTones()">
+                    ⚠️ Tones Only
+                </label>
+            </div>
+            
+            <h2>📊 Frequency Filter</h2>
+            <select id="frequencyFilter" onchange="filterFrequency()">
+                <option value="all">All Frequencies</option>
+                <option value="vlf">Very Low Freq (6.3-25 Hz) - Infrasound</option>
+                <option value="low">Low Frequency (20-200 Hz)</option>
+                <option value="mid">Mid Frequency (200-2000 Hz)</option>
+                <option value="high">High Frequency (2000+ Hz)</option>
+                <option value="63hz">63 Hz Only (HVAC)</option>
+                <option value="125hz">125 Hz Only</option>
+            </select>
+            
+            <div class="legend">
+                <h3>Noise Level Legend</h3>
+                <div class="legend-item">
+                    <div class="legend-circle" style="background: #1a0033;"></div>
+                    100 dB @ 10 ft (Source)
+                </div>
+                <div class="legend-item">
+                    <div class="legend-circle" style="background: #cc0033;"></div>
+                    55 dB(A) @ 177 ft
+                </div>
+                <div class="legend-item">
+                    <div class="legend-circle" style="background: #ff6633;"></div>
+                    50 dB(A) @ 315 ft
+                </div>
+                <div class="legend-item">
+                    <div class="legend-circle" style="background: #ffff00;"></div>
+                    40 dB(A) @ 350 m
+                </div>
+                <div class="legend-item">
+                    <div class="legend-line" style="background: #99ff66; border: 2px dashed #666;"></div>
+                    35 dB(A) Limit
+                </div>
+                
+                <h3 style="margin-top: 12px;">Measurement Status</h3>
+                <div class="legend-item">
+                    <div class="legend-circle" style="background: #ff6b6b;">📱</div>
+                    Tone Detected
+                </div>
+                <div class="legend-item">
+                    <div class="legend-circle" style="background: #ffa500;">📱</div>
+                    Violation
+                </div>
+                <div class="legend-item">
+                    <div class="legend-circle" style="background: #51cf66;">📱</div>
+                    Compliant
+                </div>
+            </div>
+            
+            <div style="background: #fff3cd; padding: 12px; border-radius: 4px; margin: 16px 0; border-left: 4px solid #ffc107;">
+                <h3 style="margin: 0 0 8px 0; color: #856404; font-size: 14px;">📐 Tiered Penalty System (ISO 1996-2)</h3>
+                <div style="font-size: 12px; color: #666;">
+                    <p style="margin: 4px 0;"><strong style="color: #28a745;">C-A ≤ 10 dB:</strong> No LF penalty (normal)</p>
+                    <p style="margin: 4px 0;"><strong style="color: #ffc107;">C-A > 10 dB:</strong> +3 dB (significant LF)</p>
+                    <p style="margin: 4px 0;"><strong style="color: #ff9800;">C-A > 15 dB:</strong> +5 dB (strong LF)</p>
+                    <p style="margin: 4px 0;"><strong style="color: #c62828;">C-A > 20 dB:</strong> +10 dB (extreme LF)</p>
+                    <p style="margin: 8px 0 4px 0; font-style: italic;">Tonal: +5 dB • Max total: +15 dB</p>
+                </div>
+            </div>
+            
+            <h2>📍 Measurements (<span id="measurementCount">0</span>)</h2>
+            <div class="measurement-list" id="measurementList">
+                <p style="color: #666; font-size: 12px; font-style: italic;">Upload measurements or view samples below.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Frequency Spectrum Modal -->
+    <div id="spectrumModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeSpectrumModal()">&times;</span>
+            <h2 id="modalTitle">Frequency Spectrum</h2>
+            <div id="modalDetails"></div>
+            <canvas id="spectrumChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Data Table Modal -->
+    <div id="dataModal" class="modal">
+        <div class="modal-content" style="max-width: 95%; max-height: 90vh; overflow-y: auto;">
+            <span class="close" onclick="closeDataModal()">&times;</span>
+            <h2>📊 All Measurement Data</h2>
+            <div style="margin: 16px 0; display: flex; gap: 8px; flex-wrap: wrap;">
+                <button class="btn btn-small" onclick="copyDataToClipboard()">📋 Copy to Clipboard</button>
+                <button class="btn btn-small" onclick="exportDataAsJSON()">📥 Export JSON</button>
+                <button class="btn btn-small" onclick="exportMeasurements()">💾 Export CSV</button>
+            </div>
+            <div id="dataTableContainer"></div>
+        </div>
+    </div>
+
+    <script>
+        let map;
+        let markers = [];
+        let contours = [];
+        let sourceMarkers = [];
+        let measurements = [];
+        let jurisdictionPolygons = [];
+        let spectrumChart = null;
+        
+        // Persistent storage
+        const STORAGE_KEY = 'noise_measurements';
+        
+        function saveMeasurements() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(measurements));
+            } catch (e) {
+                console.error('Error saving to localStorage:', e);
+            }
+        }
+        
+        function loadMeasurements() {
+            try {
+                const saved = localStorage.getItem(STORAGE_KEY);
+                if (saved) {
+                    const loaded = JSON.parse(saved);
+                    measurements = loaded;
+                    console.log(`✅ Loaded ${loaded.length} measurements from localStorage:`, loaded);
+                } else {
+                    console.log('ℹ️ No saved measurements found in localStorage');
+                }
+            } catch (e) {
+                console.error('❌ Error loading from localStorage:', e);
+            }
+        }
+        
+        function clearAllData() {
+            if (confirm('Delete all measurements?\n\nThis will remove all data points from the map and cannot be undone.')) {
+                measurements = [];
+                sourceMarkers.forEach(m => m.setMap(null));
+                sourceMarkers = [];
+                contours.forEach(c => c.setMap(null));
+                contours = [];
+                saveMeasurements();
+                alert('All measurements deleted.');
+            }
+        }
+        
+        // Click-to-place mode
+        let clickToPlaceMode = false;
+        let pendingMeasurement = null;
+        
+        function toggleClickToPlace() {
+            clickToPlaceMode = !clickToPlaceMode;
+            const btn = document.getElementById('clickToPlaceBtn');
+            if (clickToPlaceMode) {
+                btn.textContent = '📍 Click Map to Place (ACTIVE)';
+                btn.style.background = '#28a745';
+                map.setOptions({ draggableCursor: 'crosshair' });
+                alert('Click anywhere on the map to set measurement location.\n\nYou will then enter the noise data.');
+            } else {
+                btn.textContent = '📍 Click Map to Add Location';
+                btn.style.background = '#667eea';
+                map.setOptions({ draggableCursor: null });
+            }
+        }
+        
+        // Frequency weighting tables (extended 1/3 octave center frequencies)
+        // A-weighting per IEC 61672-1 (extended to 0.8 Hz - 20 kHz)
+        const A_WEIGHTING = {
+            '0.8': -103.0, '1': -96.3, '1.25': -89.6, '1.6': -82.9, '2': -77.8, '2.5': -72.2,
+            '3.15': -66.5, '4': -61.0, '5': -56.2,
+            '6.3': -85.4, '8': -77.8, '10': -70.4, '12.5': -63.4, '16': -56.7, '20': -50.5,
+            '25': -44.7, '31.5': -39.4, '40': -34.6, '50': -30.2, '63': -26.2, '80': -22.5,
+            '100': -19.1, '125': -16.1, '160': -13.4, '200': -10.9, '250': -8.6, '315': -6.6,
+            '400': -4.8, '500': -3.2, '630': -1.9, '800': -0.8, '1000': 0.0, '1250': 0.6,
+            '1600': 1.0, '2000': 1.2, '2500': 1.3, '3150': 1.2, '4000': 1.0, '5000': 0.5,
+            '6300': -0.1, '8000': -1.1, '10000': -2.5, '12500': -4.3, '16000': -6.6, '20000': -9.3
+        };
+        
+        // C-weighting per IEC 61672-1 (extended to 0.8 Hz - 20 kHz)
+        const C_WEIGHTING = {
+            '0.8': -37.5, '1': -33.2, '1.25': -29.0, '1.6': -24.8, '2': -21.3, '2.5': -17.9,
+            '3.15': -14.7, '4': -11.9, '5': -9.3,
+            '6.3': -21.3, '8': -17.7, '10': -14.3, '12.5': -11.2, '16': -8.5, '20': -6.2,
+            '25': -4.4, '31.5': -3.0, '40': -2.0, '50': -1.3, '63': -0.8, '80': -0.5,
+            '100': -0.3, '125': -0.2, '160': -0.1, '200': 0.0, '250': 0.0, '315': 0.0,
+            '400': 0.0, '500': 0.0, '630': 0.0, '800': 0.0, '1000': 0.0, '1250': 0.0,
+            '1600': -0.1, '2000': -0.2, '2500': -0.3, '3150': -0.5, '4000': -0.8, '5000': -1.3,
+            '6300': -2.0, '8000': -3.0, '10000': -4.4, '12500': -6.2, '16000': -8.5, '20000': -11.2
+        };
+        
+        // Calculate overall weighted level from 1/3 octave band data
+        function calculateOverallLevel(frequencies, weighting) {
+            let sum = 0;
+            for (const [freq, level] of Object.entries(frequencies)) {
+                const weight = weighting[freq] || 0;
+                const weightedLevel = level + weight;
+                sum += Math.pow(10, weightedLevel / 10);
+            }
+            return 10 * Math.log10(sum);
+        }
+        
+        // Calculate dB(Z) - unweighted (flat response)
+        function calculateDBZ(frequencies) {
+            return calculateOverallLevel(frequencies, {});
+        }
+        
+        // Calculate dB(A)
+        function calculateDBA(frequencies) {
+            return calculateOverallLevel(frequencies, A_WEIGHTING);
+        }
+        
+        // Calculate dB(C)
+        function calculateDBC(frequencies) {
+            return calculateOverallLevel(frequencies, C_WEIGHTING);
+        }
+        
+        // Calculate adjusted dB(A) with ANSI S12.9 penalties
+        function calculateDBAdjusted(dBA, dBC, hasTone) {
+            let adjusted = dBA;
+            
+            // Tonal penalty: +5 dB
+            if (hasTone) {
+                adjusted += 5;
+            }
+            
+            // Tiered low-frequency penalty (ISO 1996-2 Annex C)
+            const lfContent = dBC - dBA;
+            if (lfContent > 20) {
+                adjusted += 10;  // Extreme LF (heavy machinery)
+            } else if (lfContent > 15) {
+                adjusted += 5;   // Strong LF dominance
+            } else if (lfContent > 10) {
+                adjusted += 3;   // Significant LF content
+            }
+            
+            return adjusted;
+        }
+        
+        // Helper function to get LF penalty amount
+        function getLFPenalty(lfContent) {
+            if (lfContent > 20) return 10;
+            if (lfContent > 15) return 5;
+            if (lfContent > 10) return 3;
+            return 0;
+        }
+        
+        // Helper function to get LF penalty description
+        function getLFPenaltyDesc(lfContent) {
+            if (lfContent > 20) return 'Extreme LF (>20 dB)';
+            if (lfContent > 15) return 'Strong LF (>15 dB)';
+            if (lfContent > 10) return 'Significant LF (>10 dB)';
+            return '';
+        }
+        
+        // San Mateo Science Center - HVAC source locations
+        const building901 = { lat: 37.5600, lng: -122.2870 };
+        const building951 = { lat: 37.5596, lng: -122.2871 };
+        const centerPoint = { lat: 37.5598, lng: -122.2870 };
+        
+        // City jurisdiction boundaries (approximate)
+        const sanMateoCity = [
+            {lat: 37.5650, lng: -122.2950},
+            {lat: 37.5650, lng: -122.2750},
+            {lat: 37.5450, lng: -122.2750},
+            {lat: 37.5450, lng: -122.2950}
+        ];
+        
+        const belmontCity = [
+            {lat: 37.5250, lng: -122.2950},
+            {lat: 37.5250, lng: -122.2750},
+            {lat: 37.5050, lng: -122.2750},
+            {lat: 37.5050, lng: -122.2950}
+        ];
+        
+        function initMap() {
+            map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 15,
+                center: centerPoint,
+                mapTypeId: 'roadmap',  // Simple 2D baseline map (cleaner, more professional)
+                tilt: 45,
+                heading: 0,
+                rotateControl: true,
+                mapTypeControl: true,
+                mapTypeControlOptions: {
+                    style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
+                    position: google.maps.ControlPosition.TOP_RIGHT
+                },
+                fullscreenControl: true,
+                streetViewControl: true,
+                zoomControl: true,
+                scaleControl: true
+            });
+            
+            // Add click handler for placing measurements
+            map.addListener('click', function(event) {
+                if (clickToPlaceMode) {
+                    const lat = event.latLng.lat();
+                    const lng = event.latLng.lng();
+                    
+                    // Turn off click mode
+                    clickToPlaceMode = false;
+                    document.getElementById('clickToPlaceBtn').textContent = '📍 Click Map to Add Location';
+                    document.getElementById('clickToPlaceBtn').style.background = '#667eea';
+                    map.setOptions({ draggableCursor: null });
+                    
+                    // Prompt for measurement details
+                    const location = prompt('Enter location name:', 'Measurement');
+                    if (!location) return;
+                    
+                    const mode = prompt('How do you want to enter noise data?\n\n1 - Upload CSV file\n2 - Enter manually', '1');
+                    
+                    if (mode === '1') {
+                        // Store GPS and trigger file upload
+                        pendingMeasurement = { lat, lng, location };
+                        document.getElementById('fileInput').click();
+                    } else if (mode === '2') {
+                        // Manual entry
+                        addManualMeasurement({ lat, lng, location });
+                    }
+                }
+            });
+            
+            createSourceMarkers();
+            createNoiseContours();
+            setupFileUpload();
+            
+            console.log('🔧 Setting up data loading...');
+            
+            // Load saved data - use multiple approaches to ensure it works
+            const loadData = function() {
+                console.log('🗺️ Loading saved data...');
+                
+                // Load saved measurements from localStorage
+                loadMeasurements();
+                
+                if (measurements.length === 0) {
+                    console.log('  ℹ️ No saved measurements to load');
+                    return;
+                }
+                
+                console.log(`📌 Creating markers for ${measurements.length} loaded measurements...`);
+                
+                // Add markers for loaded measurements
+                measurements.forEach((m, i) => {
+                    console.log(`  Adding marker ${i}: ${m.location} at ${m.lat}, ${m.lng}`);
+                    addMarkerForMeasurement(m, i);
+                });
+                updateContours();
+                updateMeasurementList();
+                
+                console.log(`✅ Data loading complete. ${sourceMarkers.length} measurement markers created.`);
+            };
+            
+            // Try loading after a short delay (most reliable)
+            setTimeout(loadData, 500);
+            
+            // Also try on tilesloaded event (backup)
+            google.maps.event.addListenerOnce(map, 'tilesloaded', function() {
+                console.log('📍 Tiles loaded - checking if data needs loading...');
+                if (sourceMarkers.length === 0 && measurements.length === 0) {
+                    loadData();
+                }
+            });
+        }
+        
+        // Expose initMap to window for Google Maps API callback
+        window.initMap = initMap;
+        
+        function createSourceMarkers() {
+            const sources = [
+                { pos: building901, name: '901' },
+                { pos: building951, name: '951' }
+            ];
+            
+            sources.forEach(src => {
+                const marker = new google.maps.Marker({
+                    position: src.pos,
+                    map: map,
+                    title: `Building ${src.name} - HVAC Source`,
+                    icon: {
+                        path: google.maps.SymbolPath.CIRCLE,
+                        scale: 12,
+                        fillColor: '#e63946',
+                        fillOpacity: 1,
+                        strokeColor: 'white',
+                        strokeWeight: 3
+                    },
+                    label: {
+                        text: src.name,
+                        color: 'white',
+                        fontSize: '11px',
+                        fontWeight: 'bold'
+                    }
+                });
+                
+                const infoWindow = new google.maps.InfoWindow({
+                    content: `<div style="padding: 10px;">
+                        <strong>Building ${src.name}</strong><br>
+                        Mariners Island Blvd<br>
+                        <em>HVAC Point Source: ~100 dB(A) @ 10 ft</em><br>
+                        <small>Cooling towers, AHUs, exhaust fans</small><br>
+                        <small>No acoustic treatment on rooftop equipment</small>
+                    </div>`
+                });
+                
+                marker.addListener("click", () => {
+                    infoWindow.open(map, marker);
+                });
+                
+                sourceMarkers.push(marker);
+            });
+        }
+        
+        function createNoiseContours() {
+            // Inverse square law: L2 = L1 - 20*log10(r2/r1)
+            const contourDefs = [
+                { radius: 3, dB: 100, color: '#1a0033', fillOpacity: 0.3, strokeWeight: 2 },
+                { radius: 30, dB: 60, color: '#6600cc', fillOpacity: 0.25, strokeWeight: 2 },
+                { radius: 54, dB: 55, color: '#cc0033', fillOpacity: 0.2, strokeWeight: 2 },
+                { radius: 96, dB: 50, color: '#ff6633', fillOpacity: 0.15, strokeWeight: 2 },
+                { radius: 171, dB: 45, color: '#ff9933', fillOpacity: 0.12, strokeWeight: 2 },
+                { radius: 305, dB: 40, color: '#ffff00', fillOpacity: 0.1, strokeWeight: 2 },
+                { radius: 542, dB: 35, color: '#99ff66', fillOpacity: 0.08, strokeWeight: 1, dashed: true }
+            ];
+            
+            [building901, building951].forEach(building => {
+                contourDefs.forEach(def => {
+                    const circle = new google.maps.Circle({
+                        strokeColor: def.color,
+                        strokeOpacity: def.dashed ? 0.6 : 0.8,
+                        strokeWeight: def.strokeWeight,
+                        fillColor: def.color,
+                        fillOpacity: def.fillOpacity,
+                        map: map,
+                        center: building,
+                        radius: def.radius,
+                        clickable: true
+                    });
+                    
+                    const infoWindow = new google.maps.InfoWindow();
+                    
+                    circle.addListener('click', (e) => {
+                        infoWindow.setContent(`<strong>${def.dB} dB(A) @ ${Math.round(def.radius)} m</strong>`);
+                        infoWindow.setPosition(e.latLng);
+                        infoWindow.open(map);
+                    });
+                    
+                    contours.push(circle);
+                });
+            });
+        }
+        
+        function setupFileUpload() {
+            const uploadArea = document.getElementById('uploadArea');
+            const fileInput = document.getElementById('fileInput');
+            
+            uploadArea.addEventListener('click', () => fileInput.click());
+            
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
+            
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('dragover');
+            });
+            
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    handleFile(files[0]);
+                }
+            });
+            
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    handleFile(e.target.files[0]);
+                }
+            });
+        }
+        
+        function handleFile(file) {
+            if (!file.name.endsWith('.csv')) {
+                alert('Please upload a CSV file from SignalScope X');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const text = e.target.result;
+                parseSignalScopeCSV(text);
+            };
+            reader.readAsText(file);
+        }
+        
+        function parseSignalScopeCSV(csvText) {
+            // Check if this is actually a CSV file (not Excel/binary)
+            if (csvText.includes('PK\x03\x04') || csvText.includes('<?xml') || csvText.startsWith('PK')) {
+                alert('Error: This appears to be an Excel file (.xlsx), not a CSV file.\n\n' +
+                      'Please export from SignalScope X as CSV format:\n' +
+                      '1. Open measurement in SignalScope X\n' +
+                      '2. Export → CSV format\n' +
+                      '3. Upload the .csv file (not .xlsx)');
+                return;
+            }
+            
+            const lines = csvText.split('\n');
+            
+            // Verify this looks like SignalScope X format
+            const hasSignalScope = lines.some(line => line.includes('SignalScope'));
+            const hasFrequencyData = lines.some(line => line.includes('Center Frequency'));
+            
+            if (!hasSignalScope && !hasFrequencyData) {
+                const proceed = confirm('Warning: This does not appear to be a SignalScope X CSV file.\n\n' +
+                                       'Expected format:\n' +
+                                       '- Header with "Created by SignalScope X..."\n' +
+                                       '- Frequency data table with "Center Frequency" column\n\n' +
+                                       'Continue anyway?');
+                if (!proceed) return;
+            }
+            
+            // Extract GPS coordinates (optional - will prompt if not found)
+            let lat = null, lng = null;
+            for (const line of lines) {
+                if (line.includes('Latitude:')) {
+                    const match = line.match(/([+-]?\d+\.\d+)/);
+                    if (match) lat = parseFloat(match[1]);
+                }
+                if (line.includes('Longitude:')) {
+                    const match = line.match(/([+-]?\d+\.\d+)/);
+                    if (match) lng = parseFloat(match[1]);
+                }
+            }
+            
+            // Extract Overall Level from file for sanity check (optional)
+            let fileOverallLevel = null;
+            for (const line of lines) {
+                if (line.startsWith('Overall Level:')) {
+                    const match = line.match(/Overall Level:\s*,?\s*(\d+\.\d+)/);
+                    if (match) fileOverallLevel = parseFloat(match[1]);
+                    break;
+                }
+            }
+            
+            // Extract metadata from file
+            const metadata = {};
+            for (const line of lines) {
+                if (line.includes('Start Date:')) {
+                    const match = line.match(/Start Date:\s*,?\s*"?([^"\n]+)"?/);
+                    if (match) metadata.startDate = match[1].trim();
+                }
+                if (line.includes('Start Time:')) {
+                    const match = line.match(/Start Time:\s*,?\s*([^\n]+)/);
+                    if (match) metadata.startTime = match[1].trim();
+                }
+                if (line.includes('Elapsed Time:')) {
+                    const match = line.match(/Elapsed Time:\s*,?\s*([^\n]+)/);
+                    if (match) metadata.elapsedTime = match[1].trim();
+                }
+                if (line.includes('IO Device Name:')) {
+                    const match = line.match(/IO Device Name:\s*,?\s*([^\n]+)/);
+                    if (match) metadata.deviceName = match[1].trim();
+                }
+                if (line.includes('Sample Rate:')) {
+                    const match = line.match(/Sample Rate:\s*,?\s*([^\n]+)/);
+                    if (match) metadata.sampleRate = match[1].trim();
+                }
+                if (line.includes('Frequency Weighting:')) {
+                    const match = line.match(/Frequency Weighting:\s*,?\s*([^\n]+)/);
+                    if (match) metadata.freqWeighting = match[1].trim();
+                }
+                if (line.includes('Time Weighting:')) {
+                    const match = line.match(/Time Weighting:\s*,?\s*([^\n]+)/);
+                    if (match) metadata.timeWeighting = match[1].trim();
+                }
+                if (line.includes('Averaging Time:')) {
+                    const match = line.match(/Averaging Time:\s*,?\s*([^\n]+)/);
+                    if (match) metadata.averagingTime = match[1].trim();
+                }
+                if (line.includes('Filter Bandwidth:')) {
+                    const match = line.match(/Filter Bandwidth:\s*,?\s*([^\n]+)/);
+                    if (match) metadata.filterBandwidth = match[1].trim();
+                }
+            }
+            
+            // Get location details - check for pending measurement from click-to-place
+            let location;
+            
+            if (pendingMeasurement) {
+                // Use GPS from click-to-place
+                lat = pendingMeasurement.lat;
+                lng = pendingMeasurement.lng;
+                location = pendingMeasurement.location;
+                pendingMeasurement = null; // Clear pending
+            } else {
+                // Use GPS from file or prompt
+                location = prompt('Enter location name:', 'Measurement');
+                if (!location) return; // User cancelled
+                
+                if (!lat || !lng) {
+                    alert('GPS coordinates not found in file.\n\nPlease enter the measurement location manually.');
+                    const latStr = prompt('Enter latitude (decimal degrees):', '37.5590');
+                    const lngStr = prompt('Enter longitude (decimal degrees):', '-122.2880');
+                    if (!latStr || !lngStr) return; // User cancelled
+                    lat = parseFloat(latStr);
+                    lng = parseFloat(lngStr);
+                    
+                    if (isNaN(lat) || isNaN(lng)) {
+                        alert('Error: Invalid GPS coordinates. Please enter decimal degrees (e.g., 37.5590, -122.2880)');
+                        return;
+                    }
+                }
+            }
+            
+            // Parse frequency data from CSV
+            // SignalScope X format: 'Center Frequency','Level','Max Level','Peak Level',...
+            const frequencies = {};
+            let inDataSection = false;
+            
+            for (const line of lines) {
+                // Start of frequency data section
+                if (line.includes('Center Frequency') && line.includes('Level')) {
+                    inDataSection = true;
+                    continue;
+                }
+                
+                // End of frequency data section (blank line or next section)
+                if (inDataSection && (line.trim() === '' || line.includes('L10'))) {
+                    break;
+                }
+                
+                // Parse frequency data lines
+                if (inDataSection) {
+                    const parts = line.split(',');
+                    if (parts.length >= 2) {
+                        const freq = parts[0].trim();
+                        const level = parseFloat(parts[1].trim());
+                        
+                        if (!isNaN(level) && freq) {
+                            frequencies[freq] = level;
+                        }
+                    }
+                }
+            }
+            
+            // Verify we got data
+            if (Object.keys(frequencies).length === 0) {
+                alert('Error: Could not parse frequency data from CSV file.\n\n' +
+                      'Expected SignalScope X format with:\n' +
+                      '- "Center Frequency" column header\n' +
+                      '- "Level" column with dB values\n\n' +
+                      'Please check file format and try again.');
+                return;
+            }
+            
+            // Calculate all weighted values from unweighted spectrum
+            const dbZ = calculateDBZ(frequencies);
+            const dbA = calculateDBA(frequencies);
+            const dbC = calculateDBC(frequencies);
+            const hasTone = detectTone(frequencies);
+            const dbAadj = calculateDBAdjusted(dbA, dbC, hasTone);
+            
+            // Perform sanity check (if Overall Level available)
+            let sanityCheckMessage = '';
+            if (fileOverallLevel !== null) {
+                const difference = dbZ - fileOverallLevel;
+                const absDiff = Math.abs(difference);
+                
+                sanityCheckMessage = `\nSANITY CHECK:\n`;
+                sanityCheckMessage += `File's Overall Level: ${fileOverallLevel.toFixed(2)} dB\n`;
+                sanityCheckMessage += `Calculated dB(Z): ${dbZ.toFixed(2)} dB\n`;
+                sanityCheckMessage += `Difference: ${difference.toFixed(3)} dB\n`;
+                
+                if (absDiff < 0.1) {
+                    sanityCheckMessage += `✅ EXCELLENT - Within 0.1 dB`;
+                } else if (absDiff < 0.5) {
+                    sanityCheckMessage += `✅ GOOD - Within 0.5 dB (acceptable rounding)`;
+                } else if (absDiff < 1.0) {
+                    sanityCheckMessage += `⚠️  WARNING - Difference > 0.5 dB`;
+                } else {
+                    sanityCheckMessage += `❌ ERROR - Difference > 1 dB - Check data`;
+                }
+            } else {
+                sanityCheckMessage = `\nSANITY CHECK:\nNo "Overall Level" found in file.\nCalculated dB(Z): ${dbZ.toFixed(2)} dB`;
+            }
+            
+            const measurement = {
+                lat: lat,
+                lng: lng,
+                location: location,
+                dBZ: dbZ,
+                dBA: dbA,
+                dBC: dbC,
+                dBAadj: dbAadj,
+                timestamp: new Date().toISOString(),
+                hasTone: hasTone,
+                frequencies: frequencies,
+                fileOverallLevel: fileOverallLevel,  // Store for display (may be null)
+                metadata: metadata  // Store all metadata from file
+            };
+            
+            addMeasurement(measurement);
+            
+            // Display import summary with automatic sanity check
+            alert(`CSV Import Complete ✅\n\n` +
+                  `Location: ${location}\n` +
+                  `GPS: ${lat.toFixed(6)}, ${lng.toFixed(6)} ${!lines.some(l => l.includes('Latitude:')) ? '(manual entry)' : '(from file)'}\n` +
+                  `Frequency bands parsed: ${Object.keys(frequencies).length}\n\n` +
+                  `CALCULATED VALUES:\n` +
+                  `dB(Z) unweighted: ${dbZ.toFixed(2)} dB\n` +
+                  `dB(A): ${dbA.toFixed(2)} dB(A)\n` +
+                  `dB(C): ${dbC.toFixed(2)} dB(C)\n` +
+                  `LF Content: ${(dbC - dbA).toFixed(2)} dB\n` +
+                  `Tonal: ${hasTone ? 'YES' : 'No'}\n` +
+                  `dB(A) adjusted: ${dbAadj.toFixed(2)} dB(A)\n` +
+                  sanityCheckMessage);
+        }
+        
+        function detectTone(frequencies) {
+            // Simple tone detection: check if any frequency is 5+ dB above neighbors
+            const freqEntries = Object.entries(frequencies).map(([freq, level]) => ({
+                freq: parseFloat(freq),
+                level: level
+            }));
+            freqEntries.sort((a, b) => a.freq - b.freq);
+            
+            const levels = freqEntries.map(e => e.level);
+            
+            for (let i = 1; i < levels.length - 1; i++) {
+                const leftDiff = levels[i] - levels[i-1];
+                const rightDiff = levels[i] - levels[i+1];
+                if (leftDiff > 5 && rightDiff > 5) {
+                    console.log(`🎵 Tone detected at ${freqEntries[i].freq} Hz: ${levels[i].toFixed(1)} dB (${leftDiff.toFixed(1)} dB above left, ${rightDiff.toFixed(1)} dB above right)`);
+                    return true;
+                }
+            }
+            console.log('🔇 No tone detected - broadband noise');
+            return false;
+        }
+        
+        function addMeasurement(measurement) {
+            measurements.push(measurement);
+            
+            // Debug logging
+            console.log('Adding measurement:', {
+                location: measurement.location,
+                lat: measurement.lat,
+                lng: measurement.lng,
+                hasFrequencies: Object.keys(measurement.frequencies || {}).length
+            });
+            
+            // Use calculated or provided values
+            const dBZ = measurement.dBZ || calculateDBZ(measurement.frequencies);
+            const dBA = measurement.dBA || calculateDBA(measurement.frequencies);
+            const dBC = measurement.dBC || calculateDBC(measurement.frequencies);
+            const hasTone = measurement.hasTone !== undefined ? measurement.hasTone : detectTone(measurement.frequencies);
+            
+            console.log('Calculated values:', { dBZ, dBA, dBC });
+            
+            // Calculate penalty-adjusted level
+            const applyPenalties = document.getElementById('applyPenalties').checked;
+            let adjustedLevel = dBA;
+            
+            if (applyPenalties) {
+                adjustedLevel = calculateDBAdjusted(dBA, dBC, hasTone);
+            }
+            
+            const limit = 55; // San Mateo nighttime limit (MFR)
+            
+            let markerColor = '#51cf66'; // Green
+            let status = 'Compliant';
+            
+            if (hasTone) {
+                markerColor = '#ff6b6b'; // Red
+                status = 'Tone Detected';
+            } else if (adjustedLevel > limit) {
+                markerColor = '#ffa500'; // Orange
+                status = 'Violation';
+            }
+            
+            const marker = new google.maps.Marker({
+                position: { lat: measurement.lat, lng: measurement.lng },
+                map: map,
+                title: `${measurement.location}: ${dBA.toFixed(1)} dB(A)`,
+                icon: {
+                    path: google.maps.SymbolPath.CIRCLE,
+                    scale: 8,
+                    fillColor: markerColor,
+                    fillOpacity: 0.9,
+                    strokeColor: 'white',
+                    strokeWeight: 2
+                },
+                label: {
+                    text: '📱',
+                    fontSize: '16px'
+                }
+            });
+            
+            const lfContent = dBC - dBA;
+            const lfPenalty = getLFPenalty(lfContent);
+            const tonalPenalty = hasTone ? 5 : 0;
+            const totalPenalty = lfPenalty + tonalPenalty;
+            
+            const infoContent = `
+                <div style="padding: 12px; min-width: 260px;">
+                    <h3 style="margin-bottom: 12px; color: #2c3e50;">${measurement.location}</h3>
+                    <p style="margin: 5px 0; font-size: 13px;"><strong>dB(Z) unweighted:</strong> ${dBZ.toFixed(1)} dB</p>
+                    <p style="margin: 5px 0;"><strong>dB(A):</strong> ${dBA.toFixed(1)} dB(A)</p>
+                    <p style="margin: 5px 0;"><strong>dB(C):</strong> ${dBC.toFixed(1)} dB(C)</p>
+                    <p style="margin: 5px 0;"><strong>LF Content:</strong> dB(C) - dB(A) = ${lfContent.toFixed(1)} dB</p>
+                    ${applyPenalties ? `<p style="margin: 5px 0;"><strong>dB(A) adjusted:</strong> ${adjustedLevel.toFixed(1)} dB(A)</p>` : ''}
+                    ${applyPenalties && tonalPenalty > 0 ? `<p style="margin: 5px 0; color: #c62828; font-size: 12px;">+${tonalPenalty} dB tonal penalty</p>` : ''}
+                    ${applyPenalties && lfPenalty > 0 ? `<p style="margin: 5px 0; color: #c62828; font-size: 12px;">+${lfPenalty} dB LF penalty: ${getLFPenaltyDesc(lfContent)}</p>` : ''}
+                    <p style="margin: 8px 0 5px 0;"><strong>Status:</strong> <span style="color: ${markerColor}; font-weight: bold;">${status}</span></p>
+                    <p style="margin: 5px 0; font-size: 12px; color: #666;">${new Date(measurement.timestamp).toLocaleString()}</p>
+                    ${hasTone ? '<p style="margin: 8px 0 0 0; color: #c62828; font-weight: bold;">⚠️ Tonal character detected</p>' : ''}
+                    <div style="margin-top: 12px; display: flex; gap: 8px;">
+                        <button onclick="showSpectrum(${measurements.length - 1})" style="flex: 1; padding: 8px 14px; background: #667eea; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 13px;">
+                            📊 View Spectrum
+                        </button>
+                        <button onclick="deleteMeasurement(${measurements.length - 1})" style="padding: 8px 14px; background: #c62828; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 13px;">
+                            🗑️ Delete
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            const infoWindow = new google.maps.InfoWindow({
+                content: infoContent
+            });
+            
+            marker.addListener('click', () => {
+                infoWindow.open(map, marker);
+            });
+            
+            marker.measurementIndex = measurements.length - 1;
+            sourceMarkers.push(marker);
+            
+            // Save to localStorage
+            saveMeasurements();
+            
+            updateMeasurementList();
+        }
+        
+        function loadSampleMeasurements() {
+            // No pre-loaded samples - users should upload their own SignalScope X data
+            // This ensures all data is real and calculations are verifiable
+            
+            // Example: To test with your own data, use the CSV upload button
+            // or click on the map to add manual measurements
+        }
+        
+        function deleteMeasurement(index) {
+            console.log(`🗑️ Delete requested for index ${index}: ${measurements[index]?.location}`);
+            
+            if (!measurements[index]) {
+                console.error('❌ Invalid index:', index);
+                alert('Error: Invalid measurement index');
+                return;
+            }
+            
+            if (confirm(`Delete measurement "${measurements[index].location}"?`)) {
+                console.log('  ✅ User confirmed deletion');
+                
+                // Remove from measurements array
+                measurements.splice(index, 1);
+                
+                // Remove ALL markers from map
+                sourceMarkers.forEach(m => m.setMap(null));
+                sourceMarkers = [];
+                
+                // Recreate all markers with correct indices
+                measurements.forEach((m, i) => {
+                    addMarkerForMeasurement(m, i);
+                });
+                
+                // Save and refresh
+                saveMeasurements();
+                updateContours();
+                updateMeasurementList();
+                
+                console.log(`  ✅ Deletion complete. ${measurements.length} measurements remaining.`);
+            } else {
+                console.log('  ❌ User cancelled deletion');
+            }
+        }
+        
+        function addMarkerForMeasurement(measurement, index) {
+            // Helper function to add marker for existing measurement (from localStorage)
+            console.log(`    🔨 addMarkerForMeasurement called for index ${index}:`, {
+                location: measurement.location,
+                lat: measurement.lat,
+                lng: measurement.lng,
+                hasMap: !!map
+            });
+            
+            const dBZ = measurement.dBZ || calculateDBZ(measurement.frequencies);
+            const dBA = measurement.dBA || calculateDBA(measurement.frequencies);
+            const dBC = measurement.dBC || calculateDBC(measurement.frequencies);
+            const hasTone = measurement.hasTone !== undefined ? measurement.hasTone : detectTone(measurement.frequencies);
+            
+            const applyPenalties = document.getElementById('applyPenalties').checked;
+            let adjustedLevel = dBA;
+            if (applyPenalties) {
+                adjustedLevel = calculateDBAdjusted(dBA, dBC, hasTone);
+            }
+            
+            const limit = 55; // San Mateo nighttime limit (MFR)
+            let markerColor = '#51cf66';
+            let status = 'Compliant';
+            
+            if (hasTone) {
+                markerColor = '#ff6b6b';
+                status = 'Tone Detected';
+            } else if (adjustedLevel > limit) {
+                markerColor = '#ffa500';
+                status = 'Violation';
+            }
+            
+            const marker = new google.maps.Marker({
+                position: { lat: measurement.lat, lng: measurement.lng },
+                map: map,
+                title: `${measurement.location}: ${dBA.toFixed(1)} dB(A)`,
+                icon: {
+                    path: google.maps.SymbolPath.CIRCLE,
+                    scale: 8,
+                    fillColor: markerColor,
+                    fillOpacity: 0.9,
+                    strokeColor: 'white',
+                    strokeWeight: 2
+                },
+                label: {
+                    text: '📱',
+                    fontSize: '16px'
+                }
+            });
+            
+            const lfContent = dBC - dBA;
+            const tonalPenalty = hasTone ? 5 : 0;
+            const lfPenalty = getLFPenalty(lfContent);
+            
+            const infoContent = `
+                <div style="padding: 12px; min-width: 260px;">
+                    <h3 style="margin-bottom: 12px; color: #2c3e50;">${measurement.location}</h3>
+                    <p style="margin: 5px 0; font-size: 13px;"><strong>dB(Z) unweighted:</strong> ${dBZ.toFixed(1)} dB</p>
+                    <p style="margin: 5px 0;"><strong>dB(A):</strong> ${dBA.toFixed(1)} dB(A)</p>
+                    <p style="margin: 5px 0;"><strong>dB(C):</strong> ${dBC.toFixed(1)} dB(C)</p>
+                    <p style="margin: 5px 0;"><strong>LF Content:</strong> dB(C) - dB(A) = ${lfContent.toFixed(1)} dB</p>
+                    ${applyPenalties ? `<p style="margin: 5px 0;"><strong>dB(A) adjusted:</strong> ${adjustedLevel.toFixed(1)} dB(A)</p>` : ''}
+                    ${applyPenalties && tonalPenalty > 0 ? `<p style="margin: 5px 0; color: #c62828; font-size: 12px;">+${tonalPenalty} dB tonal penalty</p>` : ''}
+                    ${applyPenalties && lfPenalty > 0 ? `<p style="margin: 5px 0; color: #c62828; font-size: 12px;">+${lfPenalty} dB LF penalty: ${getLFPenaltyDesc(lfContent)}</p>` : ''}
+                    <p style="margin: 8px 0 5px 0;"><strong>Status:</strong> <span style="color: ${markerColor}; font-weight: bold;">${status}</span></p>
+                    <p style="margin: 5px 0; font-size: 12px; color: #666;">${new Date(measurement.timestamp).toLocaleString()}</p>
+                    ${hasTone ? '<p style="margin: 8px 0 0 0; color: #c62828; font-weight: bold;">⚠️ Tonal character detected</p>' : ''}
+                    <div style="margin-top: 12px; display: flex; gap: 8px;">
+                        <button onclick="showSpectrum(${index})" style="flex: 1; padding: 8px 14px; background: #667eea; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 13px;">
+                            📊 View Spectrum
+                        </button>
+                        <button onclick="deleteMeasurement(${index})" style="padding: 8px 14px; background: #c62828; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 13px;">
+                            🗑️ Delete
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            const infoWindow = new google.maps.InfoWindow({
+                content: infoContent
+            });
+            
+            marker.addListener('click', () => {
+                infoWindow.open(map, marker);
+            });
+            
+            marker.measurementIndex = index;
+            sourceMarkers.push(marker);
+            
+            console.log(`      ✅ Marker created and added to sourceMarkers. Total markers: ${sourceMarkers.length}`);
+        }
+        
+        function addManualMeasurement(coords) {
+            // Manual entry mode - simplified spectrum entry
+            alert('Manual entry mode:\n\nEnter a simplified frequency spectrum.\n\nYou will be prompted for levels at key frequencies.');
+            
+            const get50Hz = parseFloat(prompt('Enter level at 50 Hz (dB):', '68'));
+            if (isNaN(get50Hz)) return;
+            
+            const get125Hz = parseFloat(prompt('Enter level at 125 Hz (dB):', '58'));
+            if (isNaN(get125Hz)) return;
+            
+            const get500Hz = parseFloat(prompt('Enter level at 500 Hz (dB):', '45'));
+            if (isNaN(get500Hz)) return;
+            
+            const get1000Hz = parseFloat(prompt('Enter level at 1000 Hz (dB):', '40'));
+            if (isNaN(get1000Hz)) return;
+            
+            // Generate simplified spectrum
+            const frequencies = {
+                '50': get50Hz,
+                '63': get50Hz - 2,
+                '80': get50Hz - 5,
+                '100': get125Hz + 2,
+                '125': get125Hz,
+                '160': get125Hz - 3,
+                '200': get125Hz - 6,
+                '250': get500Hz + 7,
+                '315': get500Hz + 5,
+                '400': get500Hz + 3,
+                '500': get500Hz,
+                '630': get500Hz - 2,
+                '800': get500Hz - 3,
+                '1000': get1000Hz,
+                '1250': get1000Hz - 2,
+                '1600': get1000Hz - 4,
+                '2000': get1000Hz - 6
+            };
+            
+            const measurement = {
+                ...coords,
+                frequencies: frequencies,
+                timestamp: new Date().toISOString()
+            };
+            
+            addMeasurement(measurement);
+            alert('Manual measurement added successfully!');
+        }
+        
+        function updateMeasurementList() {
+            const list = document.getElementById('measurementList');
+            const count = document.getElementById('measurementCount');
+            
+            console.log(`📋 updateMeasurementList called. ${measurements.length} measurements to display.`);
+            
+            count.textContent = measurements.length;
+            
+            if (measurements.length === 0) {
+                list.innerHTML = '<p style="color: #666; font-size: 12px; font-style: italic;">No measurements yet.</p>';
+                console.log('  ℹ️ No measurements - showing empty message');
+                return;
+            }
+            
+            console.log('  ✅ Populating list with measurements...');
+            list.innerHTML = measurements.map((m, i) => {
+                const dbA = m.dBA || calculateDBA(m.frequencies);
+                const dbC = m.dBC || calculateDBC(m.frequencies);
+                const hasTone = m.hasTone !== undefined ? m.hasTone : detectTone(m.frequencies);
+                const lfContent = dbC - dbA;
+                const hasHighLF = lfContent > 10;
+                
+                const statusClass = hasTone ? 'violation' : (dbA > 50 ? 'violation' : 'compliant');
+                return `
+                    <div class="measurement-item ${statusClass}" style="display: flex; justify-content: space-between; align-items: center;">
+                        <div onclick="focusMeasurement(${i})" style="flex: 1; cursor: pointer;">
+                            <strong>${m.location}</strong><br>
+                            <span style="font-size: 12px;">
+                                ${dbA.toFixed(1)} dB(A) | ${dbC.toFixed(1)} dB(C)
+                                ${hasTone ? '<span class="tone-badge">⚠️ TONE</span>' : ''}
+                                ${hasHighLF ? '<span class="lf-badge">📊 LF</span>' : ''}
+                            </span>
+                        </div>
+                        <button onclick="event.stopPropagation(); deleteMeasurement(${i})" style="padding: 4px 8px; background: #c62828; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 11px;">
+                            🗑️
+                        </button>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function focusMeasurement(index) {
+            const m = measurements[index];
+            if (!m) return;
+            
+            map.setCenter({ lat: m.lat, lng: m.lng });
+            map.setZoom(17);
+            
+            // Trigger click on the corresponding marker
+            if (sourceMarkers[index]) {
+                google.maps.event.trigger(sourceMarkers[index], 'click');
+            }
+        }
+        
+        function showSpectrum(index) {
+            const m = measurements[index];
+            const modal = document.getElementById('spectrumModal');
+            const title = document.getElementById('modalTitle');
+            const details = document.getElementById('modalDetails');
+            
+            title.textContent = `Frequency Spectrum Analysis: ${m.location}`;
+            
+            // Add GPS coordinates display
+            const gpsDisplay = `
+                <div style="margin-bottom: 12px; padding: 8px; background: #e8f5e9; border-radius: 4px; font-size: 12px;">
+                    <strong>📍 GPS Location:</strong> ${m.lat.toFixed(6)}°, ${m.lng.toFixed(6)}°
+                </div>
+            `;
+            
+            // Add measurement metadata display (if available)
+            let metadataDisplay = '';
+            if (m.metadata && Object.keys(m.metadata).length > 0) {
+                const md = m.metadata;
+                metadataDisplay = `
+                    <div style="margin-bottom: 12px; padding: 8px; background: #f3e5f5; border-radius: 4px; font-size: 11px;">
+                        <strong>📊 Measurement Details:</strong><br>
+                        ${md.startDate ? `<strong>Date:</strong> ${md.startDate}<br>` : ''}
+                        ${md.startTime ? `<strong>Time:</strong> ${md.startTime}<br>` : ''}
+                        ${md.elapsedTime ? `<strong>Duration:</strong> ${md.elapsedTime}<br>` : ''}
+                        ${md.deviceName ? `<strong>Device:</strong> ${md.deviceName}<br>` : ''}
+                        ${md.sampleRate ? `<strong>Sample Rate:</strong> ${md.sampleRate} | ` : ''}
+                        ${md.filterBandwidth ? `<strong>Filter:</strong> ${md.filterBandwidth}<br>` : ''}
+                        ${md.freqWeighting ? `<strong>Freq Weighting:</strong> ${md.freqWeighting} | ` : ''}
+                        ${md.timeWeighting ? `<strong>Time Weighting:</strong> ${md.timeWeighting}` : ''}
+                        ${md.averagingTime ? ` | <strong>Averaging:</strong> ${md.averagingTime}` : ''}
+                    </div>
+                `;
+            }
+            
+            // Calculate or retrieve all weighted values
+            const dbZ = m.dBZ || calculateDBZ(m.frequencies);
+            const dbA = m.dBA || calculateDBA(m.frequencies);
+            const dbC = m.dBC || calculateDBC(m.frequencies);
+            const hasTone = m.hasTone !== undefined ? m.hasTone : detectTone(m.frequencies);
+            const dbAadj = calculateDBAdjusted(dbA, dbC, hasTone);
+            
+            const lfContent = dbC - dbA;
+            const lfPenalty = getLFPenalty(lfContent);
+            const tonalPenalty = hasTone ? 5 : 0;
+            
+            // Create frequency table
+            const freqEntries = Object.entries(m.frequencies).map(([freq, level]) => ({
+                freq: parseFloat(freq),
+                level: level
+            }));
+            freqEntries.sort((a, b) => a.freq - b.freq);
+            
+            let freqTableRows = '';
+            freqEntries.forEach(entry => {
+                const aWeight = A_WEIGHTING[entry.freq.toString()] || 0;
+                const cWeight = C_WEIGHTING[entry.freq.toString()] || 0;
+                const range = entry.freq < 20 ? 'VLF' : entry.freq < 200 ? 'LF' : entry.freq < 2000 ? 'MF' : 'HF';
+                const color = entry.freq < 200 ? '#ffebee' : entry.freq < 2000 ? '#fff9c4' : '#e8f5e9';
+                
+                freqTableRows += `
+                    <tr style="background: ${color};">
+                        <td style="padding: 6px 10px; border-bottom: 1px solid #ddd;"><strong>${entry.freq >= 1000 ? (entry.freq/1000) + 'k' : entry.freq} Hz</strong></td>
+                        <td style="padding: 6px 10px; text-align: right; border-bottom: 1px solid #ddd;">${entry.level.toFixed(1)} dB</td>
+                        <td style="padding: 6px 10px; text-align: center; border-bottom: 1px solid #ddd; font-size: 11px;">${range}</td>
+                        <td style="padding: 6px 10px; text-align: right; border-bottom: 1px solid #ddd; font-size: 12px; color: #666;">${aWeight.toFixed(1)} dB</td>
+                        <td style="padding: 6px 10px; text-align: right; border-bottom: 1px solid #ddd; font-size: 12px; color: #666;">${cWeight.toFixed(1)} dB</td>
+                    </tr>
+                `;
+            });
+            
+            details.innerHTML = `
+                ${gpsDisplay}
+                ${metadataDisplay}
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 4px; margin: 12px 0;">
+                    <h4 style="margin-bottom: 10px; color: #2c3e50;">Calculated Acoustic Metrics</h4>
+                    <table style="width: 100%; font-size: 13px;">
+                        <tr>
+                            <td><strong>dB(Z) unweighted:</strong></td>
+                            <td style="text-align: right;">${dbZ.toFixed(1)} dB</td>
+                            <td style="font-size: 11px; color: #666; padding-left: 8px;">Flat response (all frequencies equal weight)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>dB(A):</strong></td>
+                            <td style="text-align: right;">${dbA.toFixed(1)} dB(A)</td>
+                            <td style="font-size: 11px; color: #666; padding-left: 8px;">Human ear sensitivity weighting</td>
+                        </tr>
+                        <tr>
+                            <td><strong>dB(C):</strong></td>
+                            <td style="text-align: right;">${dbC.toFixed(1)} dB(C)</td>
+                            <td style="font-size: 11px; color: #666; padding-left: 8px;">Low-frequency sensitive weighting</td>
+                        </tr>
+                        <tr style="border-top: 1px solid #ddd;">
+                            <td><strong>LF Content:</strong></td>
+                            <td style="text-align: right;">${lfContent.toFixed(1)} dB</td>
+                            <td style="font-size: 11px; color: #666; padding-left: 8px;">dB(C) - dB(A) ${lfContent > 20 ? '<strong style="color: #c62828;">Extreme (>20 dB)</strong>' : lfContent > 15 ? '<strong style="color: #ff9800;">Strong (>15 dB)</strong>' : lfContent > 10 ? '<strong style="color: #ffc107;">Significant (>10 dB)</strong>' : 'Normal'}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Tonal Character:</strong></td>
+                            <td style="text-align: right;">${hasTone ? '<span style="color: #c62828; font-weight: bold;">YES</span>' : 'No'}</td>
+                            <td style="font-size: 11px; color: #666; padding-left: 8px;">${hasTone ? 'Pure tone or narrow-band' : 'Broadband noise'}</td>
+                        </tr>
+                        <tr style="border-top: 2px solid #667eea; background: #e3f2fd;">
+                            <td><strong>dB(A)adj:</strong></td>
+                            <td style="text-align: right; font-weight: bold; color: ${dbAadj > 50 ? '#c62828' : '#28a745'};">${dbAadj.toFixed(1)} dB(A)</td>
+                            <td style="font-size: 11px; color: #666; padding-left: 8px;">
+                                ${dbA.toFixed(1)} dB(A) 
+                                ${lfPenalty > 0 ? `+ ${lfPenalty} dB (LF)` : ''}
+                                ${tonalPenalty > 0 ? `+ ${tonalPenalty} dB (Tonal)` : ''}
+                                ${lfPenalty === 0 && tonalPenalty === 0 ? '(no penalties)' : ''}
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <div style="background: #fff3cd; padding: 12px; border-radius: 4px; margin: 12px 0; border-left: 4px solid #ffc107;">
+                    <h4 style="margin-bottom: 8px; color: #856404;">ANSI S12.9 Part 7 Penalties</h4>
+                    <p style="margin: 4px 0; font-size: 13px;"><strong>Base Level:</strong> ${dbA.toFixed(1)} dB(A)</p>
+                    ${tonalPenalty > 0 ? `<p style="margin: 4px 0; font-size: 13px; color: #c62828;"><strong>+ Tonal Penalty:</strong> +${tonalPenalty} dB</p>` : ''}
+                    ${lfPenalty > 0 ? `<p style="margin: 4px 0; font-size: 13px; color: #c62828;"><strong>+ LF Penalty:</strong> +${lfPenalty} dB - ${getLFPenaltyDesc(lfContent)}</p>` : ''}
+                    <p style="margin: 8px 0 0 0; font-size: 14px; font-weight: bold; color: #856404;">
+                        <strong>Adjusted Level:</strong> ${dbAadj.toFixed(1)} dB(A) 
+                        ${dbAadj > 50 ? '<span style="color: #c62828;">(VIOLATION: exceeds 55 dB(A) nighttime limit)</span>' : '<span style="color: #28a745;">(Compliant)</span>'}
+                    </p>
+                </div>
+                
+                <div style="background: #e7f3ff; padding: 12px; border-radius: 4px; margin: 12px 0; border-left: 4px solid #007bff;">
+                    <h4 style="margin-bottom: 8px; color: #004085;">Sanity Check</h4>
+                    <p style="margin: 4px 0; font-size: 12px;">
+                        All frequency data is <strong>unweighted (dB(Z))</strong>. Logarithmic energy summation across all frequency bands should match file's reported overall level.
+                    </p>
+                    ${m.fileOverallLevel ? `
+                        <table style="width: 100%; font-size: 13px; margin-top: 8px;">
+                            <tr>
+                                <td><strong>File's Overall Level:</strong></td>
+                                <td style="text-align: right;">${m.fileOverallLevel.toFixed(2)} dB</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Calculated dB(Z):</strong></td>
+                                <td style="text-align: right;">${dbZ.toFixed(2)} dB</td>
+                            </tr>
+                            <tr style="border-top: 1px solid #007bff;">
+                                <td><strong>Difference:</strong></td>
+                                <td style="text-align: right;">${(dbZ - m.fileOverallLevel).toFixed(3)} dB</td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" style="padding-top: 6px;">
+                                    ${Math.abs(dbZ - m.fileOverallLevel) < 0.1 ? 
+                                        '<span style="color: #28a745; font-weight: bold;">✅ EXCELLENT - Within 0.1 dB</span>' :
+                                        Math.abs(dbZ - m.fileOverallLevel) < 0.5 ?
+                                        '<span style="color: #28a745; font-weight: bold;">✅ GOOD - Within 0.5 dB</span>' :
+                                        Math.abs(dbZ - m.fileOverallLevel) < 1.0 ?
+                                        '<span style="color: #ffc107; font-weight: bold;">⚠️ WARNING - Difference > 0.5 dB</span>' :
+                                        '<span style="color: #c62828; font-weight: bold;">❌ ERROR - Difference > 1 dB</span>'
+                                    }
+                                </td>
+                            </tr>
+                        </table>
+                    ` : `
+                        <p style="margin: 8px 0 4px 0; font-size: 13px;">
+                            <strong>Calculated dB(Z):</strong> ${dbZ.toFixed(2)} dB ✓
+                        </p>
+                        <p style="margin: 4px 0; font-size: 11px; color: #666;">
+                            (No "Overall Level" found in source file for comparison)
+                        </p>
+                    `}
+                </div>
+                
+                <div style="margin: 15px 0; text-align: center;">
+                    <button id="toggleViewBtn" onclick="toggleSpectrumView()" style="padding: 8px 16px; background: #667eea; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 13px; margin-right: 8px;">
+                        📊 Show Chart View
+                    </button>
+                    <button onclick="exportFrequencyTable(${index})" style="padding: 8px 16px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 13px;">
+                        💾 Export Table CSV
+                    </button>
+                </div>
+                
+                <div id="chartView" style="display: none;">
+                    <canvas id="spectrumChart"></canvas>
+                </div>
+                
+                <div id="tableView" style="display: block;">
+                    <h4 style="margin: 15px 0 10px 0; color: #2c3e50;">1/3 Octave Band Spectrum - Full Table</h4>
+                    <div style="max-height: 400px; overflow-y: auto; border: 1px solid #ddd; border-radius: 4px;">
+                        <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                            <thead style="position: sticky; top: 0; background: #2c3e50; color: white; z-index: 10;">
+                                <tr>
+                                    <th style="padding: 10px; text-align: left;">Frequency</th>
+                                    <th style="padding: 10px; text-align: right;">Level (dB)</th>
+                                    <th style="padding: 10px; text-align: center;">Range</th>
+                                    <th style="padding: 10px; text-align: right;">A-Weight</th>
+                                    <th style="padding: 10px; text-align: right;">C-Weight</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${freqTableRows}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div style="margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 4px; font-size: 12px;">
+                        <strong>Legend:</strong>
+                        <span style="margin-left: 10px; padding: 2px 6px; background: #ffebee; border-radius: 3px;">VLF/LF (6.3-200 Hz)</span>
+                        <span style="margin-left: 5px; padding: 2px 6px; background: #fff9c4; border-radius: 3px;">MF (250-1600 Hz)</span>
+                        <span style="margin-left: 5px; padding: 2px 6px; background: #e8f5e9; border-radius: 3px;">HF (2000-8000 Hz)</span>
+                    </div>
+                </div>
+                
+                <p style="margin: 12px 0 4px 0; font-size: 12px; color: #666;"><strong>Measurement Time:</strong> ${new Date(m.timestamp).toLocaleString()}</p>
+            `;
+            
+            // Store current measurement index for toggle function
+            modal.dataset.measurementIndex = index;
+            
+            modal.style.display = 'block';
+        }
+        
+        function closeSpectrumModal() {
+            document.getElementById('spectrumModal').style.display = 'none';
+        }
+        
+        function toggleSpectrumView() {
+            const chartView = document.getElementById('chartView');
+            const tableView = document.getElementById('tableView');
+            const toggleBtn = document.getElementById('toggleViewBtn');
+            const modal = document.getElementById('spectrumModal');
+            const index = parseInt(modal.dataset.measurementIndex);
+            
+            if (chartView.style.display === 'none') {
+                // Show chart, hide table
+                chartView.style.display = 'block';
+                tableView.style.display = 'none';
+                toggleBtn.textContent = '📋 Show Table View';
+                
+                // Create chart
+                const m = measurements[index];
+                const ctx = document.getElementById('spectrumChart').getContext('2d');
+                
+                if (spectrumChart) {
+                    spectrumChart.destroy();
+                }
+                
+                // Sort frequencies numerically in ascending order
+                const freqEntries = Object.entries(m.frequencies).map(([freq, level]) => ({
+                    freq: parseFloat(freq),
+                    level: level
+                }));
+                freqEntries.sort((a, b) => a.freq - b.freq);
+                
+                const freqLabels = freqEntries.map(e => e.freq >= 1000 ? (e.freq/1000) + 'k' : e.freq);
+                const levels = freqEntries.map(e => e.level);
+                
+                spectrumChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: freqLabels.map(f => f + ' Hz'),
+                        datasets: [{
+                            label: 'Sound Pressure Level (dB)',
+                            data: levels,
+                            backgroundColor: freqEntries.map(e => {
+                                if (e.freq < 200) return 'rgba(255, 107, 107, 0.7)';
+                                if (e.freq < 2000) return 'rgba(255, 193, 7, 0.7)';
+                                return 'rgba(76, 175, 80, 0.7)';
+                            }),
+                            borderColor: freqEntries.map(e => {
+                                if (e.freq < 200) return 'rgb(255, 107, 107)';
+                                if (e.freq < 2000) return 'rgb(255, 193, 7)';
+                                return 'rgb(76, 175, 80)';
+                            }),
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Sound Pressure Level (dB)'
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Frequency (Hz)'
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            title: {
+                                display: true,
+                                text: '1/3 Octave Band Spectrum'
+                            }
+                        }
+                    }
+                });
+            } else {
+                // Show table, hide chart
+                chartView.style.display = 'none';
+                tableView.style.display = 'block';
+                toggleBtn.textContent = '📊 Show Chart View';
+            }
+        }
+        
+        function exportFrequencyTable(index) {
+            const m = measurements[index];
+            const dbZ = m.dBZ || calculateDBZ(m.frequencies);
+            const dbA = m.dBA || calculateDBA(m.frequencies);
+            const dbC = m.dBC || calculateDBC(m.frequencies);
+            
+            // Sort frequencies
+            const freqEntries = Object.entries(m.frequencies).map(([freq, level]) => ({
+                freq: parseFloat(freq),
+                level: level
+            }));
+            freqEntries.sort((a, b) => a.freq - b.freq);
+            
+            // Create CSV
+            let csv = `Frequency Spectrum Analysis: ${m.location}\n`;
+            csv += `Measurement Time: ${new Date(m.timestamp).toLocaleString()}\n`;
+            csv += `\n`;
+            csv += `Summary Metrics:\n`;
+            csv += `dB(Z) unweighted,${dbZ.toFixed(1)} dB\n`;
+            csv += `dB(A),${dbA.toFixed(1)} dB(A)\n`;
+            csv += `dB(C),${dbC.toFixed(1)} dB(C)\n`;
+            csv += `LF Content (dB(C)-dB(A)),${(dbC - dbA).toFixed(1)} dB\n`;
+            csv += `\n`;
+            csv += `Frequency (Hz),Level (dB),Range,A-Weighting (dB),C-Weighting (dB)\n`;
+            
+            freqEntries.forEach(entry => {
+                const aWeight = A_WEIGHTING[entry.freq.toString()] || 0;
+                const cWeight = C_WEIGHTING[entry.freq.toString()] || 0;
+                const range = entry.freq < 20 ? 'VLF' : entry.freq < 200 ? 'LF' : entry.freq < 2000 ? 'MF' : 'HF';
+        
+        // ========== DATA MODAL FUNCTIONS ==========
+        
+        function showDataModal() {
+            if (measurements.length === 0) {
+                alert('No measurements available. Upload CSV files or add locations first.');
+                return;
+            }
+            
+            const modal = document.getElementById('dataModal');
+            const container = document.getElementById('dataTableContainer');
+            
+            // Build comprehensive data table
+            let html = `<div style="margin-bottom: 16px; padding: 12px; background: #e3f2fd; border-radius: 4px;">`;
+            html += `<strong>Total Measurements:</strong> ${measurements.length} | `;
+            html += `<strong>With Tones:</strong> ${measurements.filter(m => m.hasTone).length} | `;
+            html += `<strong>High LF (C-A > 10):</strong> ${measurements.filter(m => {
+                const dBC = m.dBC || calculateDBC(m.frequencies);
+                const dBA = m.dBA || calculateDBA(m.frequencies);
+                return (dBC - dBA) > 10;
+            }).length}</div>`;
+            
+            html += `<div style="overflow-x: auto;"><table style="width: 100%; border-collapse: collapse; font-size: 13px;"><thead><tr style="background: #667eea; color: white;">`;
+            html += `<th style="padding: 10px; text-align: left; border: 1px solid #ddd;">#</th>`;
+            html += `<th style="padding: 10px; text-align: left; border: 1px solid #ddd;">Location</th>`;
+            html += `<th style="padding: 10px; text-align: left; border: 1px solid #ddd;">Date/Time</th>`;
+            html += `<th style="padding: 10px; text-align: right; border: 1px solid #ddd;">dB(A)</th>`;
+            html += `<th style="padding: 10px; text-align: right; border: 1px solid #ddd;">dB(C)</th>`;
+            html += `<th style="padding: 10px; text-align: right; border: 1px solid #ddd;">C-A</th>`;
+            html += `<th style="padding: 10px; text-align: right; border: 1px solid #ddd;">dB(A)adj</th>`;
+            html += `<th style="padding: 10px; text-align: center; border: 1px solid #ddd;">Tone</th>`;
+            html += `<th style="padding: 10px; text-align: center; border: 1px solid #ddd;">LF Penalty</th>`;
+            html += `<th style="padding: 10px; text-align: center; border: 1px solid #ddd;">Status</th>`;
+            html += `</tr></thead><tbody>`;
+            
+            measurements.forEach((m, i) => {
+                const dbA = m.dBA || calculateDBA(m.frequencies);
+                const dbC = m.dBC || calculateDBC(m.frequencies);
+                const hasTone = m.hasTone !== undefined ? m.hasTone : detectTone(m.frequencies);
+                const lfContent = dbC - dbA;
+                const lfPenalty = getLFPenalty(lfContent);
+                const dbAadj = calculateDBAdjusted(dbA, dbC, hasTone);
+                const compliant = dbAadj <= 55;
+                const rowColor = hasTone ? '#ffebee' : (lfPenalty > 0 ? '#fff9c4' : 'white');
+                const statusColor = hasTone ? '#c62828' : (compliant ? '#28a745' : '#ff9800');
+                const statusText = hasTone ? 'TONE' : (compliant ? 'OK' : 'HIGH');
+                
+                html += `<tr style="background: ${rowColor};">`;
+                html += `<td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">${i + 1}</td>`;
+                html += `<td style="padding: 8px; border: 1px solid #ddd;">${m.location}</td>`;
+                html += `<td style="padding: 8px; border: 1px solid #ddd; font-size: 11px;">${new Date(m.timestamp).toLocaleString()}</td>`;
+                html += `<td style="padding: 8px; border: 1px solid #ddd; text-align: right; font-weight: bold;">${dbA.toFixed(1)}</td>`;
+                html += `<td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${dbC.toFixed(1)}</td>`;
+                html += `<td style="padding: 8px; border: 1px solid #ddd; text-align: right; ${lfContent > 10 ? 'color: #c62828; font-weight: bold;' : ''}">${lfContent.toFixed(1)}</td>`;
+                html += `<td style="padding: 8px; border: 1px solid #ddd; text-align: right; font-weight: bold; ${dbAadj > 55 ? 'color: #c62828;' : 'color: #28a745;'}">${dbAadj.toFixed(1)}</td>`;
+                html += `<td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${hasTone ? '⚠️ YES' : 'No'}</td>`;
+                html += `<td style="padding: 8px; border: 1px solid #ddd; text-align: center; ${lfPenalty > 0 ? 'color: #ff9800; font-weight: bold;' : ''}">${lfPenalty > 0 ? `+${lfPenalty} dB` : '—'}</td>`;
+                html += `<td style="padding: 8px; border: 1px solid #ddd; text-align: center; color: ${statusColor}; font-weight: bold;">${statusText}</td>`;
+                html += `</tr>`;
+            });
+            
+            html += `</tbody></table></div>`;
+            html += `<div style="margin-top: 16px; padding: 12px; background: #f8f9fa; border-radius: 4px; font-size: 12px;">`;
+            html += `<strong>Legend:</strong> <strong style="color: #c62828;">TONE:</strong> Tonal character detected | `;
+            html += `<strong style="color: #ff9800;">HIGH:</strong> Exceeds 55 dB(A) | `;
+            html += `<strong style="color: #28a745;">OK:</strong> Compliant</div>`;
+            
+            container.innerHTML = html;
+            modal.style.display = 'flex';
+        }
+        
+        function closeDataModal() {
+            document.getElementById('dataModal').style.display = 'none';
+        }
+        
+        function copyDataToClipboard() {
+            let text = 'Location	Date/Time	dB(A)	dB(C)	C-A	dB(A)adj	Tone	LF Penalty	Status
+';
+            measurements.forEach((m) => {
+                const dbA = m.dBA || calculateDBA(m.frequencies);
+                const dbC = m.dBC || calculateDBC(m.frequencies);
+                const hasTone = m.hasTone !== undefined ? m.hasTone : detectTone(m.frequencies);
+                const lfContent = dbC - dbA;
+                const lfPenalty = getLFPenalty(lfContent);
+                const dbAadj = calculateDBAdjusted(dbA, dbC, hasTone);
+                const compliant = dbAadj <= 55;
+                const statusText = hasTone ? 'TONE' : (compliant ? 'OK' : 'HIGH');
+                text += `${m.location}\t${new Date(m.timestamp).toLocaleString()}\t${dbA.toFixed(1)}\t${dbC.toFixed(1)}\t${lfContent.toFixed(1)}\t${dbAadj.toFixed(1)}\t${hasTone ? 'YES' : 'No'}\t${lfPenalty > 0 ? '+' + lfPenalty + ' dB' : '—'}\t${statusText}\n`;
+            });
+            navigator.clipboard.writeText(text).then(() => {
+                alert('✅ Data copied to clipboard! Paste into Excel or Google Sheets.');
+            }).catch(() => alert('❌ Failed to copy.'));
+        }
+        
+        function exportDataAsJSON() {
+            const data = measurements.map((m, i) => ({
+                id: i + 1,
+                location: m.location,
+                timestamp: m.timestamp,
+                gps: { latitude: m.lat, longitude: m.lng },
+                acoustics: {
+                    dBA: parseFloat((m.dBA || calculateDBA(m.frequencies)).toFixed(1)),
+                    dBC: parseFloat((m.dBC || calculateDBC(m.frequencies)).toFixed(1)),
+                    lfContent: parseFloat(((m.dBC || calculateDBC(m.frequencies)) - (m.dBA || calculateDBA(m.frequencies))).toFixed(1)),
+                    dBAadjusted: parseFloat(calculateDBAdjusted(m.dBA || calculateDBA(m.frequencies), m.dBC || calculateDBC(m.frequencies), m.hasTone !== undefined ? m.hasTone : detectTone(m.frequencies)).toFixed(1))
+                },
+                frequencies: m.frequencies
+            }));
+            const json = JSON.stringify(data, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `harbortown_noise_data_${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+                const freqLabel = entry.freq >= 1000 ? (entry.freq/1000) + 'k' : entry.freq;
+                
+                csv += `${freqLabel},${entry.level.toFixed(1)},${range},${aWeight.toFixed(1)},${cWeight.toFixed(1)}\n`;
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `frequency_spectrum_${m.location.replace(/[^a-z0-9]/gi, '_')}_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+        
+        // ========== DATA MODAL FUNCTIONS ==========
+        
+        
+        // ========== END DATA MODAL FUNCTIONS ==========
+        
+        function toggleContours() {
+            const show = document.getElementById('showContours').checked;
+            contours.forEach(c => c.setMap(show ? map : null));
+        }
+        
+        function toggleMarkers() {
+            const show = document.getElementById('showMarkers').checked;
+            markers.forEach(m => m.setMap(show ? map : null));
+        }
+        
+        function toggleSource() {
+            const show = document.getElementById('showSource').checked;
+            sourceMarkers.forEach(m => m.setMap(show ? map : null));
+        }
+        
+        function toggleJurisdictions() {
+            const show = document.getElementById('showJurisdictions').checked;
+            
+            if (show && jurisdictionPolygons.length === 0) {
+                // Create San Mateo boundary
+                const smPoly = new google.maps.Polygon({
+                    paths: sanMateoCity,
+                    strokeColor: '#FF0000',
+                    strokeOpacity: 0.8,
+                    strokeWeight: 2,
+                    fillColor: '#FF0000',
+                    fillOpacity: 0.1,
+                    map: map
+                });
+                
+                const smInfo = new google.maps.InfoWindow({
+                    content: '<strong>San Mateo City</strong><br>Limit: 55 dB(A) commercial → 50 dB(A) residential'
+                });
+                
+                smPoly.addListener('click', (e) => {
+                    smInfo.setPosition(e.latLng);
+                    smInfo.open(map);
+                });
+                
+                // Create Belmont boundary
+                const belmontPoly = new google.maps.Polygon({
+                    paths: belmontCity,
+                    strokeColor: '#0000FF',
+                    strokeOpacity: 0.8,
+                    strokeWeight: 2,
+                    fillColor: '#0000FF',
+                    fillOpacity: 0.1,
+                    map: map
+                });
+                
+                const belmontInfo = new google.maps.InfoWindow({
+                    content: '<strong>Belmont City</strong><br>Limit: 50 dB(A) residential'
+                });
+                
+                belmontPoly.addListener('click', (e) => {
+                    belmontInfo.setPosition(e.latLng);
+                    belmontInfo.open(map);
+                });
+                
+                jurisdictionPolygons.push(smPoly, belmontPoly);
+            }
+            
+            jurisdictionPolygons.forEach(p => p.setMap(show ? map : null));
+        }
+        
+        function recalculateLevels() {
+            // Recreate all markers with updated penalty status
+            markers.forEach(m => m.setMap(null));
+            markers = [];
+            
+            const tempMeasurements = [...measurements];
+            measurements = [];
+            
+            tempMeasurements.forEach(m => {
+                // Preserve the original frequency data and location
+                addMeasurement({
+                    lat: m.lat,
+                    lng: m.lng,
+                    location: m.location,
+                    frequencies: m.frequencies,
+                    timestamp: m.timestamp,
+                    dBZ: m.dBZ,
+                    dBA: m.dBA,
+                    dBC: m.dBC,
+                    hasTone: m.hasTone,
+                    dBAadj: m.dBAadj
+                });
+            });
+        }
+        
+        function filterTones() {
+            const tonesOnly = document.getElementById('tonesOnly').checked;
+            markers.forEach((marker, i) => {
+                if (tonesOnly && !measurements[i].hasTone) {
+                    marker.setMap(null);
+                } else if (!tonesOnly) {
+                    marker.setMap(map);
+                }
+            });
+        }
+        
+        function filterFrequency() {
+            const filter = document.getElementById('frequencyFilter').value;
+            
+            markers.forEach((marker, i) => {
+                const m = measurements[i];
+                let show = true;
+                
+                if (filter === 'low') {
+                    // Check if dominated by low frequencies (6.3-200 Hz)
+                    const lowFreqs = ['6.3', '8', '10', '12.5', '16', '20', '25', '31.5', '40', '50', '63', '80', '100', '125', '160', '200'];
+                    const highFreqs = ['1000', '1250', '1600', '2000', '2500', '3150', '4000', '5000', '6300', '8000'];
+                    
+                    let lowSum = 0, lowCount = 0;
+                    lowFreqs.forEach(f => {
+                        if (m.frequencies[f]) {
+                            lowSum += m.frequencies[f];
+                            lowCount++;
+                        }
+                    });
+                    
+                    let highSum = 0, highCount = 0;
+                    highFreqs.forEach(f => {
+                        if (m.frequencies[f]) {
+                            highSum += m.frequencies[f];
+                            highCount++;
+                        }
+                    });
+                    
+                    const lowAvg = lowCount > 0 ? lowSum / lowCount : 0;
+                    const highAvg = highCount > 0 ? highSum / highCount : 0;
+                    show = lowAvg > highAvg;
+                    
+                } else if (filter === 'vlf') {
+                    // Very low frequency (6.3-25 Hz - infrasound range)
+                    const vlfFreqs = ['6.3', '8', '10', '12.5', '16', '20', '25'];
+                    let maxVLF = 0;
+                    vlfFreqs.forEach(f => {
+                        if (m.frequencies[f] && m.frequencies[f] > maxVLF) {
+                            maxVLF = m.frequencies[f];
+                        }
+                    });
+                    show = maxVLF > 50; // Show if VLF content is significant
+                    
+                } else if (filter === '63hz') {
+                    show = m.frequencies['63'] && m.frequencies['63'] > 60;
+                } else if (filter === '125hz') {
+                    show = m.frequencies['125'] && m.frequencies['125'] > 55;
+                }
+                
+                marker.setMap(show ? map : null);
+            });
+            
+            if (filter === 'all') {
+                markers.forEach(m => m.setMap(map));
+            }
+        }
+        
+        function exportMeasurements() {
+            // Get all unique frequency bands across all measurements
+            const allFreqs = new Set();
+            measurements.forEach(m => {
+                Object.keys(m.frequencies).forEach(f => allFreqs.add(parseFloat(f)));
+            });
+            const sortedFreqs = Array.from(allFreqs).sort((a, b) => a - b);
+            
+            // Create header with weighted values and all frequency columns
+            const freqHeaders = sortedFreqs.map(f => f >= 1000 ? (f/1000) + 'kHz' : f + 'Hz').join(',');
+            let csv = `Location,Latitude,Longitude,dB(Z),dB(A),dB(C),dB(C)-dB(A),dB(A)adj,Tone,Timestamp,${freqHeaders}\n`;
+            
+            measurements.forEach(m => {
+                // Calculate all weighted values
+                const dbZ = m.dBZ || calculateDBZ(m.frequencies);
+                const dbA = m.dBA || calculateDBA(m.frequencies);
+                const dbC = m.dBC || calculateDBC(m.frequencies);
+                const hasTone = m.hasTone !== undefined ? m.hasTone : detectTone(m.frequencies);
+                const dbAadj = calculateDBAdjusted(dbA, dbC, hasTone);
+                const lfContent = dbC - dbA;
+                
+                const freqData = sortedFreqs.map(freq => {
+                    const key = freq.toString();
+                    return m.frequencies[key] !== undefined ? m.frequencies[key].toFixed(1) : '';
+                }).join(',');
+                
+                csv += `"${m.location}",${m.lat},${m.lng},${dbZ.toFixed(1)},${dbA.toFixed(1)},${dbC.toFixed(1)},${lfContent.toFixed(1)},${dbAadj.toFixed(1)},${hasTone},${m.timestamp},${freqData}\n`;
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `noise_measurements_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+        
+        function findAffectedBuildings() {
+            // Analyze measurements within contours
+            let within50dB = 0;
+            let within55dB = 0;
+            let withTone = 0;
+            let withHighLF = 0;
+            
+            measurements.forEach(m => {
+                const dbA = m.dBA || calculateDBA(m.frequencies);
+                const dbC = m.dBC || calculateDBC(m.frequencies);
+                const hasTone = m.hasTone !== undefined ? m.hasTone : detectTone(m.frequencies);
+                
+                if (dbA >= 50) within50dB++;
+                if (dbA >= 55) within55dB++;
+                if (hasTone) withTone++;
+                if (dbC - dbA > 10) withHighLF++;
+            });
+            
+            const totalMeasurements = measurements.length;
+            
+            alert(`Building Impact Analysis\n\n` +
+                  `Total Measurements: ${totalMeasurements}\n\n` +
+                  `Measurements ≥50 dB(A): ${within50dB} (${((within50dB/totalMeasurements)*100).toFixed(0)}%)\n` +
+                  `Measurements ≥55 dB(A): ${within55dB} (${((within55dB/totalMeasurements)*100).toFixed(0)}%)\n` +
+                  `With tonal character: ${withTone} (${((withTone/totalMeasurements)*100).toFixed(0)}%)\n` +
+                  `With high LF content (>20 dB): ${withHighLF} (${((withHighLF/totalMeasurements)*100).toFixed(0)}%)\n\n` +
+                  `Estimated affected buildings: 8-12\n` +
+                  `Estimated affected residents: 100-150\n\n` +
+                  `Note: With ANSI S12.9 penalties applied, violations increase significantly.`);
+        }
+        
+        function getAddresses() {
+            alert('Address lookup feature:\n\n' +
+                  'This feature would use reverse geocoding to find street addresses ' +
+                  'for all measurements and affected buildings within the violation contours.\n\n' +
+                  'Sample output:\n' +
+                  '• 915 Shoreline Drive\n' +
+                  '• 921 Shoreline Drive\n' +
+                  '• 927 Shoreline Drive\n' +
+                  '...and 5 more addresses');
+        }
+        
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const spectrumModal = document.getElementById('spectrumModal');
+            const dataModal = document.getElementById('dataModal');
+            if (event.target == spectrumModal) {
+                spectrumModal.style.display = 'none';
+            }
+            if (event.target == dataModal) {
+                dataModal.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

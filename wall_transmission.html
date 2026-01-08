@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Low-Frequency Sound Transmission Through Walls</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+        }
+        
+        .navbar {
+            background: #2c3e50;
+            padding: 15px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 220px;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+        
+        .navbar ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .navbar li {
+            margin: 0;
+        }
+        
+        .navbar a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            padding: 10px 25px;
+            transition: background 0.3s, padding-left 0.3s;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            font-size: 14px;
+        }
+        
+        .navbar a:hover {
+            background: #34495e;
+            padding-left: 30px;
+        }
+        
+        .navbar a.active {
+            background: #667eea;
+            font-weight: 600;
+            border-left: 4px solid #fff;
+        }
+        
+        .main-content {
+            margin-left: 240px;
+            padding: 25px 40px;
+            max-width: 1600px;
+        }
+        
+        @media (max-width: 768px) {
+            .navbar {
+                position: static;
+                width: 100%;
+                height: auto;
+            }
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 2em;
+        }
+        
+        .subtitle {
+            color: #7f8c8d;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+        
+        .content-wrapper {
+            display: flex;
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        @media (max-width: 1200px) {
+            .content-wrapper {
+                flex-direction: column;
+            }
+        }
+        
+        .viz-container {
+            flex: 1;
+        }
+        
+        .controls-sidebar {
+            width: 350px;
+            position: sticky;
+            top: 20px;
+            align-self: flex-start;
+        }
+        
+        @media (max-width: 1200px) {
+            .controls-sidebar {
+                width: 100%;
+                position: static;
+            }
+        }
+        
+        canvas {
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background: white;
+            display: block;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .control-section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .control-section h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: #2c3e50;
+            font-size: 1.1em;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 8px;
+        }
+        
+        .frequency-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-top: 15px;
+        }
+        
+        .freq-button {
+            padding: 10px;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+        
+        .freq-button:hover {
+            background: #f0f0f0;
+        }
+        
+        .freq-button.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+        .freq-button.warning {
+            border-color: #f39c12;
+            color: #f39c12;
+        }
+        
+        .freq-button.warning.active {
+            background: #f39c12;
+            color: white;
+            border-color: #f39c12;
+        }
+        
+        button {
+            padding: 12px 24px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            background: #667eea;
+            color: white;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        
+        button:hover {
+            background: #5568d3;
+        }
+        
+        button.secondary {
+            background: #95a5a6;
+        }
+        
+        button.secondary:hover {
+            background: #7f8c8d;
+        }
+        
+        select, input[type="range"] {
+            width: 100%;
+            padding: 8px;
+            margin: 10px 0;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        
+        .checkbox-group {
+            margin: 15px 0;
+        }
+        
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+        
+        .checkbox-group label:hover {
+            background: #f0f0f0;
+        }
+        
+        .checkbox-group input[type="checkbox"] {
+            margin-right: 10px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        
+        .upload-section {
+            background: #f8f9fa;
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .upload-section.drag-over {
+            border-color: #667eea;
+            background: #e8f0fe;
+        }
+        
+        .upload-section input[type="file"] {
+            display: none;
+        }
+        
+        .upload-label {
+            display: block;
+            padding: 15px;
+            cursor: pointer;
+            color: #667eea;
+            font-weight: 600;
+        }
+        
+        .upload-label:hover {
+            color: #5568d3;
+        }
+        
+        .upload-status {
+            margin-top: 10px;
+            padding: 8px;
+            border-radius: 5px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        
+        .upload-status.success {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .upload-status.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .upload-status.loading {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .warning-box {
+            background: #fff3cd;
+            border: 2px solid #f39c12;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .warning-box h4 {
+            margin-top: 0;
+            color: #856404;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .warning-box p {
+            margin: 8px 0;
+            color: #856404;
+            font-size: 14px;
+        }
+        
+        .data-badge {
+            display: inline-block;
+            background: #d4edda;
+            color: #155724;
+            padding: 8px 12px;
+            border-radius: 5px;
+            font-size: 13px;
+            font-weight: 600;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <ul>
+            <li><a href="index.html">🏠 Home</a></li>
+            <li><a href="science_center_case.html">📋 Case Documentation</a></li>
+            <li><a href="welcome_to_neighborhood.html">🏘️ Welcome Letter</a></li>
+            <li><a href="community_complaints.html">👥 Community Complaints</a></li>
+            <li><a href="wall_transmission.html" class="active">🌊 Wall Transmission Viz</a></li>
+            <li><a href="interactive_noise_map.html">🗺️ Interactive Map</a></li>
+            <li><a href="data_import.html">📥 Data Import</a></li>
+            <li><a href="ansi_calculator_flowchart.html">🔢 ANSI Calculator</a></li>
+            <li><a href="potential_solutions.html">💡 Solutions</a></li>
+            <li><a href="comparative_standards.html">📊 Standards Comparison</a></li>
+            <li><a href="ansi_s12_9_part_4.html">📐 ANSI S12.9 Part 4</a></li>
+            <li><a href="penalty_application_guide.html">📋 Penalty Guide</a></li>
+            <li><a href="model_noise_ordinance.html">📖 Model Ordinance</a></li>
+            <li><a href="hvac_system_complete_schematic.html">🏭 HVAC Schematics</a></li>
+            <li><a href="technical_resources.html">📚 Technical Resources</a></li>
+            <li><a href="pe_ethics_health_safety.html">⚕️ PE Ethics</a></li>
+        </ul>
+    </nav>
+
+    <div class="main-content">
+        <h1>Low-Frequency Sound Transmission Through Walls</h1>
+        <div class="subtitle">
+            Interactive visualization demonstrating why low-frequency HVAC noise penetrates residential walls while higher frequencies are blocked
+        </div>
+
+        <div class="content-wrapper">
+            <div class="viz-container">
+                <canvas id="canvas" width="900" height="700"></canvas>
+            </div>
+
+            <div class="controls-sidebar">
+                <div class="control-section">
+                    <h3>Animation Controls</h3>
+                    <button id="playPauseBtn" onclick="toggleAnimation()">▶️ Animate</button>
+                    <button id="resetBtn" class="secondary" onclick="resetVisualization()">Reset</button>
+                    
+                    <div style="margin-top: 15px;">
+                        <label for="speedSlider"><strong>Animation Speed:</strong></label>
+                        <input type="range" id="speedSlider" min="0.2" max="3" step="0.1" value="1">
+                        <span id="speedValue">1.0x</span>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>Window & Wall Options</h3>
+                    <div class="checkbox-group">
+                        <label>
+                            <input type="checkbox" id="showWindow" onchange="updateVisualization()">
+                            Show Window (reduces transmission)
+                        </label>
+                        <label>
+                            <input type="checkbox" id="wallResonance" onchange="updateVisualization()">
+                            Show Wall Resonance (40-80 Hz amplification)
+                        </label>
+                    </div>
+                    
+                    <label for="windowType"><strong>Window Type:</strong></label>
+                    <select id="windowType" onchange="updateVisualization()">
+                        <option value="single">Single Pane (STC 26)</option>
+                        <option value="double" selected>Double Pane (STC 32)</option>
+                        <option value="laminated">Laminated (STC 38)</option>
+                    </select>
+                </div>
+
+                <div class="control-section">
+                    <h3>Upload SignalScope Measurements</h3>
+                    
+                    <div class="upload-section" id="sourceDropZone">
+                        <label for="sourceUpload" class="upload-label">
+                            📁 Click or drop Source CSV (Before Wall)
+                        </label>
+                        <input type="file" id="sourceUpload" accept=".csv" onchange="handleSourceUpload(event)">
+                        <div id="sourceStatus" class="upload-status" style="display:none;"></div>
+                    </div>
+                    
+                    <div class="upload-section" id="receiverDropZone">
+                        <label for="receiverUpload" class="upload-label">
+                            📁 Click or drop Receiver CSV (After Wall)
+                        </label>
+                        <input type="file" id="receiverUpload" accept=".csv" onchange="handleReceiverUpload(event)">
+                        <div id="receiverStatus" class="upload-status" style="display:none;"></div>
+                    </div>
+                    
+                    <div id="dataStatus"></div>
+                    <button class="secondary" onclick="clearUploadedData()" style="width: 100%;">Clear Data</button>
+                </div>
+
+                <div class="warning-box">
+                    <h4>⚠️ Microphone Limitations</h4>
+                    <p><strong>Dayton iMM-6C</strong> calibrated range: 18 Hz – 20 kHz</p>
+                    <p>Measurements below 18 Hz may not be reliable. Consider professional alternatives for &lt;18 Hz data.</p>
+                </div>
+
+                <div class="control-section">
+                    <h3>Frequency Selection</h3>
+                    <p style="font-size: 13px; color: #7f8c8d; margin-bottom: 10px;">
+                        ⚠️ = Below iMM-6C calibrated range
+                    </p>
+                    <div class="frequency-grid" id="frequencyGrid"></div>
+                    <div style="margin-top: 15px;">
+                        <button onclick="selectAllFrequencies()" style="width: 48%;">All</button>
+                        <button onclick="selectNoFrequencies()" class="secondary" style="width: 48%;">None</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Canvas and animation setup
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        let animating = false;
+        let time = 0;
+        let animationSpeed = 1;
+
+        // Standard 1/3 octave band frequencies (Hz)
+        const frequencies = [
+            { freq: 6.3, active: false, warning: true },
+            { freq: 8, active: false, warning: true },
+            { freq: 10, active: false, warning: true },
+            { freq: 12.5, active: false, warning: true },
+            { freq: 16, active: false, warning: true },
+            { freq: 20, active: false },
+            { freq: 25, active: false },
+            { freq: 31.5, active: false },
+            { freq: 40, active: false },
+            { freq: 50, active: false },
+            { freq: 63, active: false },
+            { freq: 80, active: false },
+            { freq: 100, active: false },
+            { freq: 125, active: false },
+            { freq: 160, active: false },
+            { freq: 200, active: true },  // Default active
+            { freq: 250, active: false },
+            { freq: 315, active: false },
+            { freq: 400, active: false },
+            { freq: 500, active: false },
+            { freq: 630, active: false },
+            { freq: 800, active: false },
+            { freq: 1000, active: false }
+        ];
+
+        // Uploaded measurement data
+        let uploadedData = {
+            source: null,  // {frequency: level} mapping
+            receiver: null
+        };
+
+        // Physical parameters
+        const wallX = 450;  // Wall center at x=450
+        const wallThickness = 20;
+        const windowX = 670;
+        const windowWidth = 15;
+
+        // A-weighting function (IEC 61672-1)
+        function aWeighting(freq) {
+            const f2 = freq * freq;
+            const numerator = Math.pow(12194, 4) * f2 * f2;
+            const f1 = f2 + Math.pow(20.6, 2);
+            const f2mid = Math.sqrt((f2 + Math.pow(107.7, 2)) * (f2 + Math.pow(737.9, 2)));
+            const f3 = f2 + Math.pow(12194, 2);
+            const denominator = f1 * f2mid * f3;
+            return 20 * Math.log10(numerator / denominator) + 2.0;
+        }
+
+        // Calculate overall dB(A) from frequency levels
+        function calculateDbA(levels) {
+            try {
+                let sum = 0;
+                frequencies.forEach(f => {
+                    const level = levels[f.freq] || 0;
+                    const aWeight = aWeighting(f.freq);
+                    const weightedLevel = level + aWeight;
+                    sum += Math.pow(10, weightedLevel / 10);
+                });
+                return 10 * Math.log10(sum);
+            } catch (e) {
+                return 0;
+            }
+        }
+
+        // Get exterior dB(A)
+        function getExteriorDbA() {
+            if (!uploadedData.source) return null;
+            return calculateDbA(uploadedData.source);
+        }
+
+        // Get interior dB(A)
+        function getInteriorDbA() {
+            if (!uploadedData.receiver) return null;
+            return calculateDbA(uploadedData.receiver);
+        }
+
+        // Generate frequency buttons
+        function generateFrequencyButtons() {
+            const grid = document.getElementById('frequencyGrid');
+            grid.innerHTML = '';
+            
+            frequencies.forEach((f, index) => {
+                const button = document.createElement('button');
+                button.className = 'freq-button';
+                if (f.active) button.classList.add('active');
+                if (f.warning) button.classList.add('warning');
+                
+                const warningSymbol = f.warning ? ' ⚠️' : '';
+                button.textContent = `${f.freq} Hz${warningSymbol}`;
+                
+                if (f.warning) {
+                    button.title = 'Below iMM-6C calibrated range (<18 Hz)';
+                }
+                
+                button.onclick = () => {
+                    f.active = !f.active;
+                    button.classList.toggle('active');
+                    updateVisualization();
+                };
+                
+                grid.appendChild(button);
+            });
+        }
+
+        function selectAllFrequencies() {
+            frequencies.forEach(f => f.active = true);
+            generateFrequencyButtons();
+            updateVisualization();
+        }
+
+        function selectNoFrequencies() {
+            frequencies.forEach(f => f.active = false);
+            generateFrequencyButtons();
+            updateVisualization();
+        }
+
+        // Parse SignalScope CSV
+        function parseSignalScopeCSV(text) {
+            const lines = text.split('\n').filter(line => {
+                line = line.trim();
+                return line && !line.startsWith('#') && !line.startsWith('//');
+            });
+            
+            const data = {};
+            
+            for (let line of lines) {
+                const parts = line.split(/[,\t\s]+/).map(p => p.trim()).filter(p => p);
+                
+                if (parts.length >= 2) {
+                    const freq = parseFloat(parts[0]);
+                    const level = parseFloat(parts[1]);
+                    
+                    if (!isNaN(freq) && !isNaN(level) && freq >= 6.3 && freq <= 1000) {
+                        data[freq] = level;
+                    }
+                }
+            }
+            
+            return Object.keys(data).length > 0 ? data : null;
+        }
+
+        // Handle source upload
+        function handleSourceUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const statusDiv = document.getElementById('sourceStatus');
+            statusDiv.style.display = 'block';
+            statusDiv.className = 'upload-status loading';
+            statusDiv.textContent = 'Loading...';
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const data = parseSignalScopeCSV(e.target.result);
+                if (data) {
+                    uploadedData.source = data;
+                    statusDiv.className = 'upload-status success';
+                    statusDiv.textContent = `✓ Loaded ${Object.keys(data).length} frequency bands`;
+                    updateDataStatus();
+                    updateVisualization();
+                } else {
+                    statusDiv.className = 'upload-status error';
+                    statusDiv.textContent = '✗ Failed to parse CSV';
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // Handle receiver upload
+        function handleReceiverUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const statusDiv = document.getElementById('receiverStatus');
+            statusDiv.style.display = 'block';
+            statusDiv.className = 'upload-status loading';
+            statusDiv.textContent = 'Loading...';
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const data = parseSignalScopeCSV(e.target.result);
+                if (data) {
+                    uploadedData.receiver = data;
+                    statusDiv.className = 'upload-status success';
+                    statusDiv.textContent = `✓ Loaded ${Object.keys(data).length} frequency bands`;
+                    updateDataStatus();
+                    updateVisualization();
+                } else {
+                    statusDiv.className = 'upload-status error';
+                    statusDiv.textContent = '✗ Failed to parse CSV';
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // Update data status display
+        function updateDataStatus() {
+            const dataStatusDiv = document.getElementById('dataStatus');
+            if (uploadedData.source && uploadedData.receiver) {
+                dataStatusDiv.innerHTML = '<div class="data-badge">📊 Using Measured Data</div>';
+            } else {
+                dataStatusDiv.innerHTML = '';
+            }
+        }
+
+        // Clear uploaded data
+        function clearUploadedData() {
+            uploadedData.source = null;
+            uploadedData.receiver = null;
+            document.getElementById('sourceUpload').value = '';
+            document.getElementById('receiverUpload').value = '';
+            document.getElementById('sourceStatus').style.display = 'none';
+            document.getElementById('receiverStatus').style.display = 'none';
+            updateDataStatus();
+            updateVisualization();
+        }
+
+        // Drag and drop handlers
+        ['sourceDropZone', 'receiverDropZone'].forEach(id => {
+            const zone = document.getElementById(id);
+            
+            zone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                zone.classList.add('drag-over');
+            });
+            
+            zone.addEventListener('dragleave', () => {
+                zone.classList.remove('drag-over');
+            });
+            
+            zone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                zone.classList.remove('drag-over');
+                
+                const file = e.dataTransfer.files[0];
+                if (file) {
+                    const input = zone.querySelector('input[type="file"]');
+                    const dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(file);
+                    input.files = dataTransfer.files;
+                    input.dispatchEvent(new Event('change'));
+                }
+            });
+        });
+
+        // Speed slider
+        document.getElementById('speedSlider').addEventListener('input', function(e) {
+            animationSpeed = parseFloat(e.target.value);
+            document.getElementById('speedValue').textContent = animationSpeed.toFixed(1) + 'x';
+        });
+
+        // Calculate transmission coefficient
+        function calculateTransmission(freq) {
+            // If we have uploaded data, use actual measurements
+            if (uploadedData.source && uploadedData.receiver) {
+                const sourceLevel = uploadedData.source[freq];
+                const receiverLevel = uploadedData.receiver[freq];
+                
+                if (sourceLevel !== undefined && receiverLevel !== undefined) {
+                    const transmissionLoss = sourceLevel - receiverLevel;
+                    return Math.pow(10, -transmissionLoss / 10);
+                }
+            }
+            
+            // Otherwise use calculated values
+            const showWindow = document.getElementById('showWindow').checked;
+            const wallResonance = document.getElementById('wallResonance').checked;
+            const windowType = document.getElementById('windowType').value;
+            
+            // Mass law: TL ≈ 20*log10(f*m) - 47
+            // Typical residential wall: m ≈ 50 kg/m²
+            let TL = 20 * Math.log10(freq * 50) - 47;
+            
+            // Wall resonance amplification at 40-80 Hz
+            if (wallResonance && freq >= 40 && freq <= 80) {
+                TL -= 10; // Reduce attenuation (amplify transmission)
+            }
+            
+            // Window reduces overall transmission
+            if (showWindow) {
+                const windowTL = {
+                    'single': 26,
+                    'double': 32,
+                    'laminated': 38
+                }[windowType];
+                
+                TL = Math.min(TL, windowTL);
+            }
+            
+            // Transmission coefficient
+            return Math.pow(10, -TL / 10);
+        }
+
+        // Draw visualization
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw dB(A) measurement boxes - HORIZONTALLY ALIGNED
+            const exteriorDbA = getExteriorDbA();
+            const interiorDbA = getInteriorDbA();
+            
+            // Exterior (Before Wall) - Left
+            ctx.fillStyle = 'white';
+            ctx.strokeStyle = '#9ca3af';
+            ctx.lineWidth = 2;
+            ctx.fillRect(50, 10, 200, 70);
+            ctx.strokeRect(50, 10, 200, 70);
+            
+            ctx.fillStyle = '#6b7280';
+            ctx.font = '12px sans-serif';
+            ctx.fillText('Exterior (Before Wall)', 60, 30);
+            
+            ctx.fillStyle = '#dc2626';
+            ctx.font = 'bold 28px sans-serif';
+            const extText = exteriorDbA ? `${exteriorDbA.toFixed(1)} dB(A)` : '-- dB(A)';
+            ctx.fillText(extText, 60, 60);
+            
+            // Transmission Loss Indicator - Center
+            ctx.fillStyle = 'white';
+            ctx.strokeStyle = '#9ca3af';
+            ctx.fillRect(350, 10, 200, 70);
+            ctx.strokeRect(350, 10, 200, 70);
+            
+            ctx.fillStyle = '#6b7280';
+            ctx.font = '12px sans-serif';
+            ctx.fillText('Overall Transmission Loss', 360, 30);
+            
+            ctx.fillStyle = '#2563eb';
+            ctx.font = 'bold 28px sans-serif';
+            const lossText = (exteriorDbA && interiorDbA) ? 
+                `${(exteriorDbA - interiorDbA).toFixed(1)} dB` : '-- dB';
+            ctx.fillText(lossText, 360, 60);
+            
+            // Interior (After Wall) - Right
+            ctx.fillStyle = 'white';
+            ctx.strokeStyle = '#9ca3af';
+            ctx.fillRect(650, 10, 200, 70);
+            ctx.strokeRect(650, 10, 200, 70);
+            
+            ctx.fillStyle = '#6b7280';
+            ctx.font = '12px sans-serif';
+            ctx.fillText('Interior (After Wall)', 660, 30);
+            
+            ctx.fillStyle = '#059669';
+            ctx.font = 'bold 28px sans-serif';
+            const intText = interiorDbA ? `${interiorDbA.toFixed(1)} dB(A)` : '-- dB(A)';
+            ctx.fillText(intText, 660, 60);
+            
+            // Draw wall (vertical, full height, centered at x=450)
+            ctx.fillStyle = '#95a5a6';
+            ctx.fillRect(wallX - wallThickness/2, 0, wallThickness, canvas.height);
+            
+            // Draw window if enabled
+            if (document.getElementById('showWindow').checked) {
+                ctx.fillStyle = '#3498db';
+                ctx.globalAlpha = 0.3;
+                ctx.fillRect(windowX - windowWidth/2, canvas.height/2 - 100, windowWidth, 200);
+                ctx.globalAlpha = 1.0;
+                
+                // Window frame
+                ctx.strokeStyle = '#2c3e50';
+                ctx.lineWidth = 3;
+                ctx.strokeRect(windowX - windowWidth/2, canvas.height/2 - 100, windowWidth, 200);
+            }
+            
+            // Draw labels
+            ctx.fillStyle = '#2c3e50';
+            ctx.font = 'bold 18px sans-serif';
+            ctx.fillText('Exterior', 50, 120);
+            ctx.fillText('Wall', wallX - 20, 120);
+            if (document.getElementById('showWindow').checked) {
+                ctx.fillText('Window', windowX - 30, 120);
+            }
+            ctx.fillText('Interior', 750, 120);
+            
+            // Draw active frequencies
+            const activeFreqs = frequencies.filter(f => f.active);
+            const verticalSpacing = 25;
+            const startY = 150;
+            
+            activeFreqs.forEach((f, index) => {
+                const y = startY + index * verticalSpacing;
+                const freq = f.freq;
+                const wavelengthPixels = 200 / freq; // Adjusted for visualization
+                const amplitude = 30;
+                
+                // Calculate transmission
+                const tau = calculateTransmission(freq);
+                const transmittedAmplitude = amplitude * Math.sqrt(tau);
+                
+                // Draw incident wave (before wall)
+                ctx.strokeStyle = '#e74c3c';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                for (let x = 0; x < wallX; x += 2) {
+                    const phase = (x / wavelengthPixels) * 2 * Math.PI - time;
+                    const waveY = y + amplitude * Math.sin(phase);
+                    if (x === 0) {
+                        ctx.moveTo(x, waveY);
+                    } else {
+                        ctx.lineTo(x, waveY);
+                    }
+                }
+                ctx.stroke();
+                
+                // Draw transmitted wave (after wall) - PHASE CONTINUOUS
+                ctx.strokeStyle = '#27ae60';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                
+                // Calculate phase at wall boundary
+                const phaseAtWall = (wallX / wavelengthPixels) * 2 * Math.PI - time;
+                
+                const endX = document.getElementById('showWindow').checked ? 
+                    windowX - windowWidth/2 : canvas.width;
+                
+                for (let x = wallX + wallThickness; x < endX; x += 2) {
+                    // Continue phase from wall
+                    const phase = phaseAtWall + ((x - wallX) / wavelengthPixels) * 2 * Math.PI;
+                    const waveY = y + transmittedAmplitude * Math.sin(phase);
+                    if (x === wallX + wallThickness) {
+                        ctx.moveTo(x, waveY);
+                    } else {
+                        ctx.lineTo(x, waveY);
+                    }
+                }
+                ctx.stroke();
+                
+                // Draw after window if present
+                if (document.getElementById('showWindow').checked) {
+                    const windowTau = calculateTransmission(freq) * 0.5; // Additional window reduction
+                    const finalAmplitude = amplitude * Math.sqrt(windowTau);
+                    
+                    ctx.strokeStyle = '#27ae60';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    
+                    const phaseAtWindow = phaseAtWall + ((windowX - wallX) / wavelengthPixels) * 2 * Math.PI;
+                    
+                    for (let x = windowX + windowWidth; x < canvas.width; x += 2) {
+                        const phase = phaseAtWindow + ((x - windowX) / wavelengthPixels) * 2 * Math.PI;
+                        const waveY = y + finalAmplitude * Math.sin(phase);
+                        if (x === windowX + windowWidth) {
+                            ctx.moveTo(x, waveY);
+                        } else {
+                            ctx.lineTo(x, waveY);
+                        }
+                    }
+                    ctx.stroke();
+                }
+                
+                // Frequency label
+                ctx.fillStyle = '#2c3e50';
+                ctx.font = '12px sans-serif';
+                ctx.fillText(`${freq} Hz`, 5, y + 5);
+            });
+            
+            // Legend
+            ctx.fillStyle = '#2c3e50';
+            ctx.font = '14px sans-serif';
+            ctx.fillText('Legend:', 10, canvas.height - 40);
+            
+            ctx.strokeStyle = '#e74c3c';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(70, canvas.height - 35);
+            ctx.lineTo(120, canvas.height - 35);
+            ctx.stroke();
+            ctx.fillText('Incident', 130, canvas.height - 30);
+            
+            ctx.strokeStyle = '#27ae60';
+            ctx.beginPath();
+            ctx.moveTo(210, canvas.height - 35);
+            ctx.lineTo(260, canvas.height - 35);
+            ctx.stroke();
+            ctx.fillText('Transmitted', 270, canvas.height - 30);
+        }
+
+        function animate() {
+            if (!animating) return;
+            
+            time += 0.05 * animationSpeed;
+            draw();
+            requestAnimationFrame(animate);
+        }
+
+        function toggleAnimation() {
+            animating = !animating;
+            const btn = document.getElementById('playPauseBtn');
+            btn.textContent = animating ? '⏸️ Pause' : '▶️ Animate';
+            
+            if (animating) {
+                animate();
+            }
+        }
+
+        function resetVisualization() {
+            time = 0;
+            animating = false;
+            document.getElementById('playPauseBtn').textContent = '▶️ Animate';
+            draw();
+        }
+
+        function updateVisualization() {
+            if (!animating) {
+                draw();
+            }
+        }
+
+        // Initialize
+        generateFrequencyButtons();
+        draw();
+    </script>
+</body>
+</html>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ANSI S12.9 Part 4</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; line-height: 1.5; color: #333; background: #f5f5f5; font-size: 14px; }
+        .navbar { background: #2c3e50; padding: 15px 0; position: fixed; left: 0; top: 0; width: 220px; height: 100vh; overflow-y: auto; z-index: 1000; }
+        .navbar ul { list-style: none; }
+        .navbar a { display: block; color: white; text-decoration: none; padding: 10px 25px; font-size: 13px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .navbar a:hover { background: #34495e; }
+        .navbar a.active { background: #667eea; font-weight: 600; border-left: 4px solid #fff; }
+        .main-content { margin-left: 240px; padding: 20px 30px; max-width: 1600px; }
+        h1 { color: #2c3e50; margin-bottom: 15px; font-size: 1.8em; }
+        h2 { color: #34495e; margin-top: 15px; margin-bottom: 10px; font-size: 1.3em; border-bottom: 2px solid #667eea; padding-bottom: 5px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px 0; }
+        .box { background: white; padding: 15px; border-radius: 4px; border-left: 4px solid #667eea; }
+        table { width: 100%; border-collapse: collapse; font-size: 12px; margin: 10px 0; }
+        th, td { padding: 6px 8px; border: 1px solid #ddd; text-align: left; }
+        th { background: #2c3e50; color: white; }
+        p { margin-bottom: 10px; }
+        ul { margin-left: 20px; }
+        li { margin-bottom: 4px; font-size: 13px; }
+    </style>
+</head>
+<body>
+                                        <nav class="navbar">
+        <ul>
+            <li><a href="index.html">🏠 Home</a></li>
+            <li><a href="science_center_case.html">📋 Case Documentation</a></li>
+            <li><a href="welcome_to_neighborhood.html">🏘️ Welcome Letter</a></li>
+            <li><a href="community_complaints.html">👥 Community Complaints</a></li>
+            <li><a href="wall_transmission.html">🌊 Wall Transmission Viz</a></li>
+            <li><a href="interactive_noise_map.html">🗺️ Interactive Map</a></li>
+            <li><a href="data_import.html">📥 Data Import</a></li>
+            <li><a href="ansi_calculator_flowchart.html">🔢 ANSI Calculator</a></li>
+            <li><a href="potential_solutions.html">💡 Solutions</a></li>
+            <li><a href="comparative_standards.html">📊 Standards Comparison</a></li>
+            <li><a href="ansi_s12_9_part_4.html" class="active">📐 ANSI S12.9 Part 4</a></li>
+            <li><a href="penalty_application_guide.html">📋 Penalty Guide</a></li>
+            <li><a href="model_noise_ordinance.html">📖 Model Ordinance</a></li>
+            <li><a href="hvac_system_complete_schematic.html">🏭 HVAC Schematics</a></li>
+            <li><a href="technical_resources.html">📚 Technical Resources</a></li>
+            <li><a href="pe_ethics_health_safety.html">⚕️ PE Ethics</a></li>
+        </ul>
+    </nav>
+
+    <div class="main-content">
+        <h1>ANSI S12.9 Part 4: Outdoor Noise Measurement Standard</h1>
+        
+        <p><strong>Standard:</strong> ANSI/ASA S12.9-2013/Part 4 (R2023) - "Quantities and Procedures for Description and Measurement of Environmental Sound - Part 4: Noise Assessment and Prediction of Long-term Community Response"</p>
+
+        <div class="grid-2">
+            <div class="box">
+                <h2>Key Requirements</h2>
+                <ul style="margin-top: 8px;">
+                    <li>Measurement at receiving property (not just property line)</li>
+                    <li>Multiple weightings: dB(A), dB(C) or dB(Z)</li>
+                    <li>1/3 octave band analysis (31.5 Hz - 8 kHz)</li>
+                    <li>Minimum 10-minute continuous measurement</li>
+                    <li>Meteorological conditions documented</li>
+                    <li>Background noise measurement (source off)</li>
+                    <li>Character-based adjustments for tonal, LF, impulsive</li>
+                </ul>
+            </div>
+            
+            <div class="box">
+                <h2>Why This Standard Matters</h2>
+                <ul style="margin-top: 8px;">
+                    <li>International recognized (ISO 1996-1/2 equivalent)</li>
+                    <li>Addresses elevated sources explicitly</li>
+                    <li>Accounts for character/annoyance factors</li>
+                    <li>Used by acoustic consultants worldwide</li>
+                    <li>Cited in peer city ordinances</li>
+                    <li>Prevents gaming through methodology choice</li>
+                </ul>
+            </div>
+        </div>
+
+        <h2>Character-Based Adjustments (§7.3.1)</h2>
+        
+        <table>
+            <tr><th>Character Type</th><th>Criteria</th><th>Penalty</th><th>HVAC Application</th></tr>
+            <tr><td><strong>Tonal</strong></td><td>Pure tone prominence per Annex C</td><td>+3 to +6 dB</td><td>63 Hz cooling tower tone, fan blade pass frequency</td></tr>
+            <tr><td><strong>Low-Frequency</strong></td><td>dB(C) - dB(A) > 20 dB</td><td>+5 dB</td><td>31.5-63 Hz rumble from compressors, towers</td></tr>
+            <tr><td><strong>Impulsive</strong></td><td>Repetitive impacts, clanks</td><td>+5 dB</td><td>Compressor cycling, damper movement</td></tr>
+            <tr><td><strong>Time-Varying</strong></td><td>Fluctuating levels >5 dB</td><td>Use statistical descriptors</td><td>VFD speed changes, cycling equipment</td></tr>
+        </table>
+
+        <h2>Measurement Positions (§5.2)</h2>
+        
+        <table>
+            <tr><th>Scenario</th><th>Measurement Location</th><th>Height</th></tr>
+            <tr><td>Ground-level source</td><td>Property line or nearest point</td><td>1.2-1.5 m above ground</td></tr>
+            <tr><td>Elevated source to ground</td><td>Most affected ground location</td><td>1.2-1.5 m above ground</td></tr>
+            <tr style="background: #fff3cd;"><td><strong>Elevated source to elevated receiver</strong></td><td><strong>At receiver (upper floors)</strong></td><td><strong>Actual receiver height</strong></td></tr>
+        </table>
+
+        <p style="margin-top: 15px;"><strong>San Mateo Case Application:</strong> Rooftop equipment at 35 ft projecting to 3rd-floor residences at 30 ft → measure at 3rd-floor windows/balconies, not at ground level.</p>
+    </div>
+</body>
+</html>

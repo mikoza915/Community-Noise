@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Engineer Ethics: Health & Safety Obligations</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+        }
+        
+        .navbar {
+            background: #2c3e50;
+            padding: 15px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 220px;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+        
+        .navbar ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .navbar li {
+            margin: 0;
+        }
+        
+        .navbar a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            padding: 12px 25px;
+            transition: background 0.3s, padding-left 0.3s;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .navbar a:hover {
+            background: #34495e;
+            padding-left: 30px;
+        }
+        
+        .navbar a.active {
+            background: #667eea;
+            font-weight: 600;
+            border-left: 4px solid #fff;
+        }
+        
+        .main-content {
+            margin-left: 240px;
+            padding: 30px 40px;
+            max-width: 1200px;
+        }
+        
+        @media (max-width: 768px) {
+            .navbar {
+                position: static;
+                width: 100%;
+                height: auto;
+            }
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            line-height: 1.2;
+        }
+        
+        h2 {
+            color: #34495e;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        h3 {
+            color: #34495e;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
+        
+        h4 {
+            color: #34495e;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        
+        p {
+            margin-bottom: 15px;
+            line-height: 1.8;
+        }
+        
+        ul, ol {
+            margin-left: 30px;
+            margin-bottom: 20px;
+        }
+        
+        li {
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+        
+        .critical-box {
+            background: #dc3545;
+            color: white;
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 8px;
+            border-left: 5px solid #a71d2a;
+        }
+        
+        .warning-box {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 4px;
+        }
+        
+        .info-box {
+            background: #e7f3ff;
+            border-left: 5px solid #007bff;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 4px;
+        }
+        
+        .code-section {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        blockquote {
+            border-left: 4px solid #667eea;
+            padding-left: 20px;
+            margin: 20px 0;
+            font-style: italic;
+            color: #555;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: #2c3e50;
+            color: white;
+            font-weight: 600;
+        }
+        
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .emphasis {
+            background-color: #fff3cd;
+            padding: 3px 6px;
+            border-radius: 3px;
+            font-weight: 600;
+        }
+        
+        .citation {
+            font-size: 0.9em;
+            color: #666;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+                                        <nav class="navbar">
+        <ul>
+            <li><a href="index.html">🏠 Home</a></li>
+            <li><a href="science_center_case.html">📋 Case Documentation</a></li>
+            <li><a href="welcome_to_neighborhood.html">🏘️ Welcome Letter</a></li>
+            <li><a href="community_complaints.html">👥 Community Complaints</a></li>
+            <li><a href="wall_transmission.html">🌊 Wall Transmission Viz</a></li>
+            <li><a href="interactive_noise_map.html">🗺️ Interactive Map</a></li>
+            <li><a href="data_import.html">📥 Data Import</a></li>
+            <li><a href="ansi_calculator_flowchart.html">🔢 ANSI Calculator</a></li>
+            <li><a href="potential_solutions.html">💡 Solutions</a></li>
+            <li><a href="comparative_standards.html">📊 Standards Comparison</a></li>
+            <li><a href="ansi_s12_9_part_4.html">📐 ANSI S12.9 Part 4</a></li>
+            <li><a href="penalty_application_guide.html">📋 Penalty Guide</a></li>
+            <li><a href="model_noise_ordinance.html">📖 Model Ordinance</a></li>
+            <li><a href="hvac_system_complete_schematic.html">🏭 HVAC Schematics</a></li>
+            <li><a href="technical_resources.html">📚 Technical Resources</a></li>
+            <li><a href="pe_ethics_health_safety.html" class="active">⚕️ PE Ethics</a></li>
+        </ul>
+    </nav>
+
+    <div class="main-content">
+        <h1>Professional Engineer Ethics: Health & Safety Obligations</h1>
+        
+        <div class="critical-box">
+            <h2 style="color: white; margin-top: 0; border: none;">Paramount Obligation</h2>
+            <p style="font-size: 1.2em;"><strong>Engineers shall hold paramount the safety, health, and welfare of the public.</strong></p>
+            <p style="margin-bottom: 0;">This is not optional guidance—it is the <strong>first and foremost</strong> ethical obligation in every major engineering code of ethics worldwide.</p>
+        </div>
+
+        <h2>California Professional Engineers Act</h2>
+        
+        <p>Professional Engineers licensed in California are governed by the <strong>California Professional Engineers Act</strong> (Business and Professions Code §6700 et seq.) and regulations enforced by the California Board for Professional Engineers, Land Surveyors, and Geologists (BPELSG).</p>
+
+        <h3>California Business and Professions Code §6775 - Professional Conduct</h3>
+        
+        <div class="code-section">
+            <p><strong>§6775. Professional conduct</strong></p>
+            <p>Professional engineers and land surveyors shall practice and perform their work in accordance with the laws relating to professional conduct generally applicable to the practice of their profession.</p>
+            <p>The board may adopt and amend rules of professional conduct appropriate to the establishment and maintenance of a high standard of integrity, skills, and practice in the professions of engineering and land surveying.</p>
+        </div>
+
+        <h3>California Code of Regulations Title 16, Division 5, §404 - Rules of Professional Conduct</h3>
+
+        <div class="code-section">
+            <p><strong>§404. Rules of Professional Conduct for Licensed Professional Engineers</strong></p>
+            <p><strong>(a) The professional engineer shall:</strong></p>
+            <ol>
+                <li><strong>Hold paramount the safety, health, and welfare of the public in the performance of their professional duties.</strong></li>
+                <li>Undertake to perform engineering assignments only when qualified by education or experience in the specific technical field of engineering involved.</li>
+                <li>Sign and seal only those plans, specifications, and reports actually prepared by him or her or under his or her direct supervision.</li>
+            </ol>
+        </div>
+
+        <div class="warning-box">
+            <h3>Key Point: "Hold Paramount"</h3>
+            <p>The word "paramount" means <strong>supreme, preeminent, superior to all others</strong>. This ethical obligation:</p>
+            <ul>
+                <li>Supersedes client interests</li>
+                <li>Supersedes employer interests</li>
+                <li>Supersedes financial considerations</li>
+                <li>Supersedes contractual obligations</li>
+            </ul>
+            <p><strong>When public safety, health, or welfare is at risk, the engineer's paramount duty is to the public—not to the client who hired them.</strong></p>
+        </div>
+
+        <h2>National Society of Professional Engineers (NSPE) Code of Ethics</h2>
+        
+        <p>The NSPE Code of Ethics is widely adopted and referenced. It provides detailed guidance on professional obligations:</p>
+
+        <h3>Fundamental Canons</h3>
+        
+        <div class="code-section">
+            <p><strong>Engineers, in the fulfillment of their professional duties, shall:</strong></p>
+            <ol>
+                <li><strong>Hold paramount the safety, health, and welfare of the public.</strong></li>
+                <li>Perform services only in areas of their competence.</li>
+                <li>Issue public statements only in an objective and truthful manner.</li>
+                <li>Act for each employer or client as faithful agents or trustees.</li>
+                <li>Avoid deceptive acts.</li>
+                <li>Conduct themselves honorably, responsibly, ethically, and lawfully so as to enhance the honor, reputation, and usefulness of the profession.</li>
+            </ol>
+        </div>
+
+        <h3>Rules of Practice - Public Safety</h3>
+
+        <div class="code-section">
+            <p><strong>1. Engineers shall hold paramount the safety, health, and welfare of the public.</strong></p>
+            
+            <p><strong>a.</strong> If engineers' judgment is overruled under circumstances that endanger life or property, they shall notify their employer or client and such other authority as may be appropriate.</p>
+            
+            <p><strong>b.</strong> Engineers shall approve only those engineering documents that are in conformity with applicable standards.</p>
+            
+            <p><strong>c.</strong> Engineers shall not reveal facts, data, or information without the prior consent of the client or employer except as authorized or required by law or this Code.</p>
+            
+            <p><strong>d.</strong> Engineers shall not permit the use of their name or associate in business ventures with any person or firm that they believe is engaged in fraudulent or dishonest enterprise.</p>
+            
+            <p><strong>e.</strong> Engineers having knowledge of any alleged violation of this Code shall report thereon to appropriate professional bodies and, when relevant, also to public authorities, and cooperate with the proper authorities in furnishing such information or assistance as may be required.</p>
+        </div>
+
+        <div class="info-box">
+            <h3>NSPE Rule 1.a - The "Overruled Judgment" Provision</h3>
+            <p>This rule is particularly relevant when:</p>
+            <ul>
+                <li>An engineer designs a system with inadequate safety margins</li>
+                <li>Cost-cutting measures eliminate necessary safety features</li>
+                <li>An employer/client refuses to address identified hazards</li>
+                <li><strong>Public complaints reveal unanticipated hazards post-construction</strong></li>
+            </ul>
+            <p><strong>The engineer's obligation does not end when the project is complete. If new information reveals public health/safety hazards, the engineer must act.</strong></p>
+        </div>
+
+        <h2>Application to HVAC Noise as a Public Health Issue</h2>
+
+        <h3>Is Noise a "Public Health and Safety" Matter?</h3>
+
+        <p><strong>Yes. Definitively.</strong></p>
+
+        <p>Excessive noise exposure is recognized by:</p>
+
+        <ul>
+            <li><strong>World Health Organization (WHO)</strong> - Environmental noise ranks second only to air pollution as an environmental cause of health problems</li>
+            <li><strong>U.S. Environmental Protection Agency (EPA)</strong> - Noise pollution affects health and welfare</li>
+            <li><strong>California Department of Public Health</strong> - Recognizes noise as environmental health hazard</li>
+            <li><strong>Occupational Safety and Health Administration (OSHA)</strong> - Regulates workplace noise exposure</li>
+            <li><strong>U.S. Department of Housing and Urban Development (HUD)</strong> - Sets noise standards for residential areas</li>
+        </ul>
+
+        <h3>Documented Health Effects of Chronic Noise Exposure</h3>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Health Impact Category</th>
+                    <th>Documented Effects</th>
+                    <th>Threshold Levels</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Sleep Disruption</strong></td>
+                    <td>Fragmented sleep, reduced REM sleep, daytime fatigue, cognitive impairment</td>
+                    <td>35-45 dB(A) indoor nighttime</td>
+                </tr>
+                <tr>
+                    <td><strong>Cardiovascular Effects</strong></td>
+                    <td>Elevated blood pressure, increased heart rate, higher risk of hypertension and heart disease</td>
+                    <td>50-55 dB(A) chronic exposure</td>
+                </tr>
+                <tr>
+                    <td><strong>Mental Health</strong></td>
+                    <td>Increased stress, anxiety, irritability, reduced quality of life</td>
+                    <td>45-55 dB(A) residential</td>
+                </tr>
+                <tr>
+                    <td><strong>Cognitive Performance</strong></td>
+                    <td>Reduced concentration, impaired learning, decreased productivity</td>
+                    <td>40-50 dB(A) during tasks</td>
+                </tr>
+                <tr>
+                    <td><strong>Annoyance</strong></td>
+                    <td>Chronic annoyance, reduced enjoyment of property, stress response</td>
+                    <td>45-50 dB(A) outdoor</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p class="citation">Sources: WHO Environmental Noise Guidelines (2018), EPA Levels Document (1974), ANSI/ASA S12.9 Part 7 (2016)</p>
+
+        <div class="warning-box">
+            <h3>Low-Frequency Noise: Special Health Concerns</h3>
+            <p>Low-frequency noise (20-200 Hz), characteristic of HVAC equipment, presents additional health challenges:</p>
+            <ul>
+                <li><strong>Penetrates building structures</strong> more effectively than higher frequencies</li>
+                <li><strong>Difficult to mask</strong> with conventional sound insulation</li>
+                <li><strong>More annoying</strong> than broadband noise at equivalent dB(A) levels</li>
+                <li><strong>Causes vibrotactile perception</strong> (feeling sound in the body)</li>
+                <li><strong>Associated with "wind turbine syndrome"</strong> symptoms: headaches, nausea, dizziness, sleep disturbance</li>
+            </ul>
+            <p><strong>Standard dB(A) weighting significantly underestimates low-frequency annoyance and health impact.</strong></p>
+            <p class="citation">Leventhall, G. (2004). "Low frequency noise and annoyance." Noise & Health, 6(23), 59-72.</p>
+        </div>
+
+        <h2>Engineer's Duty Upon Learning of Public Health Hazard</h2>
+
+        <h3>Scenario: Post-Construction Discovery of Noise Impact</h3>
+
+        <p>When an engineer learns that a system they designed is causing documented public health impacts (e.g., through noise complaints, measurements showing violations), their ethical obligations include:</p>
+
+        <h4>1. Acknowledge and Investigate</h4>
+        <ul>
+            <li>Take complaints seriously, not dismissively</li>
+            <li>Review actual measurement data from affected parties</li>
+            <li>Verify measurements at proper receiving locations (not just property line)</li>
+            <li>Consider whether design assumptions were valid</li>
+        </ul>
+
+        <h4>2. Apply Current Standards</h4>
+        <ul>
+            <li>Use current measurement methodology (ANSI S12.9 Part 4, not outdated methods)</li>
+            <li>Apply character penalties for tonal and low-frequency content</li>
+            <li>Measure at locations where impact occurs (elevated receivers for elevated sources)</li>
+            <li>Consider cumulative impact of multiple sources</li>
+        </ul>
+
+        <h4>3. Recommend Corrective Action</h4>
+        <ul>
+            <li>If violations exist, engineer must recommend mitigation</li>
+            <li>Present technically feasible solutions with cost estimates</li>
+            <li>Prioritize public health over client cost preferences</li>
+            <li>Document recommendations in writing</li>
+        </ul>
+
+        <h4>4. Escalate if Necessary</h4>
+        <ul>
+            <li>If client refuses to implement necessary corrections</li>
+            <li>Notify appropriate authorities (code enforcement, health department)</li>
+            <li>Document the refusal and notification</li>
+            <li>May need to withdraw from further representation of client on this matter</li>
+        </ul>
+
+        <div class="critical-box">
+            <h3 style="color: white; margin-top: 0; border: none;">What Engineers Cannot Do</h3>
+            <p><strong>Engineers cannot:</strong></p>
+            <ul style="margin-bottom: 0;">
+                <li>Ignore documented public complaints of health impacts</li>
+                <li>Use inadequate measurement methodology to claim "compliance"</li>
+                <li>Prioritize client's financial interests over public health</li>
+                <li>Remain silent when aware of ongoing public health hazards</li>
+                <li>Defend a deficient design simply because it was theirs</li>
+            </ul>
+        </div>
+
+        <h2>Specific Application: San Mateo Science Center Case</h2>
+
+        <h3>Facts Implicating PE Ethics</h3>
+
+        <ol>
+            <li><strong>Multiple resident complaints</strong> documenting sleep disruption and quality of life impacts (204+ days)</li>
+            
+            <li><strong>Documented measurements</strong> showing:
+                <ul>
+                    <li>Tonal character (63 Hz fundamental from cooling towers)</li>
+                    <li>Low-frequency dominance (dB(C) - dB(A) > 20 dB)</li>
+                    <li>Elevated-to-elevated sound path not captured by ground measurements</li>
+                    <li>Levels at receiving properties likely 15-20 dB higher than ground measurements</li>
+                </ul>
+            </li>
+            
+            <li><strong>Methodology inadequacies</strong>:
+                <ul>
+                    <li>Ground-level measurements for elevated sources/receivers</li>
+                    <li>dB(A)-only assessment for low-frequency dominant noise</li>
+                    <li>No character penalties applied despite obvious tonal content</li>
+                    <li>Measurements at wrong location per ANSI S12.9 Part 4</li>
+                </ul>
+            </li>
+            
+            <li><strong>Predictable outcome</strong>:
+                <ul>
+                    <li>Community provided specific warnings about rooftop equipment in January 2022</li>
+                    <li>Ground equipment was properly mitigated (18-ft walls, acoustic treatment)</li>
+                    <li>Rooftop equipment received no mitigation despite same proximity concerns</li>
+                    <li>Exactly the predicted problem occurred</li>
+                </ul>
+            </li>
+        </ol>
+
+        <h3>Ethical Questions for Matthews & Vaneveld</h3>
+
+        <div class="info-box">
+            <p><strong>As the professional engineers of record for the HVAC systems:</strong></p>
+            <ol>
+                <li>Are you aware that residents have filed formal noise complaints (CE-2024-000294)?</li>
+                
+                <li>Have you reviewed measurement data showing:
+                    <ul>
+                        <li>Tonal character at 63 Hz (cooling tower blade pass frequency)?</li>
+                        <li>Low-frequency content with dB(C) - dB(A) > 20 dB?</li>
+                        <li>Documented impact at upper-floor receiving locations?</li>
+                    </ul>
+                </li>
+                
+                <li>Do you agree that:
+                    <ul>
+                        <li>Ground-level measurements miss elevated-to-elevated sound paths?</li>
+                        <li>dB(A) weighting underestimates low-frequency annoyance?</li>
+                        <li>ANSI S12.9 Part 4 requires measurement at highest-reading receiving location?</li>
+                        <li>Tonal and low-frequency character warrant penalty adjustments?</li>
+                    </ul>
+                </li>
+                
+                <li>Given documented health impacts (sleep disruption) and measurement data suggesting violations when properly assessed, what is your professional recommendation for corrective action?</li>
+                
+                <li>Do you believe your paramount duty to public health and welfare requires engagement with this issue, regardless of client preferences?</li>
+            </ol>
+        </div>
+
+        <h2>Consequences of Ethical Violations</h2>
+
+        <p>Professional Engineers who violate ethical obligations may face:</p>
+
+        <h3>Administrative Penalties (BPELSG)</h3>
+        <ul>
+            <li>License revocation</li>
+            <li>License suspension</li>
+            <li>Probation with conditions</li>
+            <li>Public reprimand</li>
+            <li>Administrative fines</li>
+            <li>Required remedial education</li>
+        </ul>
+
+        <h3>Civil Liability</h3>
+        <ul>
+            <li>Professional negligence claims</li>
+            <li>Breach of professional duty</li>
+            <li>Nuisance liability</li>
+            <li>Contribution to property damage (diminished value)</li>
+        </ul>
+
+        <h3>Professional Reputation</h3>
+        <ul>
+            <li>Loss of professional standing</li>
+            <li>Difficulty obtaining future work</li>
+            <li>Damage to firm reputation</li>
+            <li>Loss of professional society memberships</li>
+        </ul>
+
+        <h2>Reporting Ethical Violations</h2>
+
+        <h3>California Board for Professional Engineers, Land Surveyors, and Geologists (BPELSG)</h3>
+
+        <div class="info-box">
+            <p><strong>Filing a Complaint:</strong></p>
+            <p><strong>Online:</strong> <a href="https://www.bpelsg.ca.gov/consumers/complaints.shtml" target="_blank">www.bpelsg.ca.gov/consumers/complaints.shtml</a></p>
+            <p><strong>Mail:</strong><br>
+            Board for Professional Engineers, Land Surveyors, and Geologists<br>
+            2535 Capitol Oaks Drive, Suite 300<br>
+            Sacramento, CA 95833</p>
+            <p><strong>Phone:</strong> (916) 263-2222</p>
+            
+            <p style="margin-top: 15px;"><strong>What to Include:</strong></p>
+            <ul>
+                <li>Engineer's name and license number (if known)</li>
+                <li>Description of the project and engineer's role</li>
+                <li>Specific ethical violations alleged</li>
+                <li>Documentation: measurements, complaint filings, correspondence</li>
+                <li>Evidence of public health impact</li>
+                <li>Timeline of events</li>
+            </ul>
+        </div>
+
+        <h3>National Society of Professional Engineers (NSPE)</h3>
+
+        <p>While NSPE cannot revoke licenses, complaints can lead to:</p>
+        <ul>
+            <li>Ethics review by NSPE Board of Ethical Review</li>
+            <li>Published ethics opinions (anonymized)</li>
+            <li>Professional censure</li>
+            <li>Referral to state licensing board</li>
+        </ul>
+
+        <h2>Constructive Engagement: Engineer-to-Engineer Approach</h2>
+
+        <p>Before filing formal complaints, professional courtesy suggests direct engagement:</p>
+
+        <div class="info-box">
+            <h3>Recommended Approach</h3>
+            <ol>
+                <li><strong>Collegial Contact:</strong> Engineer-to-engineer communication emphasizing shared professional obligations</li>
+                
+                <li><strong>Present Technical Evidence:</strong> Share measurement data, methodology analysis, ANSI standards</li>
+                
+                <li><strong>Frame as Professional Opportunity:</strong> Chance to demonstrate adherence to ethical obligations</li>
+                
+                <li><strong>Suggest Site Visit:</strong> Invite engineers to experience conditions at receiving properties</li>
+                
+                <li><strong>Request Professional Opinion:</strong> Ask for engineering assessment of mitigation options</li>
+                
+                <li><strong>Document Everything:</strong> Keep records of all communications</li>
+                
+                <li><strong>Set Reasonable Deadline:</strong> 30-60 days for response</li>
+                
+                <li><strong>Escalate if Necessary:</strong> If no substantive response, proceed to formal complaint</li>
+            </ol>
+        </div>
+
+        <h2>Summary: The Engineer's Paramount Duty</h2>
+
+        <div class="critical-box">
+            <h3 style="color: white; margin-top: 0; border: none;">Bottom Line</h3>
+            <p style="font-size: 1.1em;"><strong>When credible evidence emerges that an engineered system is causing public health impacts:</strong></p>
+            <ul>
+                <li>The engineer's <strong>paramount duty to public safety, health, and welfare</strong> requires action</li>
+                <li>Client interests, cost considerations, and professional pride are <strong>subordinate</strong> to this duty</li>
+                <li>Ignoring documented health impacts is <strong>not ethically defensible</strong></li>
+                <li>Using inadequate methodology to claim "compliance" is <strong>professionally dishonest</strong></li>
+                <li>The license to practice engineering is a <strong>public trust</strong>, not just a professional credential</li>
+            </ul>
+            <p style="margin-bottom: 0; font-size: 1.1em;"><strong>Professional engineers are not hired guns. They are stewards of public safety.</strong></p>
+        </div>
+
+        <h2>References & Resources</h2>
+
+        <h3>Legal and Regulatory</h3>
+        <ul>
+            <li>California Business and Professions Code §6700-6799 (Professional Engineers Act)</li>
+            <li>California Code of Regulations Title 16, Division 5, §404 (Rules of Professional Conduct)</li>
+            <li>NSPE Code of Ethics (2019): <a href="https://www.nspe.org/resources/ethics/code-ethics" target="_blank">www.nspe.org/resources/ethics/code-ethics</a></li>
+            <li>BPELSG Complaint Process: <a href="https://www.bpelsg.ca.gov/consumers/complaints.shtml" target="_blank">www.bpelsg.ca.gov/consumers/complaints.shtml</a></li>
+        </ul>
+
+        <h3>Health Effects Research</h3>
+        <ul>
+            <li>World Health Organization (2018). "Environmental Noise Guidelines for the European Region"</li>
+            <li>EPA (1974). "Information on Levels of Environmental Noise Requisite to Protect Public Health and Welfare with an Adequate Margin of Safety" (EPA 550/9-74-004)</li>
+            <li>Leventhall, G. (2004). "Low frequency noise and annoyance." <em>Noise & Health</em>, 6(23), 59-72</li>
+            <li>Basner, M., et al. (2014). "Auditory and non-auditory effects of noise on health." <em>The Lancet</em>, 383(9925), 1325-1332</li>
+        </ul>
+
+        <h3>Engineering Standards</h3>
+        <ul>
+            <li>ANSI/ASA S12.9 Part 4 (2005). "Quantities and Procedures for Description and Measurement of Environmental Sound - Part 4: Noise Assessment and Prediction of Long-term Community Response"</li>
+            <li>ASHRAE (2005). "A Practical Guide to Noise and Vibration Control for HVAC Systems" (RP-526)</li>
+            <li>ISO 1996-1 (2016). "Acoustics — Description, measurement and assessment of environmental noise — Part 1: Basic quantities and assessment procedures"</li>
+        </ul>
+
+        <p style="margin-top: 40px; text-align: center;">
+            <a href="index.html" style="background: #667eea; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; font-weight: bold;">Return to Home</a>
+        </p>
+    </div>
+</body>
+</html>

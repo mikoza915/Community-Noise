@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Industrial HVAC System Schematic</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+            font-size: 15px;
+        }
+        
+        .navbar {
+            background: #2c3e50;
+            padding: 15px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 220px;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+        
+        .navbar ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .navbar li {
+            margin: 0;
+        }
+        
+        .navbar a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            padding: 10px 25px;
+            transition: background 0.3s, padding-left 0.3s;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            font-size: 14px;
+        }
+        
+        .navbar a:hover {
+            background: #34495e;
+            padding-left: 30px;
+        }
+        
+        .navbar a.active {
+            background: #667eea;
+            font-weight: 600;
+            border-left: 4px solid #fff;
+        }
+        
+        .main-content {
+            margin-left: 240px;
+            padding: 25px 40px;
+            max-width: 1600px;
+        }
+        
+        @media (max-width: 1920px) and (min-width: 1600px) {
+            .main-content {
+                max-width: 1400px;
+            }
+        }
+        
+        @media (max-width: 1599px) {
+            .main-content {
+                max-width: 1200px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .navbar {
+                position: static;
+                width: 100%;
+                height: auto;
+            }
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 2.2em;
+            line-height: 1.2;
+        }
+        
+        h2 {
+            color: #34495e;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-size: 1.6em;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 8px;
+            line-height: 1.3;
+        }
+        
+        h3 {
+            color: #34495e;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 1.3em;
+            line-height: 1.3;
+        }
+        
+        h4 {
+            color: #34495e;
+            margin-top: 15px;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+        
+        p {
+            margin-bottom: 15px;
+            line-height: 1.7;
+        }
+        
+        a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        
+        a:hover {
+            text-decoration: underline;
+        }
+        
+        .summary-box, .key-point, .note {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 18px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .improvement {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 18px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .inadequate-response {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 18px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+        
+        th, td {
+            padding: 10px 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        
+        th {
+            background: #2c3e50;
+            color: white;
+            font-weight: 600;
+        }
+        
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: "Courier New", monospace;
+            font-size: 0.9em;
+        }
+        
+        pre {
+            background: #f4f4f4;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin: 20px 0;
+            font-size: 0.9em;
+        }
+        
+        ul, ol {
+            margin-left: 30px;
+            margin-bottom: 15px;
+        }
+        
+        li {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            margin-left: 240px;
+            max-width: 1600px;
+            background: white;
+            padding: 25px 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                margin-left: 0;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+                                        <nav class="navbar">
+        <ul>
+            <li><a href="index.html">🏠 Home</a></li>
+            <li><a href="science_center_case.html">📋 Case Documentation</a></li>
+            <li><a href="welcome_to_neighborhood.html">🏘️ Welcome Letter</a></li>
+            <li><a href="community_complaints.html">👥 Community Complaints</a></li>
+            <li><a href="wall_transmission.html">🌊 Wall Transmission Viz</a></li>
+            <li><a href="interactive_noise_map.html">🗺️ Interactive Map</a></li>
+            <li><a href="data_import.html">📥 Data Import</a></li>
+            <li><a href="ansi_calculator_flowchart.html">🔢 ANSI Calculator</a></li>
+            <li><a href="potential_solutions.html">💡 Solutions</a></li>
+            <li><a href="comparative_standards.html">📊 Standards Comparison</a></li>
+            <li><a href="ansi_s12_9_part_4.html">📐 ANSI S12.9 Part 4</a></li>
+            <li><a href="penalty_application_guide.html">📋 Penalty Guide</a></li>
+            <li><a href="model_noise_ordinance.html">📖 Model Ordinance</a></li>
+            <li><a href="hvac_system_complete_schematic.html">🏭 HVAC Schematics</a></li>
+            <li><a href="technical_resources.html">📚 Technical Resources</a></li>
+            <li><a href="pe_ethics_health_safety.html">⚕️ PE Ethics</a></li>
+        </ul>
+    </nav>
+
+
+    <div class="container">
+        <h1>Industrial HVAC System Schematic</h1>
+        <p class="subtitle">Typical Life Science / Lab Building Installation (200,000+ SF)</p>
+        
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color" style="background: #e74c3c;"></div>
+                <span><strong>High Noise (>75 dB)</strong></span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #f39c12;"></div>
+                <span><strong>Medium Noise (65-75 dB)</strong></span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #3498db;"></div>
+                <span><strong>Chilled Water Flow</strong></span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #95a5a6;"></div>
+                <span><strong>Condenser Water Flow</strong></span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #2ecc71;"></div>
+                <span><strong>Air Flow (Supply)</strong></span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #e67e22;"></div>
+                <span><strong>Air Flow (Return)</strong></span>
+            </div>
+        </div>
+
+        <svg viewBox="0 0 1200 900" xmlns="http://www.w3.org/2000/svg">
+            <!-- Title -->
+            <text x="600" y="30" font-size="24" font-weight="bold" text-anchor="middle" fill="#2c3e50">
+                Rooftop HVAC System - Typical Installation
+            </text>
+            
+            <!-- Rooftop boundary -->
+            <rect x="50" y="50" width="1100" height="400" fill="none" stroke="#34495e" stroke-width="3" stroke-dasharray="10,5"/>
+            <text x="600" y="80" font-size="18" font-weight="bold" text-anchor="middle" fill="#34495e">ROOFTOP EQUIPMENT</text>
+            
+            <!-- COOLING TOWER -->
+            <g id="cooling-tower">
+                <rect x="100" y="120" width="200" height="150" fill="#95a5a6" stroke="#2c3e50" stroke-width="2"/>
+                <path d="M 150 120 L 200 90 L 250 120" fill="none" stroke="#2c3e50" stroke-width="2"/>
+                <circle cx="200" cy="180" r="30" fill="#7f8c8d" stroke="#2c3e50" stroke-width="2"/>
+                <text x="200" y="150" font-size="16" font-weight="bold" text-anchor="middle">COOLING</text>
+                <text x="200" y="170" font-size="16" font-weight="bold" text-anchor="middle">TOWER</text>
+                
+                <!-- Fan at top -->
+                <circle cx="200" cy="105" r="10" fill="#34495e"/>
+                <line x1="195" y1="100" x2="205" y2="110" stroke="#fff" stroke-width="2"/>
+                <line x1="195" y1="110" x2="205" y2="100" stroke="#fff" stroke-width="2"/>
+                
+                <!-- Noise data -->
+                <rect x="105" y="280" width="190" height="60" fill="#e74c3c" opacity="0.2" stroke="#e74c3c" stroke-width="2"/>
+                <text x="200" y="305" font-size="13" font-weight="bold" text-anchor="middle" fill="#c0392b">🔊 85-95 dB(A)</text>
+                <text x="200" y="320" font-size="11" text-anchor="middle">Fan: 60/120 Hz tone</text>
+                <text x="200" y="333" font-size="11" text-anchor="middle">Power: 75-150 kW</text>
+            </g>
+            
+            <!-- CHILLER 1 -->
+            <g id="chiller-1">
+                <rect x="380" y="120" width="180" height="180" fill="#3498db" opacity="0.3" stroke="#2c3e50" stroke-width="2"/>
+                <rect x="395" y="140" width="150" height="60" fill="#2980b9" stroke="#2c3e50" stroke-width="1"/>
+                <text x="470" y="165" font-size="14" font-weight="bold" text-anchor="middle" fill="#fff">COMPRESSOR</text>
+                <text x="470" y="182" font-size="12" text-anchor="middle" fill="#fff">Screw Type</text>
+                
+                <rect x="395" y="220" width="150" height="60" fill="#3498db" stroke="#2c3e50" stroke-width="1"/>
+                <text x="470" y="245" font-size="14" font-weight="bold" text-anchor="middle">EVAPORATOR</text>
+                <text x="470" y="262" font-size="12" text-anchor="middle">(Chilled Water)</text>
+                
+                <text x="470" y="115" font-size="16" font-weight="bold" text-anchor="middle">CHILLER #1</text>
+                
+                <!-- Noise data -->
+                <rect x="385" y="310" width="170" height="60" fill="#f39c12" opacity="0.2" stroke="#f39c12" stroke-width="2"/>
+                <text x="470" y="335" font-size="13" font-weight="bold" text-anchor="middle" fill="#d68910">🔊 78-88 dB(A)</text>
+                <text x="470" y="350" font-size="11" text-anchor="middle">Compressor vibration</text>
+                <text x="470" y="363" font-size="11" text-anchor="middle">Power: 200-400 kW</text>
+            </g>
+            
+            <!-- CHILLER 2 -->
+            <g id="chiller-2">
+                <rect x="620" y="120" width="180" height="180" fill="#3498db" opacity="0.3" stroke="#2c3e50" stroke-width="2"/>
+                <rect x="635" y="140" width="150" height="60" fill="#2980b9" stroke="#2c3e50" stroke-width="1"/>
+                <text x="710" y="165" font-size="14" font-weight="bold" text-anchor="middle" fill="#fff">COMPRESSOR</text>
+                <text x="710" y="182" font-size="12" text-anchor="middle" fill="#fff">Screw Type</text>
+                
+                <rect x="635" y="220" width="150" height="60" fill="#3498db" stroke="#2c3e50" stroke-width="1"/>
+                <text x="710" y="245" font-size="14" font-weight="bold" text-anchor="middle">EVAPORATOR</text>
+                <text x="710" y="262" font-size="12" text-anchor="middle">(Chilled Water)</text>
+                
+                <text x="710" y="115" font-size="16" font-weight="bold" text-anchor="middle">CHILLER #2</text>
+                
+                <!-- Noise data -->
+                <rect x="625" y="310" width="170" height="60" fill="#f39c12" opacity="0.2" stroke="#f39c12" stroke-width="2"/>
+                <text x="710" y="335" font-size="13" font-weight="bold" text-anchor="middle" fill="#d68910">🔊 78-88 dB(A)</text>
+                <text x="710" y="350" font-size="11" text-anchor="middle">Compressor vibration</text>
+                <text x="710" y="363" font-size="11" text-anchor="middle">Power: 200-400 kW</text>
+            </g>
+            
+            <!-- AIR HANDLING UNIT (AHU) -->
+            <g id="ahu">
+                <rect x="880" y="150" width="240" height="120" fill="#2ecc71" opacity="0.2" stroke="#2c3e50" stroke-width="2"/>
+                <rect x="900" y="170" width="60" height="80" fill="#27ae60" stroke="#2c3e50" stroke-width="1"/>
+                <circle cx="930" cy="210" r="20" fill="#1e8449"/>
+                <text x="930" y="215" font-size="12" font-weight="bold" text-anchor="middle" fill="#fff">FAN</text>
+                
+                <rect x="980" y="170" width="60" height="80" fill="#95a5a6" stroke="#2c3e50" stroke-width="1"/>
+                <text x="1010" y="205" font-size="10" text-anchor="middle">Cooling</text>
+                <text x="1010" y="220" font-size="10" text-anchor="middle">Coil</text>
+                
+                <rect x="1060" y="170" width="40" height="80" fill="#e8daef" stroke="#2c3e50" stroke-width="1"/>
+                <text x="1080" y="210" font-size="9" text-anchor="middle">Filter</text>
+                
+                <text x="1000" y="145" font-size="16" font-weight="bold" text-anchor="middle">AIR HANDLER (AHU)</text>
+                
+                <!-- Noise data -->
+                <rect x="885" y="280" width="230" height="50" fill="#f39c12" opacity="0.2" stroke="#f39c12" stroke-width="2"/>
+                <text x="1000" y="305" font-size="13" font-weight="bold" text-anchor="middle" fill="#d68910">🔊 70-80 dB(A)</text>
+                <text x="1000" y="320" font-size="11" text-anchor="middle">Fan BPF: 180-600 Hz | Power: 50-100 kW</text>
+            </g>
+            
+            <!-- CONDENSER WATER PIPES (Cooling Tower to Chillers) -->
+            <path d="M 200 270 L 200 320 L 380 320 L 380 200" 
+                  fill="none" stroke="#95a5a6" stroke-width="6" marker-end="url(#arrowgray)"/>
+            <text x="290" y="315" font-size="11" fill="#7f8c8d">Condenser Water Supply (Hot)</text>
+            
+            <path d="M 200 270 L 250 320 L 620 320 L 620 200" 
+                  fill="none" stroke="#95a5a6" stroke-width="6" marker-end="url(#arrowgray)"/>
+            
+            <path d="M 470 160 L 470 90 L 200 90 L 200 120" 
+                  fill="none" stroke="#7f8c8d" stroke-width="6" marker-end="url(#arrowgray)"/>
+            <text x="330" y="85" font-size="11" fill="#7f8c8d">Condenser Water Return (Cool)</text>
+            
+            <path d="M 710 160 L 710 100 L 240 100" 
+                  fill="none" stroke="#7f8c8d" stroke-width="6"/>
+            
+            <!-- CHILLED WATER PIPES (Chillers to AHU and Building) -->
+            <path d="M 560 250 L 880 250 L 880 230" 
+                  fill="none" stroke="#3498db" stroke-width="6" marker-end="url(#arrowblue)"/>
+            <text x="720" y="245" font-size="11" fill="#2980b9">Chilled Water Supply (42°F)</text>
+            
+            <path d="M 800 250 L 880 250" 
+                  fill="none" stroke="#3498db" stroke-width="6"/>
+            
+            <path d="M 880 210 L 800 210 L 800 260 L 620 260" 
+                  fill="none" stroke="#5dade2" stroke-width="6" marker-end="url(#arrowblue)"/>
+            <text x="720" y="255" font-size="11" fill="#5dade2">Chilled Water Return (55°F)</text>
+            
+            <path d="M 560 260 L 400 260" 
+                  fill="none" stroke="#5dade2" stroke-width="6"/>
+            
+            <!-- AIR FLOW from AHU -->
+            <path d="M 1120 210 L 1180 210" 
+                  fill="none" stroke="#2ecc71" stroke-width="8" marker-end="url(#arrowgreen)"/>
+            <text x="1145" y="200" font-size="11" fill="#27ae60" font-weight="bold">Supply Air</text>
+            <text x="1145" y="230" font-size="10" fill="#27ae60">To Building</text>
+            
+            <!-- Arrow markers -->
+            <defs>
+                <marker id="arrowblue" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                    <path d="M0,0 L0,6 L9,3 z" fill="#3498db"/>
+                </marker>
+                <marker id="arrowgray" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                    <path d="M0,0 L0,6 L9,3 z" fill="#95a5a6"/>
+                </marker>
+                <marker id="arrowgreen" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                    <path d="M0,0 L0,6 L9,3 z" fill="#2ecc71"/>
+                </marker>
+                <marker id="arroworange" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                    <path d="M0,0 L0,6 L9,3 z" fill="#e67e22"/>
+                </marker>
+            </defs>
+            
+            <!-- BUILDING INTERIOR -->
+            <rect x="50" y="500" width="1100" height="350" fill="#ecf0f1" stroke="#34495e" stroke-width="3"/>
+            <text x="600" y="530" font-size="18" font-weight="bold" text-anchor="middle" fill="#34495e">BUILDING INTERIOR</text>
+            
+            <!-- Supply Duct -->
+            <rect x="1120" y="460" width="60" height="60" fill="#2ecc71" opacity="0.3" stroke="#27ae60" stroke-width="2"/>
+            <text x="1150" y="495" font-size="11" text-anchor="middle">Supply</text>
+            <text x="1150" y="508" font-size="11" text-anchor="middle">Duct</text>
+            
+            <path d="M 1150 520 L 1150 580 L 950 580 L 950 640" 
+                  fill="none" stroke="#2ecc71" stroke-width="8" marker-end="url(#arrowgreen)"/>
+            
+            <!-- Lab Spaces -->
+            <rect x="800" y="560" width="300" height="120" fill="#fff" stroke="#2c3e50" stroke-width="2"/>
+            <text x="950" y="590" font-size="16" font-weight="bold" text-anchor="middle">LAB SPACES</text>
+            <text x="950" y="610" font-size="12" text-anchor="middle">Tight temp control required</text>
+            <text x="950" y="630" font-size="12" text-anchor="middle">100% outside air (labs)</text>
+            <text x="950" y="650" font-size="12" text-anchor="middle">High air change rate</text>
+            <text x="950" y="670" font-size="11" text-anchor="middle" fill="#e74c3c">⚠️ 24/7 Operation Required</text>
+            
+            <!-- Office Spaces -->
+            <rect x="450" y="560" width="280" height="120" fill="#fff" stroke="#2c3e50" stroke-width="2"/>
+            <text x="590" y="590" font-size="16" font-weight="bold" text-anchor="middle">OFFICE SPACES</text>
+            <text x="590" y="610" font-size="12" text-anchor="middle">Standard comfort cooling</text>
+            <text x="590" y="630" font-size="12" text-anchor="middle">Lower ventilation rates</text>
+            <text x="590" y="650" font-size="12" text-anchor="middle">Reduced after-hours loads</text>
+            
+            <!-- Return Air -->
+            <path d="M 650 680 L 650 750 L 1100 750 L 1100 480" 
+                  fill="none" stroke="#e67e22" stroke-width="8" marker-end="url(#arroworange)" stroke-dasharray="10,5"/>
+            <text x="870" y="740" font-size="11" fill="#d35400" font-weight="bold">Return Air</text>
+            
+            <!-- Exhaust Air (from labs) -->
+            <path d="M 950 560 L 950 480 L 850 480 L 850 200 L 750 200 L 750 120" 
+                  fill="none" stroke="#c0392b" stroke-width="6" marker-end="url(#arrowred)" stroke-dasharray="8,4"/>
+            <text x="820" y="340" font-size="11" fill="#c0392b" transform="rotate(-90 820 340)">Lab Exhaust</text>
+            
+            <defs>
+                <marker id="arrowred" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                    <path d="M0,0 L0,6 L9,3 z" fill="#c0392b"/>
+                </marker>
+            </defs>
+            
+            <!-- Exhaust Fan on Roof -->
+            <circle cx="750" cy="140" r="25" fill="#e74c3c" stroke="#2c3e50" stroke-width="2"/>
+            <text x="750" y="145" font-size="11" font-weight="bold" text-anchor="middle" fill="#fff">EXHAUST</text>
+            <text x="750" y="157" font-size="10" text-anchor="middle" fill="#fff">FAN</text>
+            
+            <rect x="820" y="120" width="80" height="35" fill="#e74c3c" opacity="0.2" stroke="#e74c3c" stroke-width="1"/>
+            <text x="860" y="140" font-size="10" text-anchor="middle" fill="#c0392b">75-85 dB(A)</text>
+            
+            <!-- PUMPS -->
+            <g id="pump-primary">
+                <circle cx="350" cy="380" r="30" fill="#3498db" stroke="#2c3e50" stroke-width="2"/>
+                <rect x="338" y="365" width="24" height="30" fill="#2980b9"/>
+                <text x="350" y="385" font-size="10" font-weight="bold" text-anchor="middle" fill="#fff">PUMP</text>
+                <text x="350" y="425" font-size="11" text-anchor="middle">Chilled Water</text>
+                <text x="350" y="440" font-size="10" text-anchor="middle">65-75 dB(A)</text>
+            </g>
+            
+            <g id="pump-condenser">
+                <circle cx="250" cy="380" r="30" fill="#95a5a6" stroke="#2c3e50" stroke-width="2"/>
+                <rect x="238" y="365" width="24" height="30" fill="#7f8c8d"/>
+                <text x="250" y="385" font-size="10" font-weight="bold" text-anchor="middle" fill="#fff">PUMP</text>
+                <text x="250" y="425" font-size="11" text-anchor="middle">Condenser Water</text>
+                <text x="250" y="440" font-size="10" text-anchor="middle">65-75 dB(A)</text>
+            </g>
+            
+            <!-- Power Summary Box -->
+            <rect x="100" y="720" width="280" height="110" fill="#fff3cd" stroke="#ffc107" stroke-width="2"/>
+            <text x="240" y="745" font-size="14" font-weight="bold" text-anchor="middle">TOTAL SYSTEM POWER</text>
+            <text x="240" y="765" font-size="12" text-anchor="middle">Chillers (2): 400-800 kW</text>
+            <text x="240" y="780" font-size="12" text-anchor="middle">Cooling Tower: 75-150 kW</text>
+            <text x="240" y="795" font-size="12" text-anchor="middle">AHUs + Fans: 100-200 kW</text>
+            <text x="240" y="810" font-size="12" text-anchor="middle">Pumps: 50-100 kW</text>
+            <text x="240" y="828" font-size="14" font-weight="bold" text-anchor="middle" fill="#c0392b">TOTAL: ~625-1,250 kW</text>
+            
+            <!-- Noise Impact Zone -->
+            <ellipse cx="200" cy="90" rx="180" ry="60" fill="none" stroke="#e74c3c" stroke-width="3" stroke-dasharray="5,5" opacity="0.6"/>
+            <text x="200" y="45" font-size="12" font-weight="bold" text-anchor="middle" fill="#e74c3c">PRIMARY NOISE SOURCE</text>
+            
+            <path d="M 200 150 L 100 450 L 50 450" 
+                  fill="none" stroke="#e74c3c" stroke-width="2" stroke-dasharray="5,5" marker-end="url(#arrowred)"/>
+            <text x="120" y="300" font-size="11" fill="#e74c3c" transform="rotate(-65 120 300)">Noise propagation</text>
+            
+            <!-- Residential Area (off property) -->
+            <rect x="50" y="450" width="250" height="40" fill="#fff" stroke="#e74c3c" stroke-width="2"/>
+            <text x="175" y="473" font-size="13" font-weight="bold" text-anchor="middle" fill="#e74c3c">⚠️ RESIDENTIAL AREA 620-750 ft</text>
+        </svg>
+
+        <div class="notes">
+            <h3>Key Points About Industrial HVAC Noise:</h3>
+            <ul>
+                <li><strong>Cooling Towers:</strong> Highest noise source (85-95 dB). Combination of fan noise (60/120 Hz fundamental) and water cascading sounds. Often the primary complaint source.</li>
+                <li><strong>Chillers:</strong> Screw or centrifugal compressors generate 78-88 dB with strong low-frequency components (31.5-125 Hz). Vibration can transmit through structure.</li>
+                <li><strong>Air Handlers:</strong> Large fans (70-80 dB) with blade pass frequency (BPF) tones. BPF = (number of blades) × (RPM/60). Creates distinct tonal character.</li>
+                <li><strong>24/7 Operation:</strong> Life science labs require constant temperature/humidity control and 100% outside air. No "off hours" for noise reduction.</li>
+                <li><strong>Combined Sound Levels:</strong> Multiple sources operating simultaneously. Total noise at property line depends on distance, directivity, and barriers.</li>
+                <li><strong>Low-Frequency Dominance:</strong> HVAC equipment produces strong low-frequency noise (31.5-250 Hz) which:
+                    <ul>
+                        <li>Travels farther than high frequencies</li>
+                        <li>Penetrates walls more effectively</li>
+                        <li>Is underestimated by A-weighting (up to -26 dB at 63 Hz)</li>
+                        <li>Causes disproportionate annoyance</li>
+                    </ul>
+                </li>
+                <li><strong>Power Consumption:</strong> Typical 200,000 SF life science building: 625-1,250 kW for HVAC (represents 40-60% of total building power).</li>
+                <li><strong>Mitigation Challenges:</strong> Equipment typically located on rooftops for space efficiency, but this elevates noise sources above typical barriers and projects sound over longer distances.</li>
+            </ul>
+            
+            <h3>San Mateo Science Center Context:</h3>
+            <p>The San Mateo Science Center (Buildings 901 & 951, totaling 262,000 SF) has rooftop HVAC equipment matching this configuration. Residential properties in Harbortown are 620-750 feet away and report continuous low-frequency hum, particularly noticeable at night. The rooftop location provides minimal natural sound attenuation between equipment and residences.</p>
+        </div>
+    </div>
+</body>
+</html>

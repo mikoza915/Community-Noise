@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>San Mateo Science Center: Longfellow Is a Noisy Neighbor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+            font-size: 15px;
+        }
+        
+        .navbar {
+            background: #2c3e50;
+            padding: 15px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 220px;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+        
+        .navbar ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .navbar li {
+            margin: 0;
+        }
+        
+        .navbar a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            padding: 10px 25px;
+            transition: background 0.3s, padding-left 0.3s;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            font-size: 14px;
+        }
+        
+        .navbar a:hover {
+            background: #34495e;
+            padding-left: 30px;
+        }
+        
+        .navbar a.active {
+            background: #667eea;
+            font-weight: 600;
+            border-left: 4px solid #fff;
+        }
+        
+        .main-content {
+            margin-left: 240px;
+            padding: 25px 40px;
+            max-width: 1600px;
+        }
+        
+        @media (max-width: 1920px) and (min-width: 1600px) {
+            .main-content {
+                max-width: 1400px;
+            }
+        }
+        
+        @media (max-width: 1599px) {
+            .main-content {
+                max-width: 1200px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .navbar {
+                position: static;
+                width: 100%;
+                height: auto;
+            }
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 2.2em;
+            line-height: 1.2;
+        }
+        
+        h2 {
+            color: #34495e;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-size: 1.6em;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 8px;
+            line-height: 1.3;
+        }
+        
+        h3 {
+            color: #34495e;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 1.3em;
+            line-height: 1.3;
+        }
+        
+        h4 {
+            color: #34495e;
+            margin-top: 15px;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+        
+        p {
+            margin-bottom: 15px;
+            line-height: 1.7;
+        }
+        
+        a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        
+        a:hover {
+            text-decoration: underline;
+        }
+        
+        .summary-box, .key-point, .note {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 18px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .improvement {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 18px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .inadequate-response {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 18px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+        
+        th, td {
+            padding: 10px 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        
+        th {
+            background: #2c3e50;
+            color: white;
+            font-weight: 600;
+        }
+        
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: "Courier New", monospace;
+            font-size: 0.9em;
+        }
+        
+        pre {
+            background: #f4f4f4;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin: 20px 0;
+            font-size: 0.9em;
+        }
+        
+        ul, ol {
+            margin-left: 30px;
+            margin-bottom: 15px;
+        }
+        
+        li {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            margin-left: 240px;
+            max-width: 1600px;
+            background: white;
+            padding: 25px 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                margin-left: 0;
+                padding: 20px;
+            }
+        }
+    </style>
+    <script>
+        function calculateMonthsSince() {
+            const startDate = new Date('2024-06-18');
+            const today = new Date();
+            
+            const years = today.getFullYear() - startDate.getFullYear();
+            const months = today.getMonth() - startDate.getMonth();
+            const totalMonths = years * 12 + months;
+            
+            // Update all elements with class 'months-since'
+            const elements = document.getElementsByClassName('months-since');
+            for (let elem of elements) {
+                elem.textContent = totalMonths;
+            }
+        }
+        
+        // Run when page loads
+        window.addEventListener('DOMContentLoaded', calculateMonthsSince);
+    </script>
+</head>
+<body>
+                                                <nav class="navbar">
+        <ul>
+            <li><a href="index.html">🏠 Home</a></li>
+            <li><a href="science_center_case.html" class="active">📋 Case Documentation</a></li>
+            <li><a href="welcome_to_neighborhood.html">🏘️ Welcome Letter</a></li>
+            <li><a href="community_complaints.html">👥 Community Complaints</a></li>
+            <li><a href="wall_transmission.html">🌊 Wall Transmission Viz</a></li>
+            <li><a href="interactive_noise_map.html">🗺️ Interactive Map</a></li>
+            <li><a href="data_import.html">📥 Data Import</a></li>
+            <li><a href="ansi_calculator_flowchart.html">🔢 ANSI Calculator</a></li>
+            <li><a href="potential_solutions.html">💡 Solutions</a></li>
+            <li><a href="comparative_standards.html">📊 Standards Comparison</a></li>
+            <li><a href="ansi_s12_9_part_4.html">📐 ANSI S12.9 Part 4</a></li>
+            <li><a href="penalty_application_guide.html">📋 Penalty Guide</a></li>
+            <li><a href="model_noise_ordinance.html">📖 Model Ordinance</a></li>
+            <li><a href="hvac_system_complete_schematic.html">🏭 HVAC Schematics</a></li>
+            <li><a href="technical_resources.html">📚 Technical Resources</a></li>
+            <li><a href="pe_ethics_health_safety.html">⚕️ PE Ethics</a></li>
+        </ul>
+    </nav>
+
+
+    <h1>San Mateo Science Center: Longfellow Is a Noisy Neighbor</h1>
+    <p><strong>A Story of Community Disregard and Failed Accountability</strong></p>
+
+    <div style="background-color: #e8f4f8; padding: 20px; margin: 30px 0; border-radius: 5px;">
+        <h2 style="margin-top: 0; color: #1F4788;">Learn More</h2>
+        <h3><a href="noise_map_integrated.html">Community Measurement Portal</a></h3>
+        <h3><a href="decibel_scale.html">How Sound is Measured</a></h3>
+        <h3><a href="low_frequency_noise.html">Low Frequency Noise -- The Silent Menace</a></h3>
+        <h3><a href="annoyance_penalties.html">Hum, Whine, and Whoosh -- Why Character Matters</a></h3>
+        <h3><a href="noise_regulations.html">Noise Regulations -- No Good Deed Goes Unpunished</a></h3>
+        <h3><a href="acoustic_standards.html">Acoustic Standards</a></h3>
+    </div>
+
+    <div class="summary-box">
+        <h3 style="margin-top: 0;">The Problem</h3>
+        <p>Longfellow Real Estate Partners redeveloped the San Mateo Science Center with complete disregard for the surrounding residential community. Despite being explicitly warned about noise concerns in January 2022, they installed rooftop HVAC equipment that now produces constant, intrusive low-frequency noise affecting nearby homes 24/7. When residents complained, Longfellow's response has been minimal, inadequate, and dismissive. The problem has persisted for <span class="months-since">19</span> months with no meaningful resolution.</p>
+    </div>
+
+    <h2>A Pattern of Disregard</h2>
+    
+    <ul>
+        <li><strong>January 2022:</strong> Community explicitly warned Longfellow about HVAC noise concerns and requested equipment be located away from residential areas</li>
+        <li><strong>Community request ignored:</strong> Equipment was installed exactly where residents asked it not to be</li>
+        <li><strong>No meaningful engagement:</strong> When the predicted problems materialized in June 2024, Longfellow's response was a single inadequate technical memo</li>
+        <li><strong>Zero accountability:</strong> <span class="months-since">19</span> months later, the noise continues unabated with no real effort to resolve the issue</li>
+    </ul>
+
+    <h2>Impact on the Community</h2>
+
+    <ul>
+        <li><strong>Sleep disruption:</strong> Constant low-frequency hum audible inside homes, particularly at night</li>
+        <li><strong>Loss of property enjoyment:</strong> Cannot use outdoor spaces without intrusive mechanical noise</li>
+        <li><strong>Stress and frustration:</strong> <span class="months-since">19</span> months of unresolved complaints and bureaucratic runaround</li>
+        <li><strong>Diminished property values:</strong> Who wants to buy a home next to industrial-level noise?</li>
+    </ul>
+
+    <div class="key-point">
+        <h3 style="margin-top: 0;">They Were Warned</h3>
+        <p><strong>January 2022:</strong> During the planning process, community members with technical expertise explicitly warned Longfellow that rooftop HVAC equipment would create noise problems for nearby residents. The community specifically requested that utility structures be moved to Baker Way, away from residential properties.</p>
+        <p><strong>Longfellow's response:</strong> Ignored the warnings. Installed the equipment anyway. Now residents live with the exact problem they predicted.</p>
+    </div>
+
+    <h2>Timeline of Accountability Failure</h2>
+
+    <ol>
+        <li><strong>January 2022:</strong> Community warns about noise, asks for equipment relocation → Request ignored</li>
+        <li><strong>April 2022:</strong> Environmental review omits any meaningful analysis of rooftop HVAC noise</li>
+        <li><strong>June 2024:</strong> Residents file formal complaints about the exact noise problem they predicted</li>
+        <li><strong>July 2024:</strong> Longfellow's consultant provides a one-page memo using flawed methodology</li>
+        <li><strong>December 2024:</strong> Six months later, problem remains unresolved, no meaningful action taken</li>
+    </ol>
+
+    <h2>What Residents Deserve</h2>
+
+    <ul>
+        <li><strong>Real solutions:</strong> Actual noise mitigation, not more studies or excuses</li>
+        <li><strong>Accountability:</strong> Acknowledgment that Longfellow created this problem after being warned</li>
+        <li><strong>Timely action:</strong> The problem has persisted for six months—that's long enough</li>
+        <li><strong>Respect:</strong> The community's concerns should be taken seriously, not dismissed</li>
+        <li><strong>Good neighbors:</strong> Corporate citizens should act like good neighbors in the communities where they operate</li>
+    </ul>
+
+    <div class="footer">
+        <p><strong>The Bottom Line:</strong> Longfellow Real Estate Partners was warned about noise problems, ignored those warnings, created the exact problems residents predicted, and has failed to meaningfully address the issue for six months and counting.</p>
+        <p><strong>Property:</strong> San Mateo Science Center, 901/951 Mariners Island Boulevard<br>
+        <strong>Developer:</strong> Longfellow Real Estate Partners<br>
+        <strong>Code Enforcement Case:</strong> CE-2024-000294 (filed June 15, 2024)</p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,97 @@
+HOW TO UPLOAD THIS TO GITHUB
+==============================
+
+STEP 1: Download this folder
+-----------------------------
+First, you need to get the "noise-website" folder onto your computer.
+
+Since downloads aren't working in Claude, try:
+a) Claude Desktop App (claude.ai/download)
+b) Different browser
+c) I can show you how to copy/paste individual files
+
+STEP 2: Create a new GitHub repository
+---------------------------------------
+1. Go to: https://github.com/new
+2. Repository name: "san-mateo-noise-advocacy" (or whatever you want)
+3. Description: "San Mateo Science Center HVAC noise complaint documentation"
+4. Choose: Public (so others can see it)
+5. DON'T check "Initialize with README" (we already have one)
+6. Click "Create repository"
+
+STEP 3: Push your files to GitHub
+----------------------------------
+Open Terminal (Mac) or Command Prompt (Windows) and run these commands:
+
+# Navigate to the noise-website folder
+cd /path/to/noise-website
+
+# Initialize Git repository
+git init
+
+# Add all files
+git add .
+
+# Commit files
+git commit -m "Initial commit: San Mateo Science Center noise advocacy website"
+
+# Add your GitHub repository as remote
+# Replace YOUR_USERNAME with your GitHub username
+git remote add origin https://github.com/YOUR_USERNAME/san-mateo-noise-advocacy.git
+
+# Push to GitHub
+git branch -M main
+git push -u origin main
+
+STEP 4: Enable GitHub Pages (optional)
+---------------------------------------
+If you want to host the website on GitHub Pages:
+
+1. Go to your repository on GitHub
+2. Click "Settings" tab
+3. Click "Pages" in left sidebar
+4. Under "Source", select "main" branch
+5. Click "Save"
+6. Your site will be at: https://YOUR_USERNAME.github.io/san-mateo-noise-advocacy/
+
+ALTERNATIVE: If downloads still don't work
+-------------------------------------------
+I can create individual files you can copy/paste into GitHub's web interface:
+
+1. Create repository on GitHub
+2. Click "Add file" → "Create new file"
+3. Name it (e.g., "index.html")
+4. I'll give you the code to paste
+5. Repeat for each file
+
+Would you like me to do that instead?
+
+TROUBLESHOOTING
+---------------
+Problem: "git: command not found"
+Solution: Install Git from https://git-scm.com/downloads
+
+Problem: Authentication error when pushing
+Solution: You may need to set up a Personal Access Token
+         Go to: https://github.com/settings/tokens
+
+Problem: Still can't download the folder
+Solution: Let me know and I'll give you the code for each file individually
+         so you can create them directly in GitHub's web interface
+
+WHAT'S IN THIS FOLDER
+---------------------
+✅ 20 HTML files (complete website)
+✅ README.md (documentation)
+✅ .gitignore (Git configuration)
+
+Total size: ~500 KB
+
+NEXT STEPS AFTER UPLOADING
+---------------------------
+1. Add your Google Maps API key to index.html
+2. Test the site locally or on GitHub Pages
+3. Share the URL with your community
+4. Update content as needed
+
+Questions? Let me know which step is giving you trouble!
